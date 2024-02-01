@@ -20,5 +20,6 @@ func main() {
 	})
 	// add additional router
 	router.GET("/example", controllers.ExampleController())
+	router.GET("/test_mongo", controllers.Testmongo())
 	router.Run(":" + port)
 }

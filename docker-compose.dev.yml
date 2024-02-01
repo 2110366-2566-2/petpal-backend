@@ -1,0 +1,22 @@
+version: "3.9"
+services:
+  ga_db:
+    image: mongo
+    container_name: ga-mongo_db
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=inwza
+      - MONGO_INITDB_ROOT_PASSWORD=strongpassword
+  ga_db-client:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=inwza
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=strongpassword
+      - ME_CONFIG_MONGODB_URL=mongodb://inwza:strongpassword@ga_db:27017/
+    depends_on:
+      - ga_db
