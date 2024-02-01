@@ -6,6 +6,7 @@
 1. run following commands in terminal
    1. `cd petpal-backend` (if not already in petpal-backend directory)
    1. `go mod tidy` (to install all the dependacies needed)
+1. install docker
 
 # Run
 
