@@ -1,0 +1,59 @@
+{
+    "type" : "object",
+    "bsonType" : "object",
+    "title" : "svcp",
+    "description" : "Store service Provider data",
+    "required" : ["SVCPID", "SVCPImg", "SVCPUsername", "SVCPPassword", "SVCPEmail", "isVerified", "SVCPResponsiblePerson", "defaultBank", "defaultAccountNumber", "license", "location", "SVCPAdditionalImg", "services"],
+    "properties" : {
+        "SVCPID" : {"bsonType" : "string"},
+        "SVCPImg" : {"bsonType" : "string"},
+        "SVCPUsername" : {"bsonType" : "string"},
+        "SVCPPassword" : {
+            "bsonType" : "string",
+            "minLength" : 8,
+            "maxLength" : 64,
+            "pattern" : ".*[a-zA-Z].*"
+        },
+        "SVCPEmail" : {
+            "bsonType" : "string",
+            "pattern" : ".+@.+\\..+",
+            "maxLength" : 64
+        },
+        "isVerified" : {"bsonType" : "bool"},
+        "SVCPResponsiblePerson" : {
+            "bsonType" : "string",
+            "maxLength" : 128
+        },
+        "defaultBank" : {"bsonType" : "string"},
+        "defaultAccountNumber" : {"bsonType" : "string"},
+        "license" : {"bsonType" : "string"},
+        "location" : {
+            "bsonType" : "string",
+            "maxLength" : 256
+        },
+        "SVCPAdditionalImg" : {"bsonType" : "string"},
+        "services" : {
+            "bsonType" : "array",
+            "items" : {
+                "bsonType" : "object",
+                "properties" : {
+                    "serviceType" : {"bsonType" : "string"},
+                    "serviceDescription" : {"bsonType" : "string"},
+                    "serviceImg" : {"bsonType" : "string"},
+                    "averageRating" : {"bsonType" : "double"},
+                    "requiredCert" : {"bsonType" : "bool"},
+                    "timeslots" : {
+                        "bsonType" : "array",
+                        "items" : {
+                            "bsonType" : "object",
+                            "properties" : {
+                                "startTime" : {"bsonType" : "date"},
+                                "endTime" : {"bsonType" : "date"}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

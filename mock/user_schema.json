@@ -16,7 +16,10 @@
             "maxLength" : 64,
             "pattern" : ".*[a-zA-Z].*"
         },
-        "address" : {"bsonType" : "string"},
+        "address" : {
+            "bsonType" : "string",
+            "maxLength" : 256
+        },
         "phoneNumber" : {
             "bsonType" : "string",
             "pattern" : "0\\d*",
@@ -25,14 +28,18 @@
         },
         "email" : {
             "bsonType" : "string",
-            "pattern" : ".*@.*"
+            "pattern" : ".+@.+\\..+",
+            "maxLength" : 64
         },
         "profilePicture" : {"bsonType" : "string"},
-        "fullName" : {"bsonType" : "string"},
-        "dateOfBith" : {"bsonType" : "string"},
+        "fullName" : {
+            "bsonType" : "string",
+            "maxLength" : 128
+        },
+        "dateOfBith" : {"bsonType" : "date"},
         "defaultAccountNumber" : {"bsonType" : "string"},
         "defaultBank" : {"bsonType" : "string"},
-        "pet" : {
+        "pets" : {
             "bsonType" : "array",
             "items" : {
                 "bsonType" : "object",
