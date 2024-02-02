@@ -16,6 +16,11 @@ USERNAME = 'inwza'
 PASSWORD = 'strongpassword'
 url = f"mongodb://{USERNAME}:{PASSWORD}@localhost:27017/"
 
+# Random
+SEED = 696969
+random.seed(SEED)
+
+
 client = MongoClient(url, server_api=ServerApi('1'))
 
 try:
