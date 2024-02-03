@@ -13,8 +13,7 @@
         "password" : {
             "bsonType" : "string",
             "minLength" : 8,
-            "maxLength" : 64,
-            "pattern" : ".*[a-zA-Z].*"
+            "maxLength" : 64
         },
         "address" : {
             "bsonType" : "string",
