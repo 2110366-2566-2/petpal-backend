@@ -13,5 +13,10 @@ type User struct {
 	dateOfBirth          string // ควรเปลี่ยนเป็น date หรือเปล่า
 	defaultAccountNumber string
 	defaultBank          string
-	// Waiting for implement eneity pet
+	pet                  Pet
+}
+
+func (u *User) editPet(petName string, petDetails Pet) Pet {
+	// Mock Function
+	return u.pet
 }
