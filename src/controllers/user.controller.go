@@ -8,12 +8,8 @@ import (
 	// Import the user package containing UserRepository and UserService
 )
 
-type UserController struct {
-	db models.MongoDB
-}
-
 // CreateHandler handles the creation of a new user
-func (uc *UserController) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
+func CreateUserHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB) {
 	// Parse request body to get user data
 	var createNewUser models.CreateUser
 	err := json.NewDecoder(r.Body).Decode(&createNewUser)

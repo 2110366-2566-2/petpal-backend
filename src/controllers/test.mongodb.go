@@ -7,18 +7,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// example Go controller function
-func Testmongo() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		mongo, err := models.NewMongoDB()
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-		mongo.InitFirstDB()
-		response, _ := mongo.GetFirstDB()
-		c.JSON(http.StatusOK, response)
+func Testmongo(c *gin.Context) {
+
+	db := c.MustGet("db").(*models.MongoDB)
+
+	db.InitFirstDB()
+	response, err := db.GetFirstDB()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
 	}
+	c.JSON(http.StatusOK, response)
 }
