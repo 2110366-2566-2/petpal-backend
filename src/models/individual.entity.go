@@ -3,10 +3,10 @@ package models
 
 // User represents a user entity
 type Individual struct {
-	IndividualID string
+	IndividualID int
 }
 
-func (e *Individual) editProfile(individualID string, profileDetails string) Individual {
+func (e *Individual) editProfile(individualID int, profileDetails string) Individual {
 	// Mock Function <-------------------------------
 	// What is profileDetails Na
 	e.IndividualID = individualID
