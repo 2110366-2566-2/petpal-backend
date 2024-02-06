@@ -2,11 +2,10 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 	"petpal-backend/src/configs"
-	"petpal-backend/src/controllers"
 	"petpal-backend/src/models"
 	"petpal-backend/src/routes"
+	"petpal-backend/src/utills"
 
 	"github.com/gin-gonic/gin"
 )
@@ -23,7 +22,7 @@ func main() {
 	// Initialize Gin router
 	r := gin.Default()
 
-	db, err := models.NewMongoDB()
+	db, err := utills.NewMongoDB()
 	if err != nil {
 		fmt.Println("Have you ever recite Namo 3 times to praise the golden-armored warrior? That so importance na :", err)
 	}
@@ -32,15 +31,9 @@ func main() {
 	r.Use(DatabaseMiddleware(db))
 
 	port := configs.GetPort()
-	// basic route
-	r.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "Hello World!",
-		})
-	})
-	r.GET("/test_mongo", controllers.Testmongo)
 
-	// add additional router
+	// add router
+	routes.BasicRoutes(r)
 	routes.UserRoutes(r)
 	routes.ExampleRoutes(r)
 
