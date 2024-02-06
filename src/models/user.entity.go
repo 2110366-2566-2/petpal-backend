@@ -3,6 +3,7 @@ package models
 
 // User represents a user entity
 type User struct {
+	Individual
 	username             string
 	password             string
 	address              string
