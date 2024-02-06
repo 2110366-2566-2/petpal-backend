@@ -2,14 +2,14 @@ package controllers
 
 import (
 	"net/http"
-	"petpal-backend/src/models"
 
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func Testmongo(c *gin.Context) {
 
-	db := c.MustGet("db").(*models.MongoDB)
+	db := c.MustGet("db").(*mongo.Client)
 
 	db.InitFirstDB()
 	response, err := db.GetFirstDB()
