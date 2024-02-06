@@ -38,7 +38,7 @@ func GetFirstDB(m *models.MongoDB) ([]bson.M, error) {
 }
 
 // ExampleMethod demonstrates a simple MongoDB operation (e.g., inserting a document).
-func InitFirstDB(m *models.MongoDB) error {
+func AddMockDataToDB(m *models.MongoDB) error {
 	// Example of using co
 	collection := m.Collection("collection1")
 
