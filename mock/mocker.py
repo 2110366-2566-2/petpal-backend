@@ -87,7 +87,7 @@ for idx, collection_name in enumerate(COLLECTION_NAMES):
     print(f"Mocking collection {collection_name}")
     collection = db[collection_name]
     
-    schema_path = os.path.abspath(f'./mock/{collection_name}_schema.json')
+    schema_path = os.path.abspath(f'./{collection_name}_schema.json')
     with open(schema_path) as file:
         print(f"\tReading schema from {schema_path}")
         user_schema = json.load(file)
