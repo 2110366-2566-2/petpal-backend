@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"petpal-backend/src/models"
 	"petpal-backend/src/utills"
@@ -48,7 +47,6 @@ func SetDefaultBankAccountHandler(w http.ResponseWriter, r *http.Request, db *mo
 	username := req.Username
 	defaultBankAccountNumber := req.DefaultBankAccountNumber
 	defaultBank := req.DefaultBank
-	fmt.Println(username, defaultBankAccountNumber, defaultBank)
 	
 	// Call the user service to set the default bank account
 	err_str, err := utills.SetDefaultBankAccount(username, defaultBankAccountNumber, defaultBank, db)
