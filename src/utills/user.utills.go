@@ -24,7 +24,7 @@ func NewUser(createUser models.CreateUser) (*models.User, error) {
 		ProfilePicture:       "Mock",
 		DefaultAccountNumber: "Mock",
 		DefaultBank:          "Mock",
-		Pet:                  nil,
+		Pets:                  nil,
 	}
 
 	return newUser, nil
