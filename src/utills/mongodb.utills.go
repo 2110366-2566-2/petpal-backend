@@ -26,7 +26,7 @@ func NewMongoDB() (*models.MongoDB, error) {
 		return nil, err
 	}
 
-	return &models.MongoDB{Client: mongoClient, DbName: "testDbName"}, nil
+	return &models.MongoDB{Client: mongoClient, DbName: "petpal"}, nil
 }
 
 func GetFirstDB(m *models.MongoDB) ([]bson.M, error) {
