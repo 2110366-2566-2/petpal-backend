@@ -29,5 +29,11 @@ func UserRoutes(r *gin.Engine) {
 			controllers.UploadImageHandler(c, db)
 		})
 
+		// get user profile image (only one image)
+		userGroup.GET("/ProfileImage/:username", func(c *gin.Context) {
+			db := c.MustGet("db").(*models.MongoDB)
+			controllers.GetProfileImageHandler(c, "user", db)
+		})
+
 	}
 }

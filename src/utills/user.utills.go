@@ -91,3 +91,20 @@ func UploadProfileImage(username string, fileContent []byte, db *models.MongoDB)
 	// Return a success message along with the update results
 	return gin.H{"message": "Profile Picture File stored successfully in 'user' collection", "updated": results}, nil
 }
+
+func GetProfileImage(username string, db *models.MongoDB) (string, error) {
+	// Access the "user" collection in the MongoDB database
+	userCollection := db.Collection("user")
+
+	// Find the user by username in the "user" collection
+	var user models.User = models.User{}
+	filter := bson.D{{Key: "username", Value: username}}
+	err := userCollection.FindOne(context.Background(), filter).Decode(&user)
+	if err != nil {
+		// If an error occurs during the database query, return an error response
+		return "", err
+	}
+
+	// Return the profile picture file content
+	return user.ProfilePicture, nil
+}
