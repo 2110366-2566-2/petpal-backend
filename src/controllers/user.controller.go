@@ -65,7 +65,7 @@ func SetDefaultBankAccountHandler(w http.ResponseWriter, r *http.Request, db *mo
 }
 
 // UploadImageHandler handles the HTTP request for uploading a profile image.
-func UploadImageHandler(c *gin.Context, db *models.MongoDB) {
+func UploadImageHandler(c *gin.Context, userType string, db *models.MongoDB) {
 	// Parse the multipart form data
 	err := c.Request.ParseMultipartForm(10 << 20)
 	if err != nil {
@@ -102,7 +102,7 @@ func UploadImageHandler(c *gin.Context, db *models.MongoDB) {
 	}
 
 	// Perform the upload of the profile image to the database using a utility function
-	response, err := utills.UploadProfileImage(username, fileContent, db)
+	response, err := utills.UploadProfileImage(username, fileContent, userType, db)
 	if err != nil {
 		// If there is an error during the profile image upload, respond with an internal server error and error message
 		c.JSON(http.StatusInternalServerError, response)

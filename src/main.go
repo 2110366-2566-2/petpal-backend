@@ -35,6 +35,7 @@ func main() {
 	// add router
 	routes.BasicRoutes(r)
 	routes.UserRoutes(r)
+	routes.ServiceProviderRoutes(r)
 	routes.ExampleRoutes(r)
 
 	r.Run(":" + port)

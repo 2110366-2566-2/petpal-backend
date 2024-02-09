@@ -61,35 +61,66 @@ func SetDefaultBankAccount(username string, defaultBankAccountNumber string, def
 // UploadProfileImage uploads a profile image for a user.
 // It takes the username, file content (image bytes), and a MongoDB instance.
 // Returns a gin.H (response) and an error if any.
-func UploadProfileImage(username string, fileContent []byte, db *models.MongoDB) (gin.H, error) {
-	// Access the "user" collection in the MongoDB database
-	userCollection := db.Collection("user")
+func UploadProfileImage(username string, fileContent []byte, userType string, db *models.MongoDB) (gin.H, error) {
 
-	// Find the user by username in the "user" collection
-	var user models.User = models.User{}
-	filter := bson.D{{Key: "username", Value: username}}
-	err := userCollection.FindOne(context.Background(), filter).Decode(&user)
-	if err != nil {
-		// If an error occurs during the database query, return an error response
-		return gin.H{"error": err.Error()}, err
+	if userType == "user" {
+		userCollection := db.Collection("user")
+
+		// Find the user by username in the "user" collection
+		var user models.User = models.User{}
+		filter := bson.D{{Key: "username", Value: username}}
+		err := userCollection.FindOne(context.Background(), filter).Decode(&user)
+		if err != nil {
+			// If an error occurs during the database query, return an error response
+			return gin.H{"error": err.Error()}, err
+		}
+
+		// Update the user's profilePicture field with the new file content
+		update := bson.D{
+			{Key: "$set", Value: bson.D{
+				{Key: "profilePicture", Value: fileContent},
+			}},
+		}
+
+		// Perform the update operation in the "user" collection
+		results, err := userCollection.UpdateOne(context.TODO(), filter, update)
+		if err != nil {
+			// If an error occurs during the update, return an error response
+			return gin.H{"error": "Error updating profile Picture in the database"}, err
+		}
+
+		// Return a success message along with the update results
+		return gin.H{"message": "Profile Picture File stored successfully in 'user' collection", "updated": results}, nil
+	} else if userType == "svcp" {
+		userCollection := db.Collection("svcp")
+
+		// Find the user by username in the "SVCPUsername" collection
+		var user models.User = models.User{}
+		filter := bson.D{{Key: "SVCPUsername", Value: username}}
+		err := userCollection.FindOne(context.Background(), filter).Decode(&user)
+		if err != nil {
+			// If an error occurs during the database query, return an error response
+			return gin.H{"error": err.Error()}, err
+		}
+
+		// Update the user's profilePicture field with the new file content
+		update := bson.D{
+			{Key: "$set", Value: bson.D{
+				{Key: "SVCPImg", Value: fileContent},
+			}},
+		}
+
+		// Perform the update operation in the "svcp" collection
+		results, err := userCollection.UpdateOne(context.TODO(), filter, update)
+		if err != nil {
+			// If an error occurs during the update, return an error response
+			return gin.H{"error": "Error updating profile Picture in the database"}, err
+		}
+
+		// Return a success message along with the update results
+		return gin.H{"message": "Profile Picture File stored successfully in 'svcp' collection", "updated": results}, nil
 	}
-
-	// Update the user's profilePicture field with the new file content
-	update := bson.D{
-		{Key: "$set", Value: bson.D{
-			{Key: "profilePicture", Value: fileContent},
-		}},
-	}
-
-	// Perform the update operation in the "user" collection
-	results, err := userCollection.UpdateOne(context.TODO(), filter, update)
-	if err != nil {
-		// If an error occurs during the update, return an error response
-		return gin.H{"error": "Error updating profile Picture in the database"}, err
-	}
-
-	// Return a success message along with the update results
-	return gin.H{"message": "Profile Picture File stored successfully in 'user' collection", "updated": results}, nil
+	return gin.H{"error": "missing usertype in backend"}, nil
 }
 
 func GetProfileImage(username string, db *models.MongoDB) (string, error) {
