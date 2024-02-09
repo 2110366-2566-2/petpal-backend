@@ -8,13 +8,18 @@ import (
 )
 
 func ServiceProviderRoutes(r *gin.Engine) {
-	userGroup := r.Group("/svcp")
+	svcpGroup := r.Group("/svcp")
 	{
-		// send user profile image (Form Fields : username, profileImage)
-		userGroup.POST("/uploadProfileImage", func(c *gin.Context) {
+		// update user profile image (Form Fields : username, profileImage)
+		svcpGroup.POST("/uploadProfileImage", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllers.UploadImageHandler(c, "svcp", db)
 		})
 
+		// get svcp profile image (only one image)
+		svcpGroup.GET("/ProfileImage/:username", func(c *gin.Context) {
+			db := c.MustGet("db").(*models.MongoDB)
+			controllers.GetProfileImageHandler(c, "svcp", db)
+		})
 	}
 }

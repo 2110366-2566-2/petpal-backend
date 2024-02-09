@@ -126,7 +126,7 @@ func GetProfileImageHandler(c *gin.Context, userType string, db *models.MongoDB)
 	}
 
 	// // Perform the upload of the profile image to the database using a utility function
-	response, err := utills.GetProfileImage(username, db)
+	response, err := utills.GetProfileImage(username, userType, db)
 	if err != nil {
 		// If there is an error during the profile image upload, respond with an internal server error and error message
 		c.JSON(http.StatusInternalServerError, response)

@@ -23,7 +23,7 @@ func UserRoutes(r *gin.Engine) {
 			controllers.SetDefaultBankAccountHandler(c.Writer, c.Request, db)
 		})
 
-		// send user profile image (Form Fields : username, profileImage)
+		// update user profile image (Form Fields : username, profileImage)
 		userGroup.POST("/uploadProfileImage", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllers.UploadImageHandler(c, "user", db)
