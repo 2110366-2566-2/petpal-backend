@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/smtp"
 
+	emailverifier "github.com/AfterShip/email-verifier"
 	"github.com/jordan-wright/email"
 )
 
@@ -59,7 +60,22 @@ func (sender *GmailSender) SendEmail(
 			return fmt.Errorf("failed to attach file %s: %w", f, err)
 		}
 	}
-
 	smtpAuth := smtp.PlainAuth("", sender.fromEmailAddress, sender.fromEmailPassword, smtpAuthAddress)
 	return e.Send(smtpServerAddress, smtpAuth)
+}
+
+func ValidateEmailAddress(emailAddress string) bool {
+	verifier := emailverifier.NewVerifier()
+	ret, err := verifier.Verify(emailAddress)
+	if err != nil {
+		//fmt.Println("verify email address failed, error is: ", err)
+		return false
+	}
+	if !ret.Syntax.Valid {
+		//fmt.Println("email address syntax is invalid")
+		return false
+	}
+
+	//fmt.Println("email validation result", ret)
+	return true
 }
