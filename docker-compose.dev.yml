@@ -9,6 +9,8 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=inwza
       - MONGO_INITDB_ROOT_PASSWORD=strongpassword
+    volumes:
+      - mongo_local_temp:/data/db
   ga_db-client:
     image: mongo-express
     restart: always
@@ -20,3 +22,5 @@ services:
       - ME_CONFIG_MONGODB_URL=mongodb://inwza:strongpassword@ga_db:27017/
     depends_on:
       - ga_db
+volumes:
+  mongo_local_temp:

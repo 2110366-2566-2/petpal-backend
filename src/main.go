@@ -1,25 +1,42 @@
 package main
 
 import (
-	"net/http"
+	"fmt"
 	"petpal-backend/src/configs"
-	"petpal-backend/src/controllers"
+	"petpal-backend/src/models"
+	"petpal-backend/src/routes"
+	"petpal-backend/src/utills"
 
 	"github.com/gin-gonic/gin"
 )
 
+// Middleware to inject database connection into Gin context
+func DatabaseMiddleware(db *models.MongoDB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Set("db", db)
+		c.Next()
+	}
+}
+
 func main() {
-	router := gin.Default()
+	// Initialize Gin router
+	r := gin.Default()
+
+	db, err := utills.NewMongoDB()
+	if err != nil {
+		fmt.Println("Have you ever recite Namo 3 times to praise the golden-armored warrior? That so importance na :", err)
+	}
+
+	// init database to inject in gin.context
+	r.Use(DatabaseMiddleware(db))
 
 	port := configs.GetPort()
-	// basic route
-	router.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "Hello World!",
-		})
-	})
-	// add additional router
-	router.GET("/example", controllers.ExampleController())
-	router.GET("/test_mongo", controllers.Testmongo())
-	router.Run(":" + port)
+
+	// add router
+	routes.BasicRoutes(r)
+	routes.UserRoutes(r)
+	routes.ExampleRoutes(r)
+	routes.SVCPRoutes(r)
+
+	r.Run(":" + port)
 }
