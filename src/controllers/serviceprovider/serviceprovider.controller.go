@@ -26,11 +26,10 @@ func GetSVCPsHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB)
 		return
 	}
 
-	// get all users, no filters for now
+	// get all svcps, no filters for now
 	svcps, err := utills.GetSVCPs(db, bson.D{}, page - 1, per)
 	if err != nil {
-		println(err.Error())
-		http.Error(w, "Failed to get users", http.StatusInternalServerError)
+		http.Error(w, "Failed to get service providers", http.StatusInternalServerError)
 		return
 	}
 
@@ -38,15 +37,14 @@ func GetSVCPsHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB)
 	json.NewEncoder(w).Encode(svcps)
 }
 
-// GetUserByIDHandler handles the fetching of a user by ID
+// GetSVCPByIDHandler handles the fetching of a service provider by ID
 func GetSVCPByIDHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB, id string) {
-	user, err := utills.GetSVCPByID(db, id)
+	svcp, err := utills.GetSVCPByID(db, id)
 	if err != nil {
-		println(err.Error())
-		http.Error(w, "Failed to get users", http.StatusInternalServerError)
+		http.Error(w, "Failed to get service provider", http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(user)
+	json.NewEncoder(w).Encode(svcp)
 }

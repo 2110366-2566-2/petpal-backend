@@ -18,15 +18,8 @@ func SVCPRoutes(r *gin.Engine) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllers.GetSVCPByIDHandler(c.Writer, c.Request, db, c.Param("id"))
 		})
-		// SVCPGroup.POST("/", func(c *gin.Context) {
-		// 	db := c.MustGet("db").(*models.MongoDB)
-		// 	controllers.CreateUserHandler(c.Writer, c.Request, db)
-		// })
-		// SVCPGroup.PUT("/:id", updateUser)
-		// SVCPGroup.DELETE("/:id", deleteUser)
-		// SVCPGroup.POST("/setDefaultBankAccount", func(c *gin.Context) {
-		// 	db := c.MustGet("db").(*models.MongoDB)
-		// 	controllers.SetDefaultBankAccountHandler(c.Writer, c.Request, db)
-		// })
+		// SVCPGroup.POST("/", createSVCP)
+		// SVCPGroup.PUT("/:id", updateSVCP)
+		// SVCPGroup.DELETE("/:id", deleteSVCP)
 	}
 }
