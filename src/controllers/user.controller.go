@@ -11,6 +11,7 @@ import (
 	// Import the user package containing UserRepository and UserService
 )
 
+// GetUsersHandler handles the fetching of all users
 func GetUsersHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB) {
 	// Call the user service to get all users
 	params := r.URL.Query()
@@ -36,6 +37,26 @@ func GetUsersHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(users)
+}
+
+// GetUserByIDHandler handles the fetching of a user by ID
+func GetUserByIDHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB, id string) {
+	// parse id from param
+	id_int, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		http.Error(w, "Failed to parse request query params", http.StatusBadRequest)
+		return
+	}
+
+	user, err := utills.GetUserByID(db, id_int)
+	if err != nil {
+		println(err.Error())
+		http.Error(w, "Failed to get users", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(user)
 }
 
 // CreateHandler handles the creation of a new user
