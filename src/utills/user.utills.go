@@ -5,7 +5,27 @@ import (
 	"petpal-backend/src/models"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
+
+func GetUsers(db *models.MongoDB, filter bson.D, page int64, per int64) ([]models.User, error) {
+	collection := db.Collection("user")
+	opts := options.Find().SetSkip(page * per).SetLimit(per)
+
+	// Find all documents in the collection
+	cursor, err := collection.Find(context.Background(), filter, opts)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(context.Background())
+
+	var users []models.User
+	if err := cursor.All(context.Background(), &users); err != nil {
+		return nil, err
+	}
+
+	return users, err
+}
 
 func nextUserId() int {
 	id := 5

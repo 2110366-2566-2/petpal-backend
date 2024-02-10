@@ -5,8 +5,38 @@ import (
 	"net/http"
 	"petpal-backend/src/models"
 	"petpal-backend/src/utills"
+	"strconv"
+
+	"go.mongodb.org/mongo-driver/bson"
 	// Import the user package containing UserRepository and UserService
 )
+
+func GetUsersHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB) {
+	// Call the user service to get all users
+	params := r.URL.Query()
+
+	// set default values for page and per
+	if !params.Has("page") { params.Set("page", "1") }
+	if !params.Has("per") { params.Set("per", "10") }
+
+	// fetch page and per from request query
+	page, err_page := strconv.ParseInt(params.Get("page"), 10, 64)
+	per, err_per := strconv.ParseInt(params.Get("per"), 10, 64)
+	if err_page != nil || err_per != nil{
+		http.Error(w, "Failed to parse request query params", http.StatusBadRequest)
+		return
+	}
+
+	// get all users, no filters for now
+	users, err := utills.GetUsers(db, bson.D{}, page - 1, per)
+	if err != nil {
+		http.Error(w, "Failed to get users", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(users)
+}
 
 // CreateHandler handles the creation of a new user
 func CreateUserHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB) {
