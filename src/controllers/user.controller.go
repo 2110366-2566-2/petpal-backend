@@ -48,9 +48,9 @@ func GetUserByIDHandler(w http.ResponseWriter, r *http.Request, db *models.Mongo
 		return
 	}
 
+	// Call the user service to get a user by ID
 	user, err := utills.GetUserByID(db, id_int)
 	if err != nil {
-		println(err.Error())
 		http.Error(w, "Failed to get users", http.StatusInternalServerError)
 		return
 	}

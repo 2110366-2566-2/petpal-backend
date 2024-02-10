@@ -19,6 +19,7 @@ func GetUsers(db *models.MongoDB, filter bson.D, page int64, per int64) ([]model
 	}
 	defer cursor.Close(context.Background())
 
+	// Decode results
 	var users []models.User
 	if err := cursor.All(context.Background(), &users); err != nil {
 		return nil, err
