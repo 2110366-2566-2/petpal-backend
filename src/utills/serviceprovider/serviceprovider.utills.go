@@ -9,6 +9,20 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+func InsertSVCP(db *models.MongoDB, svcp *models.SVCP) (*models.SVCP, error) {
+	// Get the users collection
+	collection := db.Collection("svcp")
+
+	// Insert the user into the collection
+	_, err := collection.InsertOne(context.Background(), svcp)
+	if err != nil {
+		return nil, err
+	}
+
+	// Return the inserted user
+	return svcp, nil
+}
+
 func GetSVCPs(db *models.MongoDB, filter bson.D, page int64, per int64) ([]models.SVCP, error) {
 	collection := db.Collection("svcp")
 
@@ -38,6 +52,20 @@ func GetSVCPByID(db *models.MongoDB, id string) (*models.SVCP, error) {
 	// find service provider by *SVCPID*, could be changed to individual id when it exists
 	var svcp models.SVCP = models.SVCP{}
 	filter := bson.D{{Key: "SVCPID", Value: id}}
+	err := collection.FindOne(context.Background(), filter).Decode(&svcp)
+	if err != nil {
+		return nil, err
+	}
+
+	return &svcp, nil
+}
+func GetSVCPByEmail(db *models.MongoDB, email string) (*models.SVCP, error) {
+	// get collection
+	collection := db.Collection("svcp")
+
+	// find service provider by *SVCPID*, could be changed to individual id when it exists
+	var svcp models.SVCP = models.SVCP{}
+	filter := bson.D{{Key: "SVCPEmail", Value: email}}
 	err := collection.FindOne(context.Background(), filter).Decode(&svcp)
 	if err != nil {
 		return nil, err

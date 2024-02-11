@@ -3,38 +3,9 @@ package utills
 import (
 	"context"
 	"petpal-backend/src/models"
-	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 )
-
-func nextUserId() int {
-	id := 5
-	return id
-}
-
-func NewUser(createUser models.CreateUser) (*models.User, error) {
-	newID := nextUserId()
-	// You can add more validation rules as needed
-	newUser := &models.User{
-		Individual: models.Individual{
-			IndividualID: newID,
-		},
-		Username:             createUser.Username,
-		Password:             createUser.Password,
-		Email:                createUser.Email,
-		FullName:             createUser.FullName,
-		Address:              "Defult",
-		DateOfBirth:          time.Now(),
-		PhoneNumber:          "Deflut",
-		ProfilePicture:       "Deflut",
-		DefaultAccountNumber: "Deflut",
-		DefaultBank:          "Deflut",
-		Pets:                 nil,
-	}
-
-	return newUser, nil
-}
 
 func InsertUser(db *models.MongoDB, user *models.User) (*models.User, error) {
 	// Get the users collection

@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"petpal-backend/src/controllers/serviceprovider"
+	controllers "petpal-backend/src/controllers/serviceprovider"
 	"petpal-backend/src/models"
 
 	"github.com/gin-gonic/gin"
@@ -10,6 +10,11 @@ import (
 func SVCPRoutes(r *gin.Engine) {
 	SVCPGroup := r.Group("/serviceprovider")
 	{
+
+		SVCPGroup.GET("/me", func(c *gin.Context) {
+			db := c.MustGet("db").(*models.MongoDB)
+			controllers.CurrentSVCPHandler(c, db)
+		})
 		SVCPGroup.GET("/", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllers.GetSVCPsHandler(c.Writer, c.Request, db)
@@ -22,6 +27,10 @@ func SVCPRoutes(r *gin.Engine) {
 		SVCPGroup.PUT("/:id", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllers.UpdateSVCPHandler(c.Writer, c.Request, db, c.Param("id"))
+		})
+		SVCPGroup.POST("/", func(c *gin.Context) {
+			db := c.MustGet("db").(*models.MongoDB)
+			controllers.RegisterSVCPHandler(c, db)
 		})
 		// SVCPGroup.DELETE("/:id", deleteSVCP)
 	}

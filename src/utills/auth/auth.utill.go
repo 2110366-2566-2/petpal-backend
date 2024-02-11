@@ -31,12 +31,12 @@ type JWTClaims struct {
 	jwt.RegisteredClaims
 }
 
-func GenerateToken(u *models.User, loginType string) (string, error) {
+func GenerateToken(Username string, email string, loginType string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, JWTClaims{
-		Username:  u.Username,
+		Username:  Username,
 		LoginType: loginType,
 		RegisteredClaims: jwt.RegisteredClaims{
-			Issuer:    u.Email,
+			Issuer:    email,
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
 		},
 	})
@@ -79,7 +79,7 @@ func Login(db *models.MongoDB, req *LoginReq) (*LoginRes, error) {
 		if err != nil {
 			return &LoginRes{}, err
 		}
-		ss, err := GenerateToken(u, "user")
+		ss, err := GenerateToken(u.Username, u.Email, "user")
 		if err != nil {
 			return &LoginRes{}, err
 		}

@@ -4,10 +4,13 @@ import (
 	"encoding/json"
 	"net/http"
 	"petpal-backend/src/models"
+	"petpal-backend/src/utills/auth"
 	utills "petpal-backend/src/utills/serviceprovider"
 	"strconv"
 
 	"go.mongodb.org/mongo-driver/bson"
+
+	"github.com/gin-gonic/gin"
 )
 
 // GetSVCPsHandler handles the fetching of all service providers
@@ -69,4 +72,66 @@ func UpdateSVCPHandler(w http.ResponseWriter, r *http.Request, db *models.MongoD
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(svcp)
+}
+
+// RegisterHandler handles user registration
+func RegisterSVCPHandler(c *gin.Context, db *models.MongoDB) {
+	// Parse request body to get user data
+	var createSVCP models.CreateSVCP
+	if err := c.ShouldBindJSON(&createSVCP); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Hash the password securely
+	hashedPassword, err := auth.HashPassword(createSVCP.SVCPPassword)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to hash password"})
+		return
+	}
+
+	// Create a new user instance
+	createSVCP.SVCPPassword = hashedPassword
+	newSVCP, err := auth.NewSVCP(createSVCP)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create svcp "})
+		return
+	}
+
+	// Insert the new user into the database
+	newSVCP, err = utills.InsertSVCP(db, newSVCP)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to register svcp"})
+		return
+	}
+
+	// Generate a JWT token
+	tokenString, err := auth.GenerateToken(newSVCP.SVCPUsername, newSVCP.SVCPEmail, "svcp")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+		return
+	}
+
+	// Set token in cookies and send to frontend
+	c.SetCookie("token", tokenString, 3600, "/", "", false, true)
+
+	c.JSON(http.StatusOK, gin.H{"message": "User registered successfully", "token": tokenString})
+}
+
+// RegisterHandler handles user registration
+func CurrentSVCPHandler(c *gin.Context, db *models.MongoDB) {
+	token, err := c.Cookie("token")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, "Failed to get token from Cookie plase login first, "+err.Error())
+		return
+	}
+	// Parse request body to get user data
+	svcp, err := auth.GetCurrnetSVCP(token, db)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, "Failed to get User Email request body :"+err.Error())
+		return
+	}
+	// Set the content type header
+	c.JSON(http.StatusAccepted, svcp)
 }

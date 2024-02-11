@@ -29,7 +29,7 @@ func RegisterUserHandler(c *gin.Context, db *models.MongoDB) {
 
 	// Create a new user instance
 	createUser.Password = hashedPassword
-	newUser, err := utills.NewUser(createUser)
+	newUser, err := auth.NewUser(createUser)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user "})
 		return
@@ -43,7 +43,7 @@ func RegisterUserHandler(c *gin.Context, db *models.MongoDB) {
 	}
 
 	// Generate a JWT token
-	tokenString, err := auth.GenerateToken(newUser, "user")
+	tokenString, err := auth.GenerateToken(newUser.Username, newUser.Password, "user")
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
 		return
