@@ -48,3 +48,21 @@ func GetSVCPByIDHandler(w http.ResponseWriter, r *http.Request, db *models.Mongo
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(svcp)
 }
+
+func UpdateSVCPHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB, id string) {
+	var svcp models.SVCP
+	err := json.NewDecoder(r.Body).Decode(&svcp)
+	if err != nil {
+		http.Error(w, "Failed to decode request body", http.StatusBadRequest)
+		return
+	}
+
+	err = utills.UpdateSVCP(db, id, svcp)
+	if err != nil {
+		http.Error(w, "Failed to update service provider", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(svcp)
+}
