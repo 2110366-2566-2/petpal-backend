@@ -36,7 +36,7 @@ type LoginReq struct {
 
 type LoginRes struct {
 	AccessToken string `่json:accesstoken`
-	Username    string `json:"username"`
+	UserEmail   string `json:"useremail"`
 	LoginType   string `json:logintype`
 }
 

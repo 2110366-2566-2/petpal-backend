@@ -34,7 +34,10 @@ func SVCPRoutes(r *gin.Engine) {
 		})
 		SVCPGroup.POST("/login", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
-			controllers.LoginSCVPHandler(c, db)
+			controllers.LoginSVCPHandler(c, db)
+		})
+		SVCPGroup.POST("/logout", func(c *gin.Context) {
+			controllers.LogoutSVCPHandler(c)
 		})
 		// SVCPGroup.DELETE("/:id", deleteSVCP)
 	}

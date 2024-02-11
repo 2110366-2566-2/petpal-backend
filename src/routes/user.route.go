@@ -21,6 +21,9 @@ func UserRoutes(r *gin.Engine) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllers.LoginUserHandler(c, db)
 		})
+		userGroup.POST("/logout", func(c *gin.Context) {
+			controllers.LogoutUserHandler(c)
+		})
 
 		userGroup.GET("/me", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)

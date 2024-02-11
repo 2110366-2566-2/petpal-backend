@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"petpal-backend/src/models"
 	"petpal-backend/src/utills/auth"
-	scvp_utills "petpal-backend/src/utills/serviceprovider"
+	svcp_utills "petpal-backend/src/utills/serviceprovider"
 	"strconv"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -34,7 +34,7 @@ func GetSVCPsHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB)
 	}
 
 	// get all svcps, no filters for now
-	svcps, err := scvp_utills.GetSVCPs(db, bson.D{}, page-1, per)
+	svcps, err := svcp_utills.GetSVCPs(db, bson.D{}, page-1, per)
 	if err != nil {
 		http.Error(w, "Failed to get service providers", http.StatusInternalServerError)
 		return
@@ -46,7 +46,7 @@ func GetSVCPsHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB)
 
 // GetSVCPByIDHandler handles the fetching of a service provider by ID
 func GetSVCPByIDHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB, id string) {
-	svcp, err := scvp_utills.GetSVCPByID(db, id)
+	svcp, err := svcp_utills.GetSVCPByID(db, id)
 	if err != nil {
 		http.Error(w, "Failed to get service provider", http.StatusInternalServerError)
 		return
@@ -64,7 +64,7 @@ func UpdateSVCPHandler(w http.ResponseWriter, r *http.Request, db *models.MongoD
 		return
 	}
 
-	err = scvp_utills.UpdateSVCP(db, id, svcp)
+	err = svcp_utills.UpdateSVCP(db, id, svcp)
 	if err != nil {
 		http.Error(w, "Failed to update service provider", http.StatusInternalServerError)
 		return
@@ -82,7 +82,6 @@ func RegisterSVCPHandler(c *gin.Context, db *models.MongoDB) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
 	// Hash the password securely
 	hashedPassword, err := auth.HashPassword(createSVCP.SVCPPassword)
 	if err != nil {
@@ -99,7 +98,7 @@ func RegisterSVCPHandler(c *gin.Context, db *models.MongoDB) {
 	}
 
 	// Insert the new user into the database
-	newSVCP, err = scvp_utills.InsertSVCP(db, newSVCP)
+	newSVCP, err = svcp_utills.InsertSVCP(db, newSVCP)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to register svcp"})
 		return
@@ -126,7 +125,7 @@ func CurrentSVCPHandler(c *gin.Context, db *models.MongoDB) {
 		return
 	}
 	// Parse request body to get user data
-	svcp, err := auth.GetCurrnetSVCP(token, db)
+	svcp, err := auth.GetCurrentSVCP(token, db)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, "Failed to get User Email request body :"+err.Error())
@@ -135,7 +134,7 @@ func CurrentSVCPHandler(c *gin.Context, db *models.MongoDB) {
 	// Set the content type header
 	c.JSON(http.StatusAccepted, svcp)
 }
-func LoginSCVPHandler(c *gin.Context, db *models.MongoDB) {
+func LoginSVCPHandler(c *gin.Context, db *models.MongoDB) {
 	var user models.LoginReq
 	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -149,4 +148,9 @@ func LoginSCVPHandler(c *gin.Context, db *models.MongoDB) {
 
 	c.SetCookie("token", u.AccessToken, 3600, "/", "", false, true)
 	c.JSON(http.StatusOK, u)
+}
+
+func LogoutSVCPHandler(c *gin.Context) {
+	c.SetCookie("token", "", -1, "", "", false, true)
+	c.JSON(http.StatusOK, gin.H{"message": "logout successful"})
 }

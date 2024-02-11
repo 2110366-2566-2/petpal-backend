@@ -88,6 +88,10 @@ func LoginUserHandler(c *gin.Context, db *models.MongoDB) {
 	c.SetCookie("token", u.AccessToken, 3600, "/", "", false, true)
 	c.JSON(http.StatusOK, u)
 }
+func LogoutUserHandler(c *gin.Context) {
+	c.SetCookie("token", "", -1, "", "", false, true)
+	c.JSON(http.StatusOK, gin.H{"message": "logout successful"})
+}
 
 // SetDefaultBankAccountHandler handles the setting of a default bank account for a user
 func SetDefaultBankAccountHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB) {
