@@ -36,22 +36,22 @@ func GetUserByEmail(db *models.MongoDB, email string) (*models.User, error) {
 	return &user, nil
 }
 
-func SetDefaultBankAccount(username string, defaultBankAccountNumber string, defaultBank string, db *models.MongoDB) (string, error) {
+func SetDefaultBankAccount(email string, defaultAccountNumber string, defaultBank string, db *models.MongoDB) (string, error) {
 	// get collection
 	user_collection := db.Collection("user")
 
 	// find user by id
 	var user models.User = models.User{}
-	filter := bson.D{{Key: "username", Value: username}}
+	filter := bson.D{{Key: "email", Value: email}}
 	err := user_collection.FindOne(context.Background(), filter).Decode(&user)
 	if err != nil {
-		return "User not found (" + username + ")", err
+		return "User not found (email=" + email + ")", err
 	}
 
 	// update user with new default bank account
 	update := bson.D{
 		{Key: "$set", Value: bson.D{
-			{Key: "defaultAccountNumber", Value: defaultBankAccountNumber},
+			{Key: "defaultAccountNumber", Value: defaultAccountNumber},
 			{Key: "defaultBank", Value: defaultBank},
 		}},
 	}

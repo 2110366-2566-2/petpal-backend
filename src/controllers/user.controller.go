@@ -75,24 +75,19 @@ func CurrentUserHandler(c *gin.Context, db *models.MongoDB) {
 
 // SetDefaultBankAccountHandler handles the setting of a default bank account for a user
 func SetDefaultBankAccountHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB) {
-	type request struct {
-		Username                 string `json:"username"`
-		DefaultBankAccountNumber string `json:"defaultBankAccountNumber"`
-		DefaultBank              string `json:"defaultBank"`
-	}
 	// get user_id, default bank account number, default bank from request body
-	var req request
-	err := json.NewDecoder(r.Body).Decode(&req)
+	var user models.User
+	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		http.Error(w, "Failed to parse request body", http.StatusBadRequest)
 		return
 	}
-	username := req.Username
-	defaultBankAccountNumber := req.DefaultBankAccountNumber
-	defaultBank := req.DefaultBank
+	email := user.Email
+	defaultAccountNumber := user.DefaultAccountNumber
+	defaultBank := user.DefaultBank
 
 	// Call the user service to set the default bank account
-	err_str, err := utills.SetDefaultBankAccount(username, defaultBankAccountNumber, defaultBank, db)
+	err_str, err := utills.SetDefaultBankAccount(email, defaultAccountNumber, defaultBank, db)
 	if err != nil {
 		// show error message
 		http.Error(w, err_str, http.StatusInternalServerError)
