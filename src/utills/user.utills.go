@@ -24,7 +24,7 @@ func NewUser(createUser models.CreateUser) (*models.User, error) {
 		ProfilePicture:       "Mock",
 		DefaultAccountNumber: "Mock",
 		DefaultBank:          "Mock",
-		Pets:                  nil,
+		Pets:                 nil,
 	}
 
 	return newUser, nil
@@ -39,7 +39,7 @@ func SetDefaultBankAccount(username string, defaultBankAccountNumber string, def
 	filter := bson.D{{Key: "username", Value: username}}
 	err := user_collection.FindOne(context.Background(), filter).Decode(&user)
 	if err != nil {
-		return "User not found ("+username+")", err
+		return "User not found (" + username + ")", err
 	}
 
 	// update user with new default bank account
@@ -53,6 +53,34 @@ func SetDefaultBankAccount(username string, defaultBankAccountNumber string, def
 	if err != nil {
 		return "Failed to update user", err
 	}
-	
+
+	return "", nil
+}
+
+func DeleteBankAccount(username string, db *models.MongoDB) (string, error) {
+	// get collection
+	user_collection := db.Collection("user")
+
+	// find user by id
+	var user models.User = models.User{}
+	filter := bson.D{{Key: "username", Value: username}}
+	err := user_collection.FindOne(context.Background(), filter).Decode(&user)
+	if err != nil {
+		return "User not found (" + username + ")", err
+	}
+
+	// update default bank account to empty
+	update := bson.D{
+		{Key: "$set", Value: bson.D{
+			{Key: "defaultAccountNumber", Value: ""},
+			{Key: "defaultBank", Value: ""},
+		}},
+	}
+
+	_, err = user_collection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		return "Failed to update user", err
+	}
+
 	return "", nil
 }

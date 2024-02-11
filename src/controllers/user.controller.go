@@ -33,9 +33,9 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request, db *models.MongoD
 // SetDefaultBankAccountHandler handles the setting of a default bank account for a user
 func SetDefaultBankAccountHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB) {
 	type request struct {
-		Username                string `json:"username"`
+		Username                 string `json:"username"`
 		DefaultBankAccountNumber string `json:"defaultBankAccountNumber"`
-		DefaultBank             string `json:"defaultBank"`
+		DefaultBank              string `json:"defaultBank"`
 	}
 	// get user_id, default bank account number, default bank from request body
 	var req request
@@ -47,7 +47,7 @@ func SetDefaultBankAccountHandler(w http.ResponseWriter, r *http.Request, db *mo
 	username := req.Username
 	defaultBankAccountNumber := req.DefaultBankAccountNumber
 	defaultBank := req.DefaultBank
-	
+
 	// Call the user service to set the default bank account
 	err_str, err := utills.SetDefaultBankAccount(username, defaultBankAccountNumber, defaultBank, db)
 	if err != nil {
@@ -59,4 +59,31 @@ func SetDefaultBankAccountHandler(w http.ResponseWriter, r *http.Request, db *mo
 	// Respond with a success message
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode("Default bank account set successfully")
+}
+
+// DeleteBankAccountHandler handles the deletion of a bank account for a user
+func DeleteBankAccountHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB) {
+	type request struct {
+		Username string `json:"username"`
+	}
+	// get user_id from request body
+	var req request
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		http.Error(w, "Failed to parse request body", http.StatusBadRequest)
+		return
+	}
+	username := req.Username
+
+	// Call the user service to delete the bank account
+	err_str, err := utills.DeleteBankAccount(username, db)
+	if err != nil {
+		// show error message
+		http.Error(w, err_str, http.StatusInternalServerError)
+		return
+	}
+
+	// Respond with a success message
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode("Bank account deleted successfully")
 }
