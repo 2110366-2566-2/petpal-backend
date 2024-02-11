@@ -24,10 +24,24 @@ func NewUser(createUser models.CreateUser) (*models.User, error) {
 		ProfilePicture:       "Mock",
 		DefaultAccountNumber: "Mock",
 		DefaultBank:          "Mock",
-		Pets:                  nil,
+		Pets:                 nil,
 	}
 
 	return newUser, nil
+}
+func GetUserByEmail(db *models.MongoDB, email string) (*models.User, error) {
+	// get collection
+	collection := db.Collection("user")
+	// find user by email
+	// note: IndividualID is not present in the database yet, so this always returns an error not found
+	var user models.User = models.User{}
+	filter := bson.D{{Key: "Email", Value: email}}
+	err := collection.FindOne(context.Background(), filter).Decode(&user)
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
 }
 
 func SetDefaultBankAccount(username string, defaultBankAccountNumber string, defaultBank string, db *models.MongoDB) (string, error) {
@@ -39,7 +53,7 @@ func SetDefaultBankAccount(username string, defaultBankAccountNumber string, def
 	filter := bson.D{{Key: "username", Value: username}}
 	err := user_collection.FindOne(context.Background(), filter).Decode(&user)
 	if err != nil {
-		return "User not found ("+username+")", err
+		return "User not found (" + username + ")", err
 	}
 
 	// update user with new default bank account
@@ -53,6 +67,6 @@ func SetDefaultBankAccount(username string, defaultBankAccountNumber string, def
 	if err != nil {
 		return "Failed to update user", err
 	}
-	
+
 	return "", nil
 }
