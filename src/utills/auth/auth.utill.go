@@ -5,38 +5,27 @@ import (
 	"fmt"
 	"petpal-backend/src/configs"
 	"petpal-backend/src/models"
-	"petpal-backend/src/utills"
+	user_utills "petpal-backend/src/utills"
+	svcp_utills "petpal-backend/src/utills/serviceprovider"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
 )
 
-type LoginReq struct {
-	LoginType string `json:logintype`
-	Email     string `json:"email"`
-	Password  string `json:"password"`
-}
-
-type LoginRes struct {
-	accessToken string
-	LoginType   string `json:logintype`
-	Username    string `json:"username"`
-}
-
 var secretKey = configs.GetJWT_SECRET()
 
 type JWTClaims struct {
 	LoginType string `json:logintype`
-	Username  string `json:"username"`
+	UserEmail string `json:"useremail"`
 	jwt.RegisteredClaims
 }
 
-func GenerateToken(Username string, email string, loginType string) (string, error) {
+func GenerateToken(username string, email string, loginType string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, JWTClaims{
-		Username:  Username,
+		UserEmail: email,
 		LoginType: loginType,
 		RegisteredClaims: jwt.RegisteredClaims{
-			Issuer:    email,
+			Issuer:    username,
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
 		},
 	})
@@ -44,7 +33,7 @@ func GenerateToken(Username string, email string, loginType string) (string, err
 	return ss, err
 }
 
-func DecodeToken(tokenString string) (*LoginRes, error) {
+func DecodeToken(tokenString string) (*models.LoginRes, error) {
 	// Parse and verify the token
 	token, err := jwt.ParseWithClaims(tokenString, &JWTClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(secretKey), nil
@@ -63,28 +52,40 @@ func DecodeToken(tokenString string) (*LoginRes, error) {
 	if !ok {
 		return nil, errors.New("failed to extract claims")
 	}
-	return &LoginRes{accessToken: tokenString, LoginType: claims.LoginType, Username: claims.Username}, nil
+	return &models.LoginRes{AccessToken: tokenString, LoginType: claims.LoginType, UserEmail: claims.UserEmail}, nil
 }
 
-func Login(db *models.MongoDB, req *LoginReq) (*LoginRes, error) {
+func Login(db *models.MongoDB, req *models.LoginReq) (*models.LoginRes, error) {
 	loginType := req.LoginType
-	if loginType == "scvp" {
-
-	} else if loginType == "user" {
-		u, err := utills.GetUserByEmail(db, req.Email)
+	if loginType == "svcp" {
+		u, err := svcp_utills.GetSVCPByEmail(db, req.Email)
 		if err != nil {
-			return &LoginRes{}, err
+			return &models.LoginRes{}, err
+		}
+		err = CheckPassword(req.Password, u.SVCPPassword)
+		if err != nil {
+			return &models.LoginRes{}, err
+		}
+		ss, err := GenerateToken(u.SVCPUsername, u.SVCPEmail, "svcp")
+		if err != nil {
+			return &models.LoginRes{}, err
+		}
+		return &models.LoginRes{AccessToken: ss, LoginType: "svcp", UserEmail: u.SVCPEmail}, nil
+	} else if loginType == "user" {
+		u, err := user_utills.GetUserByEmail(db, req.Email)
+		if err != nil {
+			return &models.LoginRes{}, err
 		}
 		err = CheckPassword(req.Password, u.Password)
 		if err != nil {
-			return &LoginRes{}, err
+			return &models.LoginRes{}, err
 		}
 		ss, err := GenerateToken(u.Username, u.Email, "user")
 		if err != nil {
-			return &LoginRes{}, err
+			return &models.LoginRes{}, err
 		}
 
-		return &LoginRes{accessToken: ss, LoginType: "user", Username: u.Username}, nil
+		return &models.LoginRes{AccessToken: ss, LoginType: "user", UserEmail: u.Email}, nil
 	}
-	return &LoginRes{}, fmt.Errorf("Invalid Login Type Request")
+	return &models.LoginRes{}, fmt.Errorf("Invalid Login Type Request")
 }

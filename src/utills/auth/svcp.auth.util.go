@@ -2,18 +2,19 @@ package auth
 
 import (
 	"errors"
+	"fmt"
 	"petpal-backend/src/models"
 	utills "petpal-backend/src/utills/serviceprovider"
 )
 
-func GetCurrnetSVCP(token string, db *models.MongoDB) (*models.SVCP, error) {
+func GetCurrentSVCP(token string, db *models.MongoDB) (*models.SVCP, error) {
 	loginRes, err := DecodeToken(token)
 	if err != nil {
 		return nil, err
 	}
 	loginType := loginRes.LoginType
 	if loginType == "svcp" {
-		user, err := utills.GetSVCPByEmail(db, loginRes.Username)
+		user, err := utills.GetSVCPByEmail(db, loginRes.UserEmail)
 		if err != nil {
 			return nil, err
 		}
@@ -30,6 +31,7 @@ func nextSVCPId() int {
 
 func NewSVCP(createSVCP models.CreateSVCP) (*models.SVCP, error) {
 	newID := nextUserId()
+	fmt.Println(createSVCP)
 	// You can add more validation rules as needed
 	newSVCP := &models.SVCP{
 		Individual: models.Individual{
