@@ -36,6 +36,7 @@ func main() {
 	routes.BasicRoutes(r)
 	routes.UserRoutes(r)
 	routes.ExampleRoutes(r)
+	routes.SVCPRoutes(r)
 
 	r.Run(":" + port)
 }
