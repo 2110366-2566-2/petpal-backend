@@ -12,9 +12,14 @@ func UserRoutes(r *gin.Engine) {
 	{
 		// userGroup.GET("/", getUserList)
 		// userGroup.GET("/:id", getUserByID)
-		userGroup.POST("/", func(c *gin.Context) {
+		userGroup.POST("/register", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllers.RegisterUserHandler(c, db)
+		})
+
+		userGroup.POST("/login", func(c *gin.Context) {
+			db := c.MustGet("db").(*models.MongoDB)
+			controllers.LoginUserHandler(c, db)
 		})
 
 		userGroup.GET("/me", func(c *gin.Context) {

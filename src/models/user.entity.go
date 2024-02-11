@@ -28,6 +28,17 @@ type User struct {
 	DefaultBank          string    `json:"defaultBank"`
 	Pets                 []Pet     `json:"pets"`
 }
+type LoginReq struct {
+	Email     string `json:"email"`
+	Password  string `json:"password"`
+	LoginType string `json:logintype`
+}
+
+type LoginRes struct {
+	AccessToken string `่json:accesstoken`
+	Username    string `json:"username"`
+	LoginType   string `json:logintype`
+}
 
 func (u *User) editPet(petName string, petDetails Pet) Pet {
 	// Mock Function

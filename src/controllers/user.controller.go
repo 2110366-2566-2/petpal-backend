@@ -73,6 +73,22 @@ func CurrentUserHandler(c *gin.Context, db *models.MongoDB) {
 	c.JSON(http.StatusAccepted, user)
 }
 
+func LoginUserHandler(c *gin.Context, db *models.MongoDB) {
+	var user models.LoginReq
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	u, err := auth.Login(db, &user)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.SetCookie("token", u.AccessToken, 3600, "/", "", false, true)
+	c.JSON(http.StatusOK, u)
+}
+
 // SetDefaultBankAccountHandler handles the setting of a default bank account for a user
 func SetDefaultBankAccountHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB) {
 	type request struct {

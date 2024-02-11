@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"petpal-backend/src/models"
 	"petpal-backend/src/utills/auth"
-	utills "petpal-backend/src/utills/serviceprovider"
+	scvp_utills "petpal-backend/src/utills/serviceprovider"
 	"strconv"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -34,7 +34,7 @@ func GetSVCPsHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB)
 	}
 
 	// get all svcps, no filters for now
-	svcps, err := utills.GetSVCPs(db, bson.D{}, page-1, per)
+	svcps, err := scvp_utills.GetSVCPs(db, bson.D{}, page-1, per)
 	if err != nil {
 		http.Error(w, "Failed to get service providers", http.StatusInternalServerError)
 		return
@@ -46,7 +46,7 @@ func GetSVCPsHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB)
 
 // GetSVCPByIDHandler handles the fetching of a service provider by ID
 func GetSVCPByIDHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB, id string) {
-	svcp, err := utills.GetSVCPByID(db, id)
+	svcp, err := scvp_utills.GetSVCPByID(db, id)
 	if err != nil {
 		http.Error(w, "Failed to get service provider", http.StatusInternalServerError)
 		return
@@ -64,7 +64,7 @@ func UpdateSVCPHandler(w http.ResponseWriter, r *http.Request, db *models.MongoD
 		return
 	}
 
-	err = utills.UpdateSVCP(db, id, svcp)
+	err = scvp_utills.UpdateSVCP(db, id, svcp)
 	if err != nil {
 		http.Error(w, "Failed to update service provider", http.StatusInternalServerError)
 		return
@@ -99,7 +99,7 @@ func RegisterSVCPHandler(c *gin.Context, db *models.MongoDB) {
 	}
 
 	// Insert the new user into the database
-	newSVCP, err = utills.InsertSVCP(db, newSVCP)
+	newSVCP, err = scvp_utills.InsertSVCP(db, newSVCP)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to register svcp"})
 		return
@@ -134,4 +134,19 @@ func CurrentSVCPHandler(c *gin.Context, db *models.MongoDB) {
 	}
 	// Set the content type header
 	c.JSON(http.StatusAccepted, svcp)
+}
+func LoginSCVPHandler(c *gin.Context, db *models.MongoDB) {
+	var user models.LoginReq
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	u, err := auth.Login(db, &user)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.SetCookie("token", u.AccessToken, 3600, "/", "", false, true)
+	c.JSON(http.StatusOK, u)
 }
