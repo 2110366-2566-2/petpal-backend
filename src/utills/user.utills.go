@@ -57,16 +57,16 @@ func SetDefaultBankAccount(username string, defaultBankAccountNumber string, def
 	return "", nil
 }
 
-func DeleteBankAccount(username string, db *models.MongoDB) (string, error) {
+func DeleteBankAccount(email string, db *models.MongoDB) (string, error) {
 	// get collection
 	user_collection := db.Collection("user")
 
 	// find user by id
 	var user models.User = models.User{}
-	filter := bson.D{{Key: "username", Value: username}}
+	filter := bson.D{{Key: "email", Value: email}}
 	err := user_collection.FindOne(context.Background(), filter).Decode(&user)
 	if err != nil {
-		return "User not found (" + username + ")", err
+		return "User not found (email=" + email + ")", err
 	}
 
 	// update default bank account to empty

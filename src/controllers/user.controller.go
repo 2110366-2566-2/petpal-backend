@@ -63,20 +63,17 @@ func SetDefaultBankAccountHandler(w http.ResponseWriter, r *http.Request, db *mo
 
 // DeleteBankAccountHandler handles the deletion of a bank account for a user
 func DeleteBankAccountHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB) {
-	type request struct {
-		Username string `json:"username"`
-	}
 	// get user_id from request body
-	var req request
-	err := json.NewDecoder(r.Body).Decode(&req)
+	var user models.User
+	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		http.Error(w, "Failed to parse request body", http.StatusBadRequest)
 		return
 	}
-	username := req.Username
+	email := user.Email
 
 	// Call the user service to delete the bank account
-	err_str, err := utills.DeleteBankAccount(username, db)
+	err_str, err := utills.DeleteBankAccount(email, db)
 	if err != nil {
 		// show error message
 		http.Error(w, err_str, http.StatusInternalServerError)
