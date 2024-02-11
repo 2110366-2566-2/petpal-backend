@@ -3,6 +3,7 @@ package utills
 import (
 	"context"
 	"petpal-backend/src/models"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -20,15 +21,32 @@ func NewUser(createUser models.CreateUser) (*models.User, error) {
 			IndividualID: newID,
 		},
 		CreateUser:           createUser,
-		PhoneNumber:          "Mock",
-		ProfilePicture:       "Mock",
-		DefaultAccountNumber: "Mock",
-		DefaultBank:          "Mock",
+		Address:              "Defult",
+		DateOfBirth:          time.Now(),
+		PhoneNumber:          "Deflut",
+		ProfilePicture:       "Deflut",
+		DefaultAccountNumber: "Deflut",
+		DefaultBank:          "Deflut",
 		Pets:                 nil,
 	}
 
 	return newUser, nil
 }
+
+func InsertUser(db *models.MongoDB, user *models.User) (*models.User, error) {
+	// Get the users collection
+	collection := db.Collection("users")
+
+	// Insert the user into the collection
+	_, err := collection.InsertOne(context.Background(), user)
+	if err != nil {
+		return nil, err
+	}
+
+	// Return the inserted user
+	return user, nil
+}
+
 func GetUserByEmail(db *models.MongoDB, email string) (*models.User, error) {
 	// get collection
 	collection := db.Collection("user")

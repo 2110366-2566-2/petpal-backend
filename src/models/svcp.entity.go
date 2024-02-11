@@ -2,6 +2,13 @@
 package models
 
 // User represents a user entity
+
+type CreateSVCP struct {
+	// Define the 10 fields here
+	SVCPUsername string `json:"SVCPUsername" bson:"SVCPUsername"`
+	SVCPPassword string `json:"SVCPPassword" bson:"SVCPPassword"`
+	SVCPEmail    string `json:"SVCPEmail" bson:"SVCPEmail"`
+}
 type SVCP struct {
 	Individual
 	SVCPID                string `json:"SVCPID" bson:"SVCPID"`

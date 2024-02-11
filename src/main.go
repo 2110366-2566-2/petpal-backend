@@ -18,7 +18,7 @@ func DatabaseMiddleware(db *models.MongoDB) gin.HandlerFunc {
 	}
 }
 
-func main() {
+func InitGinRouter() *gin.Engine {
 	// Initialize Gin router
 	r := gin.Default()
 
@@ -29,6 +29,12 @@ func main() {
 
 	// init database to inject in gin.context
 	r.Use(DatabaseMiddleware(db))
+	return r
+}
+
+func main() {
+	// Initialize Gin router
+	r := InitGinRouter()
 
 	port := configs.GetPort()
 

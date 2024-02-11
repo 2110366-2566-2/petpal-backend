@@ -1,4 +1,4 @@
-package utills
+package auth
 
 import (
 	"fmt"

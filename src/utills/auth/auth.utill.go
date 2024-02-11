@@ -1,4 +1,4 @@
-package utills
+package auth
 
 import (
 	"fmt"
@@ -30,6 +30,18 @@ type JWTClaims struct {
 	jwt.RegisteredClaims
 }
 
+func GenerateToken(u *models.User) (string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, JWTClaims{
+		Username: u.Username,
+		RegisteredClaims: jwt.RegisteredClaims{
+			Issuer:    u.Email,
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
+		},
+	})
+	ss, err := token.SignedString([]byte(secretKey))
+	return ss, err
+}
+
 func Login(db *models.MongoDB, req *LoginReq) (*LoginRes, error) {
 	loginType := req.LoginType
 	if loginType == "scvp" {
@@ -43,14 +55,7 @@ func Login(db *models.MongoDB, req *LoginReq) (*LoginRes, error) {
 		if err != nil {
 			return &LoginRes{}, err
 		}
-		token := jwt.NewWithClaims(jwt.SigningMethodHS256, JWTClaims{
-			Username: u.Username,
-			RegisteredClaims: jwt.RegisteredClaims{
-				Issuer:    req.Email,
-				ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
-			},
-		})
-		ss, err := token.SignedString([]byte(secretKey))
+		ss, err := GenerateToken(u)
 		if err != nil {
 			return &LoginRes{}, err
 		}

@@ -14,7 +14,12 @@ func UserRoutes(r *gin.Engine) {
 		// userGroup.GET("/:id", getUserByID)
 		userGroup.POST("/", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
-			controllers.CreateUserHandler(c.Writer, c.Request, db)
+			controllers.RegisterUserHandler(c, db)
+		})
+
+		userGroup.GET("/me", func(c *gin.Context) {
+			db := c.MustGet("db").(*models.MongoDB)
+			controllers.RegisterUserHandler(c, db)
 		})
 		// userGroup.PUT("/:id", updateUser)
 		// userGroup.DELETE("/:id", deleteUser)
