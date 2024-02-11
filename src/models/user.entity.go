@@ -16,7 +16,10 @@ type CreateUser struct {
 
 type User struct {
 	Individual
-	CreateUser
+	Username             string    `json:"username"`
+	Password             string    `json:"password"`
+	Email                string    `json:"email"`
+	FullName             string    `json:"fullName"`
 	Address              string    `json:"address"`
 	DateOfBirth          time.Time `json:"dateOfBirth"`
 	PhoneNumber          string    `json:"phoneNumber"`

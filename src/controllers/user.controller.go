@@ -43,7 +43,7 @@ func RegisterUserHandler(c *gin.Context, db *models.MongoDB) {
 	}
 
 	// Generate a JWT token
-	tokenString, err := auth.GenerateToken(newUser)
+	tokenString, err := auth.GenerateToken(newUser, "user")
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
 		return
@@ -53,6 +53,24 @@ func RegisterUserHandler(c *gin.Context, db *models.MongoDB) {
 	c.SetCookie("token", tokenString, 3600, "/", "", false, true)
 
 	c.JSON(http.StatusOK, gin.H{"message": "User registered successfully", "token": tokenString})
+}
+
+// RegisterHandler handles user registration
+func CurrentUserHandler(c *gin.Context, db *models.MongoDB) {
+	token, err := c.Cookie("token")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, "Failed to get token from Cookie plase login first, "+err.Error())
+		return
+	}
+	// Parse request body to get user data
+	user, err := auth.GetCurrnetUser(token, db)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, "Failed to get User Email request body :"+err.Error())
+		return
+	}
+	// Set the content type header
+	c.JSON(http.StatusAccepted, user)
 }
 
 // SetDefaultBankAccountHandler handles the setting of a default bank account for a user

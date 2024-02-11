@@ -28,6 +28,7 @@ func InitGinRouter() *gin.Engine {
 	}
 
 	// init database to inject in gin.context
+	// r.Use(DatabaseMiddleware(db))
 	r.Use(DatabaseMiddleware(db))
 	return r
 }

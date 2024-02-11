@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"errors"
 	"fmt"
 	"petpal-backend/src/configs"
 	"petpal-backend/src/models"
@@ -30,9 +31,10 @@ type JWTClaims struct {
 	jwt.RegisteredClaims
 }
 
-func GenerateToken(u *models.User) (string, error) {
+func GenerateToken(u *models.User, loginType string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, JWTClaims{
-		Username: u.Username,
+		Username:  u.Username,
+		LoginType: loginType,
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    u.Email,
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
@@ -40,6 +42,28 @@ func GenerateToken(u *models.User) (string, error) {
 	})
 	ss, err := token.SignedString([]byte(secretKey))
 	return ss, err
+}
+
+func DecodeToken(tokenString string) (*LoginRes, error) {
+	// Parse and verify the token
+	token, err := jwt.ParseWithClaims(tokenString, &JWTClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(secretKey), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	// Check if the token is valid
+	if !token.Valid {
+		return nil, errors.New("invalid token")
+	}
+
+	// Extract and type-assert claims from the token
+	claims, ok := token.Claims.(*JWTClaims)
+	if !ok {
+		return nil, errors.New("failed to extract claims")
+	}
+	return &LoginRes{accessToken: tokenString, LoginType: claims.LoginType, Username: claims.Username}, nil
 }
 
 func Login(db *models.MongoDB, req *LoginReq) (*LoginRes, error) {
@@ -55,7 +79,7 @@ func Login(db *models.MongoDB, req *LoginReq) (*LoginRes, error) {
 		if err != nil {
 			return &LoginRes{}, err
 		}
-		ss, err := GenerateToken(u)
+		ss, err := GenerateToken(u, "user")
 		if err != nil {
 			return &LoginRes{}, err
 		}

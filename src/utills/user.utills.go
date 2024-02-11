@@ -20,7 +20,10 @@ func NewUser(createUser models.CreateUser) (*models.User, error) {
 		Individual: models.Individual{
 			IndividualID: newID,
 		},
-		CreateUser:           createUser,
+		Username:             createUser.Username,
+		Password:             createUser.Password,
+		Email:                createUser.Email,
+		FullName:             createUser.FullName,
 		Address:              "Defult",
 		DateOfBirth:          time.Now(),
 		PhoneNumber:          "Deflut",
@@ -35,7 +38,7 @@ func NewUser(createUser models.CreateUser) (*models.User, error) {
 
 func InsertUser(db *models.MongoDB, user *models.User) (*models.User, error) {
 	// Get the users collection
-	collection := db.Collection("users")
+	collection := db.Collection("user")
 
 	// Insert the user into the collection
 	_, err := collection.InsertOne(context.Background(), user)
@@ -53,7 +56,7 @@ func GetUserByEmail(db *models.MongoDB, email string) (*models.User, error) {
 	// find user by email
 	// note: IndividualID is not present in the database yet, so this always returns an error not found
 	var user models.User = models.User{}
-	filter := bson.D{{Key: "Email", Value: email}}
+	filter := bson.D{{Key: "email", Value: email}}
 	err := collection.FindOne(context.Background(), filter).Decode(&user)
 	if err != nil {
 		return nil, err
