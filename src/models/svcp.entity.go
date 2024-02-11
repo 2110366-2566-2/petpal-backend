@@ -9,12 +9,12 @@ type SVCP struct {
 	SVCPUsername          string `json:"SVCPUsername" bson:"SVCPUsername"`
 	SVCPPassword          string `json:"SVCPPassword" bson:"SVCPPassword"`
 	SVCPEmail             string `json:"SVCPEmail" bson:"SVCPEmail"`
-	isVerified            bool   `json:"isVerified"`
+	IsVerified            bool   `json:"isVerified" bson:"isVerified"`
 	SVCPResponsiblePerson string `json:"SVCPResponsiblePerson" bson:"SVCPResponsiblePerson"`
-	defaultBank           string `json:"defaultBank"`
-	defaultAccountNumber  string `json:"defaultAccountNumber"`
-	license               string `json:"license"`
-	location              string `json:"location"`
+	DefaultBank           string `json:"defaultBank" bson:"defaultBank"`
+	DefaultAccountNumber  string `json:"defaultAccountNumber" bson:"defaultAccountNumber"`
+	License               string `json:"license" bson:"license"`
+	Location              string `json:"location" bson:"location"`
 	SVCPAdditionalImg     string `json:"SVCPAdditionalImg" bson:"SVCPAdditionalImg"`
 }
 
