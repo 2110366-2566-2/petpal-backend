@@ -2,9 +2,10 @@
 
 ## Usage
 
-1. install `exrex` lib in python
+1. install `exrex` and `pymongo` lib in python
     ```bash
     pip install exrex
+    pip install pymongo
     ```
 1. [config](#config) variable in `mocker.py`
 1. run `mocker.py`
