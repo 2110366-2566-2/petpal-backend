@@ -5,6 +5,7 @@ import (
 	"petpal-backend/src/models"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -43,4 +44,23 @@ func GetSVCPByID(db *models.MongoDB, id string) (*models.SVCP, error) {
 	}
 
 	return &svcp, nil
+}
+
+func UpdateSVCP(db *models.MongoDB, id string, svcp models.SVCP) error {
+	// get collection
+	collection := db.Collection("svcp")
+
+	// update service provider by *SVCPID*, could be changed to individual id when it exists
+	filter := bson.D{{Key: "SVCPID", Value: id}}
+	update := bson.D{{Key: "$set", Value: svcp}}
+	res, err := collection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		return err
+	}
+
+	if res.ModifiedCount == 0 {
+		return mongo.ErrNoDocuments
+	}
+
+	return nil
 }
