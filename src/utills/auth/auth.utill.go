@@ -1,7 +1,11 @@
 package utills
 
 import (
+	"fmt"
 	"petpal-backend/src/configs"
+	"petpal-backend/src/models"
+	"petpal-backend/src/utills"
+	"time"
 
 	"github.com/golang-jwt/jwt/v4"
 )
@@ -14,7 +18,7 @@ type LoginReq struct {
 
 type LoginRes struct {
 	accessToken string
-	Type        string `json:logintype`
+	LoginType   string `json:logintype`
 	Username    string `json:"username"`
 }
 
@@ -26,46 +30,32 @@ type JWTClaims struct {
 	jwt.RegisteredClaims
 }
 
-func Login(req *LoginReq) (*LoginRes, error) {
+func Login(db *models.MongoDB, req *LoginReq) (*LoginRes, error) {
 	loginType := req.LoginType
 	if loginType == "scvp" {
 
 	} else if loginType == "user" {
-		u, err := GetUserByEmail(req.Email)
+		u, err := utills.GetUserByEmail(db, req.Email)
 		if err != nil {
-			return &LoginUserRes{}, err
+			return &LoginRes{}, err
 		}
-
 		err = CheckPassword(req.Password, u.Password)
 		if err != nil {
-			return &LoginUserRes{}, err
+			return &LoginRes{}, err
 		}
-	} else {
-		return &LoginUserRes{}, err
-	}
-	/*
-		u, err := user.GetUserByEmail(ctx, req.Email)
-		if err != nil {
-			return &LoginUserRes{}, err
-		}
-
-		err = utils.CheckPassword(req.Password, u.Password)
-		if err != nil {
-			return &LoginUserRes{}, err
-		}
-
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, JWTClaims{
 			Username: u.Username,
 			RegisteredClaims: jwt.RegisteredClaims{
-				Issuer:    strconv.Itoa(int(u.ID)),
+				Issuer:    req.Email,
 				ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
 			},
 		})
-
 		ss, err := token.SignedString([]byte(secretKey))
 		if err != nil {
-			return &LoginUserRes{}, err
+			return &LoginRes{}, err
 		}
-		return &LoginUserRes{accessToken: ss, Username: u.Username, ID: strconv.Itoa(int(u.ID))}, nil
-	*/
+
+		return &LoginRes{accessToken: ss, LoginType: "user", Username: u.Username}, nil
+	}
+	return &LoginRes{}, fmt.Errorf("Invalid Login Type Request")
 }
