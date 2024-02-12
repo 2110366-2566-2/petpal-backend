@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func GetCurrnetUser(token string, db *models.MongoDB) (*models.User, error) {
+func GetCurrentUser(token string, db *models.MongoDB) (*models.User, error) {
 	loginRes, err := DecodeToken(token)
 	if err != nil {
 		return nil, err
