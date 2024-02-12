@@ -20,6 +20,7 @@ type CreateUser struct {
 type User struct {
 	Individual
 	CreateUser
+	ID					 string `json:"id" bson:"_id"`
 	PhoneNumber          string `json:"phoneNumber"`
 	ProfilePicture       string `json:"profilePicture"`
 	DefaultAccountNumber string `json:"defaultAccountNumber"`
