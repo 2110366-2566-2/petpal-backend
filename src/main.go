@@ -38,5 +38,5 @@ func main() {
 	routes.ExampleRoutes(r)
 	routes.SVCPRoutes(r)
 
-	r.Run("localhost:" + port)
+	r.Run(":" + port)
 }
