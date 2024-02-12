@@ -35,6 +35,23 @@ func GetUserByEmail(db *models.MongoDB, email string) (*models.User, error) {
 	return &user, nil
 }
 
+func GetUserPet(db *models.MongoDB, userEmail string) (*[]models.Pet, error) {
+	user, err := GetUserByEmail(db, userEmail)
+	if err != nil {
+		return nil, err
+	}
+
+	if user.Pets == nil {
+		emptySlice := make([]models.Pet, 0)
+		return &emptySlice, nil
+	}
+	// add pets ownername
+	for i := range user.Pets {
+		user.Pets[i].OwnerUsername = user.Username
+	}
+	return &user.Pets, nil
+}
+
 func SetDefaultBankAccount(email string, defaultAccountNumber string, defaultBank string, db *models.MongoDB) (string, error) {
 	// get collection
 	user_collection := db.Collection("user")

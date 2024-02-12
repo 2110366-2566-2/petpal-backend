@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"petpal-backend/src/configs"
 	"petpal-backend/src/models"
-	user_utills "petpal-backend/src/utills"
 	svcp_utills "petpal-backend/src/utills/serviceprovider"
+	user_utills "petpal-backend/src/utills/user"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
