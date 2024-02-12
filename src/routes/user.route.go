@@ -22,7 +22,7 @@ func UserRoutes(r *gin.Engine) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllers.SetDefaultBankAccountHandler(c.Writer, c.Request, db)
 		})
-		userGroup.POST("/deleteBankAccount", func(c *gin.Context) {
+		userGroup.DELETE("/delete-bank-account", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllers.DeleteBankAccountHandler(c.Writer, c.Request, db)
 		})
