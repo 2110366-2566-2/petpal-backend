@@ -53,6 +53,8 @@ def gen_object(id, properties_dict):
             if 'pattern' in properties_dict[key]:
                 limit = 20 if 'maxLength' not in properties_dict[key] else properties_dict[key]['maxLength']
                 ret[key] = exrex.getone(properties_dict[key]['pattern'], int(limit))
+            elif 'password' in key.lower():
+                ret[key] = r'$2a$10$brrTzHVOuWleFQFlYqeU.eZbQXySNemw6d8.dYPCBxRMBRM5NCMy.' # 'password' that encrypted
             else:
                 ret[key] = key+str(id)
             if 'minLength' in properties_dict[key] and len(ret[key]) < properties_dict[key]['minLength']:
