@@ -24,3 +24,30 @@ func GetDB_URI() string {
 	db_uri := os.Getenv("DB_URI")
 	return db_uri
 }
+
+func GetEmailSenderAddress() string {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading email_sender_address from .env file")
+	}
+	email_sender_address := os.Getenv("EMAIL_SENDER_ADDRESS")
+	return email_sender_address
+}
+
+func GetEmailSenderPassword() string {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading email_sender_password from .env file")
+	}
+	email_sender_password := os.Getenv("EMAIL_SENDER_PASSWORD")
+	return email_sender_password
+}
+
+func GetJWT_SECRET() string {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading jwt_secret from .env file")
+	}
+	jwt_secret := os.Getenv("JWT_SECRET")
+	return jwt_secret
+}

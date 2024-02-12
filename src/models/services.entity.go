@@ -3,20 +3,18 @@ package models
 
 // User represents a user entity
 type Service struct {
-	SVCPID             string
-	serviceType        string
-	serviceDescription string
-	serviceImage       string
-	averageRating      string
-	requireCert        string
+	ServiceType        string     `json:"serviceType" bson:"serviceType"`
+	ServiceDescription string     `json:"serviceDescription" bson:"serviceDescription"`
+	ServiceImg         string     `json:"serviceImg" bson:"serviceImg"`
+	AverageRating      float64    `json:"averageRating" bson:"averageRating"`
+	RequireCert        bool       `json:"requireCert" bson:"requireCert"`
+	Timeslots          []Timeslot `json:"timeslots" bson:"timeslots"`
 }
 
 func (u *Service) createTimeslot(timeslotDetails Timeslot) Timeslot {
 	timeslot := Timeslot{
-		SVCPID:      timeslotDetails.SVCPID,
-		serviceType: timeslotDetails.serviceType,
-		startTime:   timeslotDetails.startTime,
-		endTime:     timeslotDetails.endTime,
+		StartTime: timeslotDetails.StartTime,
+		EndTime:   timeslotDetails.EndTime,
 	}
 	return timeslot
 }

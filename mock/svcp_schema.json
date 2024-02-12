@@ -30,7 +30,9 @@
             "bsonType" : "string",
             "maxLength" : 256
         },
+        "description" : {"bsonType" : "string"},
         "SVCPAdditionalImg" : {"bsonType" : "string"},
+        "SVCPServiceType" : {"bsonType" : "string"},
         "services" : {
             "bsonType" : "array",
             "items" : {
