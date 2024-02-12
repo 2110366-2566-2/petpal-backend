@@ -2,6 +2,7 @@ package routes
 
 import (
 	controllers "petpal-backend/src/controllers/serviceprovider"
+	user_controllers "petpal-backend/src/controllers/user"
 	"petpal-backend/src/models"
 
 	"github.com/gin-gonic/gin"
@@ -59,6 +60,18 @@ func SVCPRoutes(r *gin.Engine) {
 		SVCPGroup.DELETE("/delete-bank-account", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllers.DeleteBankAccountHandler(c, db)
+		})
+
+		// update svcp profile image (Form Fields : email:content, profileImage:content)
+		SVCPGroup.POST("/uploadProfileImage", func(c *gin.Context) {
+			db := c.MustGet("db").(*models.MongoDB)
+			user_controllers.UploadImageHandler(c, "svcp", db)
+		})
+
+		// get svcp profile image  (Form Fields : email:content) (only one image)
+		SVCPGroup.POST("/profileImage", func(c *gin.Context) {
+			db := c.MustGet("db").(*models.MongoDB)
+			user_controllers.GetProfileImageHandler(c, "svcp", db)
 		})
 	}
 }
