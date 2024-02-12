@@ -154,3 +154,23 @@ func LogoutSVCPHandler(c *gin.Context) {
 	c.SetCookie("token", "", -1, "", "", false, true)
 	c.JSON(http.StatusOK, gin.H{"message": "logout successful"})
 }
+
+func AddServiceHandler(c *gin.Context, db *models.MongoDB) {
+	var request struct {
+		SVCPEmail string `json:"svcpemail"`
+		Service   models.Service `json:"service"`
+	}
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := svcp_utills.AddService(db, request.SVCPEmail, request.Service)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Service added successfully"})
+}

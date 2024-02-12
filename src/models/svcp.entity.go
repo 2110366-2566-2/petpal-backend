@@ -25,6 +25,7 @@ type SVCP struct {
 	Location              string `json:"location" bson:"location"`
 	SVCPAdditionalImg     string `json:"SVCPAdditionalImg" bson:"SVCPAdditionalImg"`
 	SVCPServiceType	      string `json:"SVCPServiceType" bson:"SVCPServiceType"`
+	Services 			  []Service `json:"services" bson:"services"`
 }
 
 func (e *SVCP) validate(SVCPImg string) bool {
