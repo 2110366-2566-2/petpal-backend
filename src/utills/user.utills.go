@@ -130,15 +130,15 @@ func UploadProfileImage(email string, fileContent []byte, userType string, db *m
 	return gin.H{"error": "missing usertype in backend"}, nil
 }
 
-func GetProfileImage(username string, userType string, db *models.MongoDB) (gin.H, error) {
+func GetProfileImage(email string, userType string, db *models.MongoDB) (gin.H, error) {
 
 	if userType == "user" {
 		// Access the "user" collection in the MongoDB database
 		userCollection := db.Collection("user")
 
-		// Find the user by username in the "user" collection
+		// Find the user by email in the "user" collection
 		var user models.User = models.User{}
-		filter := bson.D{{Key: "username", Value: username}}
+		filter := bson.D{{Key: "email", Value: email}}
 		err := userCollection.FindOne(context.Background(), filter).Decode(&user)
 		if err != nil {
 			// If an error occurs during the database query, return an error response
@@ -147,21 +147,21 @@ func GetProfileImage(username string, userType string, db *models.MongoDB) (gin.
 
 		// Return the profile picture file content
 		results := user.ProfilePicture
-		return gin.H{"message": "Get profile image from 'user' collection", "username": username, "result": results}, nil
+		return gin.H{"message": "Get profile image from 'user' collection", "email": email, "result": results}, nil
 	} else if userType == "svcp" {
 
 		//temporarily struct for svcp
 		type Svcp struct {
-			SVCPImg      string `json:"SVCPImg"`
-			SVCPUsername string `json:"SVCPUsername"`
+			SVCPEmail string `json:"SVCPEmail"`
+			SVCPImg   string `json:"SVCPImg"`
 		}
 
-		// Access the "user" collection in the MongoDB database
+		// Access the "svcp" collection in the MongoDB database
 		userCollection := db.Collection("svcp")
 
-		// Find the user by username in the "user" collection
+		// Find the user by email in the "svcp" collection
 		var user Svcp = Svcp{}
-		filter := bson.D{{Key: "SVCPUsername", Value: username}}
+		filter := bson.D{{Key: "SVCPEmail", Value: email}}
 		err := userCollection.FindOne(context.Background(), filter).Decode(&user)
 		if err != nil {
 			// If an error occurs during the database query, return an error response
@@ -170,7 +170,7 @@ func GetProfileImage(username string, userType string, db *models.MongoDB) (gin.
 
 		// Return the profile picture file content
 		results := user.SVCPImg
-		return gin.H{"message": "Get profile image from 'svcp' collection", "username": username, "result": results}, nil
+		return gin.H{"message": "Get profile image from 'svcp' collection", "email": email, "result": results}, nil
 	}
 	return gin.H{"error": "missing usertype in backend"}, nil
 }

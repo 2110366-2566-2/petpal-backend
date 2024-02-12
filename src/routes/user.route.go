@@ -24,14 +24,15 @@ func UserRoutes(r *gin.Engine) {
 		})
 
 		//waring string in db shoudn't have '/' in string or api in input
-		// update user profile image (Form Fields : username, profileImage)
+		// update user profile image (Form Fields : email:content, profileImage:content)
 		userGroup.POST("/uploadProfileImage", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllers.UploadImageHandler(c, "user", db)
 		})
 
-		// get user profile image (only one image)
-		userGroup.GET("/ProfileImage/:username", func(c *gin.Context) {
+		//waring string in db shoudn't have '/' in string or api in input
+		// get user profile image  (Form Fields : email:content) (only one image)
+		userGroup.GET("/profileImage", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllers.GetProfileImageHandler(c, "user", db)
 		})

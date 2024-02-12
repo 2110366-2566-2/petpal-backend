@@ -116,17 +116,18 @@ func UploadImageHandler(c *gin.Context, userType string, db *models.MongoDB) {
 // UploadImageHandler handles the HTTP request for uploading a profile image.
 func GetProfileImageHandler(c *gin.Context, userType string, db *models.MongoDB) {
 
-	// parse the username from the request parameters
-	username := c.Param("username")
+	// Retrieve the email from the form data
+	email := c.Request.FormValue("email")
 
-	// Check if the username is empty
-	if username == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Username is required"})
+	// Check if the email is empty
+	if email == "" {
+		// If email is empty, respond with a bad request and error message
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Email is required"})
 		return
 	}
 
 	// // Perform the upload of the profile image to the database using a utility function
-	response, err := utills.GetProfileImage(username, userType, db)
+	response, err := utills.GetProfileImage(email, userType, db)
 	if err != nil {
 		// If there is an error during the profile image upload, respond with an internal server error and error message
 		c.JSON(http.StatusInternalServerError, response)

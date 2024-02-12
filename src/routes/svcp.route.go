@@ -12,14 +12,15 @@ func ServiceProviderRoutes(r *gin.Engine) {
 	{
 
 		//waring string in db shoudn't have '/' in string or api in input
-		// update user profile image (Form Fields : username, profileImage)
+		// update svcp profile image (Form Fields : email:content, profileImage:content)
 		svcpGroup.POST("/uploadProfileImage", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllers.UploadImageHandler(c, "svcp", db)
 		})
 
-		// get svcp profile image (only one image)
-		svcpGroup.GET("/ProfileImage/:username", func(c *gin.Context) {
+		//waring string in db shoudn't have '/' in string or api in input
+		// get svcp profile image  (Form Fields : email:content) (only one image)
+		svcpGroup.GET("/profileImage", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllers.GetProfileImageHandler(c, "svcp", db)
 		})
