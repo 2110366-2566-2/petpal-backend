@@ -32,7 +32,7 @@ func UserRoutes(r *gin.Engine) {
 
 		//waring string in db shoudn't have '/' in string or api in input
 		// get user profile image  (Form Fields : email:content) (only one image)
-		userGroup.GET("/profileImage", func(c *gin.Context) {
+		userGroup.POST("/profileImage", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllers.GetProfileImageHandler(c, "user", db)
 		})
