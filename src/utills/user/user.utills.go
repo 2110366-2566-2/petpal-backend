@@ -6,6 +6,31 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 )
+func nextUserId() int {
+	id := 5
+	return id
+}
+
+func NewUser(createUser models.CreateUser) (*models.User, error) {
+	newID := nextUserId()
+	// You can add more validation rules as needed
+	newUser := &models.User{
+		Individual: models.Individual{
+			IndividualID: newID,
+		},
+		Username:             createUser.Username,
+		Password:             createUser.Password,
+		Email:                createUser.Email,
+		FullName:             createUser.FullName,
+		PhoneNumber:          "Mock",
+		ProfilePicture:       "Mock",
+		DefaultAccountNumber: "Mock",
+		DefaultBank:          "Mock",
+		Pets:                 nil,
+	}
+
+	return newUser, nil
+}
 
 func InsertUser(db *models.MongoDB, user *models.User) (*models.User, error) {
 	// Get the users collection
@@ -71,6 +96,34 @@ func SetDefaultBankAccount(email string, defaultAccountNumber string, defaultBan
 			{Key: "defaultBank", Value: defaultBank},
 		}},
 	}
+	_, err = user_collection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		return "Failed to update user", err
+	}
+
+	return "", nil
+}
+
+func DeleteBankAccount(email string, db *models.MongoDB) (string, error) {
+	// get collection
+	user_collection := db.Collection("user")
+
+	// find user by id
+	var user models.User = models.User{}
+	filter := bson.D{{Key: "email", Value: email}}
+	err := user_collection.FindOne(context.Background(), filter).Decode(&user)
+	if err != nil {
+		return "User not found (email=" + email + ")", err
+	}
+
+	// update default bank account to empty
+	update := bson.D{
+		{Key: "$set", Value: bson.D{
+			{Key: "defaultAccountNumber", Value: ""},
+			{Key: "defaultBank", Value: ""},
+		}},
+	}
+
 	_, err = user_collection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
 		return "Failed to update user", err
