@@ -6,7 +6,7 @@ type Service struct {
 	ServiceType        string     `json:"serviceType" bson:"serviceType"`
 	ServiceDescription string     `json:"serviceDescription" bson:"serviceDescription"`
 	ServiceImg         string     `json:"serviceImg" bson:"serviceImg"`
-	AverageRating      float32    `json:"averageRating" bson:"averageRating"`
+	AverageRating      float64    `json:"averageRating" bson:"averageRating"`
 	RequireCert        bool       `json:"requireCert" bson:"requireCert"`
 	Timeslots          []Timeslot `json:"timeslots" bson:"timeslots"`
 }
