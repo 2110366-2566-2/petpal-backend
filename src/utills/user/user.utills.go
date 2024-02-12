@@ -119,6 +119,30 @@ func GetUserPet(db *models.MongoDB, userEmail string) (*[]models.Pet, error) {
 	return &user.Pets, nil
 }
 
+func UpdateUser(db *models.MongoDB, user *bson.M, id string) (string, error) {
+	// get collection
+	collection := db.Collection("user")
+
+	// find user by id
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return "Invalid user id", err
+	}
+	filter := bson.D{{Key: "_id", Value: objectID}}
+
+	// update user
+	update := bson.D{
+		{Key: "$set", Value: user},
+	}
+	_, err = collection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		return "Failed to update user", err
+	}
+
+	return "", nil
+
+}
+
 func SetDefaultBankAccount(email string, defaultAccountNumber string, defaultBank string, db *models.MongoDB) (string, error) {
 	// get collection
 	user_collection := db.Collection("user")
