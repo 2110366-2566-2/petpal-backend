@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"petpal-backend/src/models"
-	"petpal-backend/src/utills"
 	"petpal-backend/src/utills/auth"
+	utills "petpal-backend/src/utills/user"
 
 	"github.com/gin-gonic/gin"
 	// Import the user package containing UserRepository and UserService

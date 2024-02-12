@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"petpal-backend/src/controllers"
+	controllers "petpal-backend/src/controllers/user"
 	"petpal-backend/src/models"
 
 	"github.com/gin-gonic/gin"

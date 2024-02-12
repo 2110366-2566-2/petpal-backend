@@ -3,7 +3,7 @@ package auth
 import (
 	"errors"
 	"petpal-backend/src/models"
-	"petpal-backend/src/utills"
+	user_utills "petpal-backend/src/utills/user"
 	"time"
 )
 
@@ -14,7 +14,7 @@ func GetCurrnetUser(token string, db *models.MongoDB) (*models.User, error) {
 	}
 	loginType := loginRes.LoginType
 	if loginType == "user" {
-		user, err := utills.GetUserByEmail(db, loginRes.UserEmail)
+		user, err := user_utills.GetUserByEmail(db, loginRes.UserEmail)
 		if err != nil {
 			return nil, err
 		}
