@@ -82,6 +82,7 @@ func SetDefaultBankAccountHandler(w http.ResponseWriter, r *http.Request, db *mo
 		http.Error(w, "Failed to parse request body", http.StatusBadRequest)
 		return
 	}
+
 	email := user.Email
 	defaultAccountNumber := user.DefaultAccountNumber
 	defaultBank := user.DefaultBank

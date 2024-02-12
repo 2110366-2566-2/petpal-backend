@@ -23,7 +23,7 @@ func UserRoutes(r *gin.Engine) {
 		})
 		// userGroup.PUT("/:id", updateUser)
 		// userGroup.DELETE("/:id", deleteUser)
-		userGroup.POST("/setDefaultBankAccount", func(c *gin.Context) {
+		userGroup.POST("/set-default-bank-account", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllers.SetDefaultBankAccountHandler(c.Writer, c.Request, db)
 		})
