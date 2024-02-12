@@ -119,6 +119,29 @@ func GetUserPet(db *models.MongoDB, userEmail string) (*[]models.Pet, error) {
 	return &user.Pets, nil
 }
 
+func AddUserPet(db *models.MongoDB, pet *models.Pet, user_id string) (string, error) {
+	// get collection
+	user_collection := db.Collection("user")
+
+	// find user by email
+	user_objectid, err := primitive.ObjectIDFromHex(user_id)
+	if err != nil {
+		return "Invalid user id", err
+	}
+
+	filter := bson.D{{Key: "_id", Value: user_objectid}}
+	res, err := user_collection.UpdateOne(context.Background(), filter, bson.D{{Key: "$push", Value: bson.D{{Key: "pets", Value: pet}}}})
+	if(res.MatchedCount == 0){
+		return "User not found (id=" + user_id + ")", err
+	}
+	if err != nil {
+		return "Failed to add pet", err
+	}
+
+	return "", nil
+
+}
+
 func UpdateUser(db *models.MongoDB, user *bson.M, id string) (string, error) {
 	// get collection
 	collection := db.Collection("user")
