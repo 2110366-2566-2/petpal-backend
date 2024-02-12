@@ -37,5 +37,5 @@ func main() {
 	routes.UserRoutes(r)
 	routes.ExampleRoutes(r)
 
-	r.Run(":" + port)
+	r.Run("localhost:" + port)
 }
