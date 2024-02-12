@@ -40,5 +40,9 @@ func SVCPRoutes(r *gin.Engine) {
 			controllers.LogoutSVCPHandler(c)
 		})
 		// SVCPGroup.DELETE("/:id", deleteSVCP)
+		SVCPGroup.POST("/changePassword", func(c *gin.Context) {
+			db := c.MustGet("db").(*models.MongoDB)
+			controllers.ChangePassword(c.Writer, c.Request, db)
+		})
 	}
 }

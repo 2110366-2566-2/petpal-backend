@@ -154,3 +154,35 @@ func LogoutSVCPHandler(c *gin.Context) {
 	c.SetCookie("token", "", -1, "", "", false, true)
 	c.JSON(http.StatusOK, gin.H{"message": "logout successful"})
 }
+
+func ChangePassword(w http.ResponseWriter, r *http.Request, db *models.MongoDB) {
+	type ChangePasswordReq struct {
+		SVCPEmail   string `json:svcpemail`
+		NewPassword string `json:newpassword`
+	}
+	var user ChangePasswordReq
+	err := json.NewDecoder(r.Body).Decode(&user)
+	if err != nil {
+		http.Error(w, "Failed to parse request body", http.StatusBadRequest)
+		return
+	}
+	hashedPassword, err := auth.HashPassword(user.NewPassword)
+	if err != nil {
+		http.Error(w, "Failed to hash password", http.StatusBadRequest)
+		return
+	}
+	email := user.SVCPEmail
+	newPassword := hashedPassword
+
+	// Call the user service to set change password
+	err_str, err := svcp_utills.ChangePassword(email, newPassword, db)
+	if err != nil {
+		// show error message
+		http.Error(w, err_str, http.StatusInternalServerError)
+		return
+	}
+
+	// Respond with a success message
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode("set new password successfully")
+}

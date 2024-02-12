@@ -8,7 +8,7 @@ from pymongo.server_api import ServerApi
 
 # Config this part
 CLEAR_PREV = True # clear the collection before inserting new records
-N = 500 # number of records to generate
+N = 5 # number of records to generate
 COLLECTION_NAMES = ['user','svcp'] # collection name
 
 # Connect to MongoDB
