@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"net/http"
 	"petpal-backend/src/models"
-	"petpal-backend/src/utills"
 	"petpal-backend/src/utills/auth"
+	user_utills "petpal-backend/src/utills/user"
+	utills "petpal-backend/src/utills/user"
 
 	"github.com/gin-gonic/gin"
 	// Import the user package containing UserRepository and UserService
@@ -36,7 +37,7 @@ func RegisterUserHandler(c *gin.Context, db *models.MongoDB) {
 	}
 
 	// Insert the new user into the database
-	newUser, err = utills.InsertUser(db, newUser)
+	newUser, err = user_utills.InsertUser(db, newUser)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to register user"})
 		return
@@ -63,7 +64,7 @@ func CurrentUserHandler(c *gin.Context, db *models.MongoDB) {
 		return
 	}
 	// Parse request body to get user data
-	user, err := auth.GetCurrnetUser(token, db)
+	user, err := auth.GetCurrentUser(token, db)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, "Failed to get User Email request body :"+err.Error())
@@ -88,9 +89,29 @@ func LoginUserHandler(c *gin.Context, db *models.MongoDB) {
 	c.SetCookie("token", u.AccessToken, 3600, "/", "", false, true)
 	c.JSON(http.StatusOK, u)
 }
+
+// LogoutUserHandler
 func LogoutUserHandler(c *gin.Context) {
 	c.SetCookie("token", "", -1, "", "", false, true)
 	c.JSON(http.StatusOK, gin.H{"message": "logout successful"})
+}
+
+// GetUserPetsHandler for get list of user's pet
+func GetUserPetsHandler(c *gin.Context, db *models.MongoDB) {
+	type GetUserPetReq struct {
+		UserEmail string `json:useremail`
+	}
+	var user GetUserPetReq
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	pets, err := user_utills.GetUserPet(db, user.UserEmail)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"pets": pets, "useremail": user.UserEmail})
 }
 
 // SetDefaultBankAccountHandler handles the setting of a default bank account for a user

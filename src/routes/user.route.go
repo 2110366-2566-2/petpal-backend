@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"petpal-backend/src/controllers"
+	controllers "petpal-backend/src/controllers/user"
 	"petpal-backend/src/models"
 
 	"github.com/gin-gonic/gin"
@@ -31,6 +31,10 @@ func UserRoutes(r *gin.Engine) {
 		})
 		// userGroup.PUT("/:id", updateUser)
 		// userGroup.DELETE("/:id", deleteUser)
+		userGroup.POST("/pets", func(c *gin.Context) {
+			db := c.MustGet("db").(*models.MongoDB)
+			controllers.GetUserPetsHandler(c, db)
+		})
 		userGroup.POST("/setDefaultBankAccount", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllers.SetDefaultBankAccountHandler(c.Writer, c.Request, db)
