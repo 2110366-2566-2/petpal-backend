@@ -10,16 +10,8 @@ import (
 func UserRoutes(r *gin.Engine) {
 	userGroup := r.Group("/user")
 	{
-		userGroup.GET("/", func(c *gin.Context) {
-			db := c.MustGet("db").(*models.MongoDB)
-			controllers.GetUsersHandler(c.Writer, c.Request, db)
-		})
-
-		userGroup.GET("/:id", func(c *gin.Context) {
-			db := c.MustGet("db").(*models.MongoDB)
-			controllers.GetUserByIDHandler(c.Writer, c.Request, db, c.Param("id"))
-		})
-
+		// userGroup.GET("/", getUserList)
+		// userGroup.GET("/:id", getUserByID)
 		userGroup.POST("/", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllers.CreateUserHandler(c.Writer, c.Request, db)
