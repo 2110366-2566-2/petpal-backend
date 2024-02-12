@@ -179,6 +179,22 @@ func GetUserPetsHandler(c *gin.Context, db *models.MongoDB) {
 	c.JSON(http.StatusOK, gin.H{"pets": pets, "useremail": user.UserEmail})
 }
 
+func AddUserPetHandler(c *gin.Context, db *models.MongoDB) {
+	var pet models.Pet
+	if err := c.ShouldBindJSON(&pet); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err_str, err := user_utills.AddUserPet(db, &pet, c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err_str})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Pet added successfully"})
+}
+
 // SetDefaultBankAccountHandler handles the setting of a default bank account for a user
 func SetDefaultBankAccountHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB) {
 	// get user_id, default bank account number, default bank from request body
