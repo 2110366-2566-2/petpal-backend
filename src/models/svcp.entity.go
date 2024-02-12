@@ -22,6 +22,7 @@ type SVCP struct {
 	DefaultAccountNumber  string `json:"defaultAccountNumber" bson:"defaultAccountNumber"`
 	License               string `json:"license" bson:"license"`
 	Location              string `json:"location" bson:"location"`
+	Description		      string `json:"description" bson:"description"`
 	SVCPAdditionalImg     string `json:"SVCPAdditionalImg" bson:"SVCPAdditionalImg"`
 }
 
