@@ -197,3 +197,23 @@ func UploadSVCPLicenseHandler(c *gin.Context, db *models.MongoDB) {
 	}
 	c.JSON(http.StatusAccepted, gin.H{"message": "update license successfull", "svcpEmail": email})
 }
+
+func AddServiceHandler(c *gin.Context, db *models.MongoDB) {
+	var request struct {
+		SVCPEmail string `json:"svcpemail"`
+		Service   models.Service `json:"service"`
+	}
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := svcp_utills.AddService(db, request.SVCPEmail, request.Service)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Service added successfully"})
+}

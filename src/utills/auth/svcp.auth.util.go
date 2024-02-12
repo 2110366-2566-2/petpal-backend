@@ -49,6 +49,7 @@ func NewSVCP(createSVCP models.CreateSVCP) (*models.SVCP, error) {
 		License:               "Defult",
 		Location:              "Defult",
 		SVCPAdditionalImg:     "Defult",
+		SVCPServiceType:       createSVCP.SVCPServiceType,
 	}
 
 	return newSVCP, nil

@@ -1,12 +1,12 @@
 // user.go
 package models
 
+import "time"
+
 // User represents a user entity
 type Timeslot struct {
-	SVCPID      string
-	serviceType string
-	startTime   string
-	endTime     string
+	StartTime   time.Time `json:"startTime" bson:"startTime"`
+	EndTime     time.Time `json:"endTime" bson:"endTime"`
 }
 
 func (u *Timeslot) editTimeslot(timeslotDetails Timeslot) Timeslot {

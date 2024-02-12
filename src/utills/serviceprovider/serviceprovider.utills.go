@@ -110,3 +110,31 @@ func UploadSVCPLicense(db *models.MongoDB, fileContent []byte, SVCPEmail string)
 	}
 	return nil
 }
+
+func AddService(db *models.MongoDB, email string, service models.Service) error {
+	svcp_collection := db.Collection("svcp")
+
+	svcp := models.SVCP{}
+	filter := bson.D{{Key: "SVCPEmail", Value: email}}
+	err := svcp_collection.FindOne(context.Background(), filter).Decode(&svcp)
+	if err != nil {
+		return err
+	}
+
+	// append service to services
+	svcp.Services = append(svcp.Services, service)
+
+	// update service provider
+	filter = bson.D{{Key: "SVCPEmail", Value: email}}
+	update := bson.D{{Key: "$set", Value: svcp}}
+	res, err := svcp_collection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		return err
+	}
+
+	if res.ModifiedCount == 0 {
+		return mongo.ErrNoDocuments
+	}
+
+	return nil
+}
