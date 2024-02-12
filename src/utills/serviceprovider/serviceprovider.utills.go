@@ -152,3 +152,30 @@ func AddService(db *models.MongoDB, email string, service models.Service) error 
 
 	return nil
 }
+
+func SetDefaultBankAccount(email string, defaultAccountNumber string, defaultBank string, db *models.MongoDB) (string, error) {
+	// get collection
+	svcp_collection := db.Collection("svcp")
+
+	// find service provider by id
+	filter := bson.D{{Key: "SVCPEmail", Value: email}}
+	result := svcp_collection.FindOne(context.Background(), filter)
+	if result.Err() != nil {
+		return "Service provider not found", result.Err()
+	}
+
+	// update service provider with new default bank account
+	update := bson.D{
+		{Key: "$set", Value: bson.D{
+			{Key: "defaultAccountNumber", Value: defaultAccountNumber},
+			{Key: "defaultBank", Value: defaultBank},
+		}},
+	}
+
+	_, err := svcp_collection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		return "Error updating service provider", err
+	}
+	
+	return "", nil
+}
