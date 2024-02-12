@@ -39,19 +39,12 @@ func GetUsersHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB)
 	json.NewEncoder(w).Encode(users)
 }
 
-// GetUserByIDHandler handles the fetching of a user by ID
+// GetUserByIDHandler handles the fetching of a user by id
 func GetUserByIDHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB, id string) {
-	// parse id from param
-	id_int, err := strconv.ParseInt(id, 10, 64)
+	// Call the user service to get a user by email
+	user, err := utills.GetUserByID(db, id)
 	if err != nil {
-		http.Error(w, "Failed to parse request query params", http.StatusBadRequest)
-		return
-	}
-
-	// Call the user service to get a user by ID
-	user, err := utills.GetUserByID(db, id_int)
-	if err != nil {
-		http.Error(w, "Failed to get users", http.StatusInternalServerError)
+		http.Error(w, "Failed to get user", http.StatusInternalServerError)
 		return
 	}
 

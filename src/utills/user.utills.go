@@ -3,6 +3,8 @@ package utills
 import (
 	"context"
 	"petpal-backend/src/models"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -28,15 +30,19 @@ func GetUsers(db *models.MongoDB, filter bson.D, page int64, per int64) ([]model
 	return users, err
 }
 
-func GetUserByID(db *models.MongoDB, id int64) (*models.User, error) {
+
+func GetUserByID(db *models.MongoDB, id string) (*models.User, error) {
 	// get collection
 	collection := db.Collection("user")
 
 	// find user by id
-	// note: IndividualID is not present in the database yet, so this always returns an error not found
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
 	var user models.User = models.User{}
-	filter := bson.D{{Key: "IndividualID", Value: id}}
-	err := collection.FindOne(context.Background(), filter).Decode(&user)
+	filter := bson.D{{Key: "_id", Value: objectID}}
+	err = collection.FindOne(context.Background(), filter).Decode(&user)
 	if err != nil {
 		return nil, err
 	}
