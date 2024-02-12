@@ -2,6 +2,7 @@ package utills
 
 import (
 	"context"
+	"encoding/base64"
 	"petpal-backend/src/models"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -90,5 +91,22 @@ func UpdateSVCP(db *models.MongoDB, id string, svcp models.SVCP) error {
 		return mongo.ErrNoDocuments
 	}
 
+	return nil
+}
+
+// For upload license file to SVCP Collection in mongoDB
+func UploadSVCPLicense(db *models.MongoDB, fileContent []byte, SVCPEmail string) error {
+	// Encode the file content to base64 string
+	encodedFileContent := base64.StdEncoding.EncodeToString(fileContent)
+	// get collection
+	svcpCollection := db.Collection("svcp")
+	// Update the license field in "scvp" collection
+	filter := bson.D{{"SVCPEmail", SVCPEmail}}
+	update := bson.D{{"$set", bson.D{{"license", encodedFileContent}}}}
+	// Updates the first document that has the specified "SVCPUsername" value
+	_, err := svcpCollection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return err
+	}
 	return nil
 }

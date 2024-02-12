@@ -2,9 +2,11 @@ package controllers
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"petpal-backend/src/models"
 	"petpal-backend/src/utills/auth"
+	mail "petpal-backend/src/utills/email"
 	svcp_utills "petpal-backend/src/utills/serviceprovider"
 	"strconv"
 
@@ -153,4 +155,45 @@ func LoginSVCPHandler(c *gin.Context, db *models.MongoDB) {
 func LogoutSVCPHandler(c *gin.Context) {
 	c.SetCookie("token", "", -1, "", "", false, true)
 	c.JSON(http.StatusOK, gin.H{"message": "logout successful"})
+}
+
+func UploadSVCPLicenseHandler(c *gin.Context, db *models.MongoDB) {
+	// Parse the form data, including the file upload
+	err := c.Request.ParseMultipartForm(10 << 20)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Unable to parse form"})
+		return
+	} // Get the email from the form
+	email := c.Request.FormValue("svcpEmail")
+	// Retrieve the uploaded file
+	file, _, err := c.Request.FormFile("license")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Error Retrieving the File"})
+		return
+	}
+	defer file.Close()
+
+	// Read the file content as a byte slice
+	fileContent, err := ioutil.ReadAll(file)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error reading file content"})
+		return
+	}
+	err = svcp_utills.UploadSVCPLicense(db, fileContent, email)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	// Send Confirmation email to the gmail
+	emailSubject := "Petpal Service Provider Approved"
+	emailContent := `
+	<h4>สวัสดีครับ</h4>
+	<p>ยินดีด้วย คุณยืนยันตัวตนกับทาง Petpal สำเร็จ!!!</p>
+	`
+	err = mail.SendEmailWithGmail(email, emailSubject, emailContent)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusAccepted, gin.H{"message": "update license successfull", "svcpEmail": email})
 }
