@@ -56,5 +56,9 @@ func SVCPRoutes(r *gin.Engine) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllers.UploadSVCPLicenseHandler(c, db)
 		})
+		SVCPGroup.DELETE("/delete-bank-account", func(c *gin.Context) {
+			db := c.MustGet("db").(*models.MongoDB)
+			controllers.DeleteBankAccountHandler(c, db)
+		})
 	}
 }

@@ -153,6 +153,33 @@ func AddService(db *models.MongoDB, email string, service models.Service) error 
 	return nil
 }
 
+func DeleteBankAccount(db *models.MongoDB, email string) error {
+	// get collection
+	svcp_collection := db.Collection("svcp")
+
+	// find service provider by id
+	filter := bson.D{{Key: "SVCPEmail", Value: email}}
+	result := svcp_collection.FindOne(context.Background(), filter)
+	if result.Err() != nil {
+		return result.Err()
+	}
+
+	// update default bank account to empty
+	update := bson.D{
+		{Key: "$set", Value: bson.D{
+			{Key: "defaultAccountNumber", Value: ""},
+			{Key: "defaultBank", Value: ""},
+		}},
+	}
+
+	_, err := svcp_collection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		return err
+	}
+	
+	return nil
+}
+
 func SetDefaultBankAccount(email string, defaultAccountNumber string, defaultBank string, db *models.MongoDB) (string, error) {
 	// get collection
 	svcp_collection := db.Collection("svcp")

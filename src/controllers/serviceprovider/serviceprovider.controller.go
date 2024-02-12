@@ -239,6 +239,25 @@ func AddServiceHandler(c *gin.Context, db *models.MongoDB) {
 	c.JSON(http.StatusOK, gin.H{"message": "Service added successfully"})
 }
 
+func DeleteBankAccountHandler(c *gin.Context, db *models.MongoDB) {
+	var request struct {
+		SVCPEmail string `json:"svcpemail"`
+	}
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := svcp_utills.DeleteBankAccount(db, request.SVCPEmail)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Bank account deleted successfully"})
+}
+
 func SetDefaultBankAccountHandler(c *gin.Context, db *models.MongoDB) {
 	var request struct {
 		SVCPEmail           string `json:"svcpemail"`
