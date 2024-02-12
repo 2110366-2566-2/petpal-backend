@@ -2,6 +2,7 @@ import json
 import random
 import exrex
 import os
+import datetime
 
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
@@ -60,7 +61,11 @@ def gen_object(id, properties_dict):
             if 'minLength' in properties_dict[key] and len(ret[key]) < properties_dict[key]['minLength']:
                 ret[key] = ret[key] + "0"*(properties_dict[key]['minLength']-len(ret[key]))
         elif t == 'date':
-            ret[key] = f"{random.randint(1, 30)}/{random.randint(1, 12)}/{random.randint(1900, 2021)}"
+            yr = random.randint(1980, 2010)
+            month = random.randint(1, 12)
+            day = random.randint(1, 28) if month == 2 else random.randint(1, 30) if month in [4, 6, 9, 11] else random.randint(1, 31)
+            tz = datetime.timezone(datetime.timedelta())
+            ret[key] = datetime.datetime(yr, month, day, tzinfo=tz).isoformat()
         elif t == 'int' or t == 'double':
                 minimum = 0 if 'minimum' not in properties_dict[key] else properties_dict[key]['minimum']
                 maximum = 100 if 'maximum' not in properties_dict[key] else properties_dict[key]['maximum']

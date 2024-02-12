@@ -3,8 +3,10 @@ package utills
 import (
 	"context"
 	"petpal-backend/src/models"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 func nextUserId() int {
 	id := 5
@@ -44,6 +46,46 @@ func InsertUser(db *models.MongoDB, user *models.User) (*models.User, error) {
 
 	// Return the inserted user
 	return user, nil
+}
+
+func GetUsers(db *models.MongoDB, filter bson.D, page int64, per int64) ([]models.User, error) {
+	collection := db.Collection("user")
+	opts := options.Find().SetSkip(page * per).SetLimit(per)
+
+	// Find all documents in the collection
+	cursor, err := collection.Find(context.Background(), filter, opts)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(context.Background())
+
+	// Decode results
+	var users []models.User
+	if err := cursor.All(context.Background(), &users); err != nil {
+		return nil, err
+	}
+
+	return users, err
+}
+
+
+func GetUserByID(db *models.MongoDB, id string) (*models.User, error) {
+	// get collection
+	collection := db.Collection("user")
+
+	// find user by id
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+	var user models.User = models.User{}
+	filter := bson.D{{Key: "_id", Value: objectID}}
+	err = collection.FindOne(context.Background(), filter).Decode(&user)
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
 }
 
 func GetUserByEmail(db *models.MongoDB, email string) (*models.User, error) {

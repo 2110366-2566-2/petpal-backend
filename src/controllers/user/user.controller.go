@@ -7,10 +7,54 @@ import (
 	"petpal-backend/src/utills/auth"
 	user_utills "petpal-backend/src/utills/user"
 	utills "petpal-backend/src/utills/user"
+	"strconv"
+
+	"go.mongodb.org/mongo-driver/bson"
 
 	"github.com/gin-gonic/gin"
 	// Import the user package containing UserRepository and UserService
 )
+
+// GetUsersHandler handles the fetching of all users
+func GetUsersHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB) {
+	// Call the user service to get all users
+	params := r.URL.Query()
+
+	// set default values for page and per
+	if !params.Has("page") { params.Set("page", "1") }
+	if !params.Has("per") { params.Set("per", "10") }
+
+	// fetch page and per from request query
+	page, err_page := strconv.ParseInt(params.Get("page"), 10, 64)
+	per, err_per := strconv.ParseInt(params.Get("per"), 10, 64)
+	if err_page != nil || err_per != nil{
+		http.Error(w, "Failed to parse request query params", http.StatusBadRequest)
+		return
+	}
+
+	// get all users, no filters for now
+	users, err := utills.GetUsers(db, bson.D{}, page - 1, per)
+	if err != nil {
+		http.Error(w, "Failed to get users", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(users)
+}
+
+// GetUserByIDHandler handles the fetching of a user by id
+func GetUserByIDHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB, id string) {
+	// Call the user service to get a user by email
+	user, err := utills.GetUserByID(db, id)
+	if err != nil {
+		http.Error(w, "Failed to get user", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(user)
+}
 
 // RegisterHandler handles user registration
 func RegisterUserHandler(c *gin.Context, db *models.MongoDB) {
