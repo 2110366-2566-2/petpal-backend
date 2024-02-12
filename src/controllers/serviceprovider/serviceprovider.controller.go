@@ -157,6 +157,27 @@ func LogoutSVCPHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "logout successful"})
 }
 
+func UploadDescriptionHandler(c *gin.Context, db *models.MongoDB) {
+	var request models.SVCP
+	err := json.NewDecoder(c.Request.Body).Decode(&request)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	svcp_email := request.SVCPEmail
+	description := request.Description
+
+	err = svcp_utills.EditDescription(db, svcp_email, description)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Description uploaded successfully"})
+
+}
+
 func UploadSVCPLicenseHandler(c *gin.Context, db *models.MongoDB) {
 	// Parse the form data, including the file upload
 	err := c.Request.ParseMultipartForm(10 << 20)

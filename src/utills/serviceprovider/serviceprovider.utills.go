@@ -94,6 +94,20 @@ func UpdateSVCP(db *models.MongoDB, id string, svcp models.SVCP) error {
 	return nil
 }
 
+func EditDescription(db *models.MongoDB, email string, description string) error {
+	// get collection
+	collection := db.Collection("svcp")
+
+	// update service provider by *SVCPID*, could be changed to individual id when it exists
+	filter := bson.D{{Key: "SVCPEmail", Value: email}}
+	update := bson.D{{Key: "$set", Value: bson.D{{Key: "description", Value: description}}}}
+	_, err := collection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
 // For upload license file to SVCP Collection in mongoDB
 func UploadSVCPLicense(db *models.MongoDB, fileContent []byte, SVCPEmail string) error {
 	// Encode the file content to base64 string
