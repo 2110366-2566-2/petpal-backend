@@ -5,9 +5,10 @@ package models
 
 type CreateSVCP struct {
 	// Define the 10 fields here
-	SVCPUsername string `json:"SVCPUsername" bson:"SVCPUsername"`
-	SVCPPassword string `json:"SVCPPassword" bson:"SVCPPassword"`
-	SVCPEmail    string `json:"SVCPEmail" bson:"SVCPEmail"`
+	SVCPUsername    string `json:"SVCPUsername" bson:"SVCPUsername"`
+	SVCPPassword    string `json:"SVCPPassword" bson:"SVCPPassword"`
+	SVCPEmail       string `json:"SVCPEmail" bson:"SVCPEmail"`
+	SVCPServiceType string `json:"SVCPServiceType" bson:"SVCPServiceType"`
 }
 type SVCP struct {
 	Individual
@@ -23,6 +24,7 @@ type SVCP struct {
 	License               string `json:"license" bson:"license"`
 	Location              string `json:"location" bson:"location"`
 	SVCPAdditionalImg     string `json:"SVCPAdditionalImg" bson:"SVCPAdditionalImg"`
+	SVCPServiceType	      string `json:"SVCPServiceType" bson:"SVCPServiceType"`
 }
 
 func (e *SVCP) validate(SVCPImg string) bool {
