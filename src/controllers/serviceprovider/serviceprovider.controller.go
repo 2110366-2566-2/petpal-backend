@@ -238,3 +238,29 @@ func AddServiceHandler(c *gin.Context, db *models.MongoDB) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Service added successfully"})
 }
+
+func SetDefaultBankAccountHandler(c *gin.Context, db *models.MongoDB) {
+	var request struct {
+		SVCPEmail           string `json:"svcpemail"`
+		DefaultAccountNumber string `json:"defaultAccountNumber"`
+		DefaultBank          string `json:"defaultBank"`
+	}
+	err := json.NewDecoder(c.Request.Body).Decode(&request)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	svcp_email := request.SVCPEmail
+	default_bank_account := request.DefaultAccountNumber
+	default_bank := request.DefaultBank
+
+	_, err = svcp_utills.SetDefaultBankAccount(svcp_email, default_bank_account, default_bank, db)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Default bank account set successfully"})
+
+}
