@@ -56,6 +56,27 @@ func GetUserByIDHandler(w http.ResponseWriter, r *http.Request, db *models.Mongo
 	json.NewEncoder(w).Encode(user)
 }
 
+func UpdateUserHandler(c *gin.Context, db *models.MongoDB) {
+	// Parse request body to get user data
+	var user bson.M
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Call the user service to update the user
+	err_str, err := utills.UpdateUser(db, &user, c.Param("id"))
+	if err != nil {
+		// show error message
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err_str})
+		return
+	}
+
+	// Respond with a success message
+	c.JSON(http.StatusOK, gin.H{"message": "User updated successfully"})
+
+}
+
 // RegisterHandler handles user registration
 func RegisterUserHandler(c *gin.Context, db *models.MongoDB) {
 	// Parse request body to get user data
