@@ -58,17 +58,17 @@ func SetDefaultBankAccount(username string, defaultBankAccountNumber string, def
 	return "", nil
 }
 
-// UploadProfileImage uploads a profile image for a user.
-// It takes the username, file content (image bytes), and a MongoDB instance.
+// UploadProfileImage uploads a profile image for a user and svcp.
+// It takes the email, file content (image bytes), and a MongoDB instance.
 // Returns a gin.H (response) and an error if any.
-func UploadProfileImage(username string, fileContent []byte, userType string, db *models.MongoDB) (gin.H, error) {
+func UploadProfileImage(email string, fileContent []byte, userType string, db *models.MongoDB) (gin.H, error) {
 
 	if userType == "user" {
 		userCollection := db.Collection("user")
 
-		// Find the user by username in the "user" collection
+		// Find the user by email in the "user" collection
 		var user models.User = models.User{}
-		filter := bson.D{{Key: "username", Value: username}}
+		filter := bson.D{{Key: "email", Value: email}}
 		err := userCollection.FindOne(context.Background(), filter).Decode(&user)
 		if err != nil {
 			// If an error occurs during the database query, return an error response
@@ -94,16 +94,23 @@ func UploadProfileImage(username string, fileContent []byte, userType string, db
 	} else if userType == "svcp" {
 		userCollection := db.Collection("svcp")
 
-		// Find the user by username in the "SVCPUsername" collection
-		var user models.User = models.User{}
-		filter := bson.D{{Key: "SVCPUsername", Value: username}}
+		//temporarily struct for svcp
+		type Svcp struct {
+			SVCPEmail string `json:"SVCPEmail"`
+			SVCPImg   string `json:"SVCPImg"`
+		}
+
+		// Find the svcp by email in the "svcp" collection
+		var user Svcp = Svcp{}
+
+		filter := bson.D{{Key: "SVCPEmail", Value: email}}
 		err := userCollection.FindOne(context.Background(), filter).Decode(&user)
 		if err != nil {
 			// If an error occurs during the database query, return an error response
-			return gin.H{"error": err.Error()}, err
+			return gin.H{"error": err.Error() + email}, err
 		}
 
-		// Update the user's profilePicture field with the new file content
+		// Update the svcp's profilePicture field with the new file content
 		update := bson.D{
 			{Key: "$set", Value: bson.D{
 				{Key: "SVCPImg", Value: fileContent},

@@ -23,6 +23,7 @@ func UserRoutes(r *gin.Engine) {
 			controllers.SetDefaultBankAccountHandler(c.Writer, c.Request, db)
 		})
 
+		//waring string in db shoudn't have '/' in string or api in input
 		// update user profile image (Form Fields : username, profileImage)
 		userGroup.POST("/uploadProfileImage", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)

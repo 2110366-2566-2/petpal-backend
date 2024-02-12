@@ -10,6 +10,8 @@ import (
 func ServiceProviderRoutes(r *gin.Engine) {
 	svcpGroup := r.Group("/svcp")
 	{
+
+		//waring string in db shoudn't have '/' in string or api in input
 		// update user profile image (Form Fields : username, profileImage)
 		svcpGroup.POST("/uploadProfileImage", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
