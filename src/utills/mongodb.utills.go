@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"petpal-backend/src/configs"
 	"petpal-backend/src/models"
 	"time"
 
@@ -15,10 +16,10 @@ import (
 // NewMongoDB creates a new MongoDB instance with the provided connection string.
 func NewMongoDB() (*models.MongoDB, error) {
 	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
-
+	//"mongodb://inwza:strongpassword@localhost:27017/"
 	mongoClient, err := mongo.Connect(
 		ctx,
-		options.Client().ApplyURI("mongodb://inwza:strongpassword@localhost:27017/"),
+		options.Client().ApplyURI(configs.GetDB_URI()),
 	)
 
 	if err != nil {

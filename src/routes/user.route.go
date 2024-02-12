@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"petpal-backend/src/controllers"
+	controllers "petpal-backend/src/controllers/user"
 	"petpal-backend/src/models"
 
 	"github.com/gin-gonic/gin"
@@ -20,12 +20,31 @@ func UserRoutes(r *gin.Engine) {
 			controllers.GetUserByIDHandler(c.Writer, c.Request, db, c.Param("id"))
 		})
 
-		userGroup.POST("/", func(c *gin.Context) {
+		// userGroup.GET("/", getUserList)
+		// userGroup.GET("/:id", getUserByID)
+		userGroup.POST("/register", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
-			controllers.CreateUserHandler(c.Writer, c.Request, db)
+			controllers.RegisterUserHandler(c, db)
+		})
+
+		userGroup.POST("/login", func(c *gin.Context) {
+			db := c.MustGet("db").(*models.MongoDB)
+			controllers.LoginUserHandler(c, db)
+		})
+		userGroup.POST("/logout", func(c *gin.Context) {
+			controllers.LogoutUserHandler(c)
+		})
+
+		userGroup.GET("/me", func(c *gin.Context) {
+			db := c.MustGet("db").(*models.MongoDB)
+			controllers.CurrentUserHandler(c, db)
 		})
 		// userGroup.PUT("/:id", updateUser)
 		// userGroup.DELETE("/:id", deleteUser)
+		userGroup.POST("/pets", func(c *gin.Context) {
+			db := c.MustGet("db").(*models.MongoDB)
+			controllers.GetUserPetsHandler(c, db)
+		})
 		userGroup.POST("/setDefaultBankAccount", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllers.SetDefaultBankAccountHandler(c.Writer, c.Request, db)

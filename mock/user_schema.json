@@ -1,59 +1,70 @@
 {
-    "type" : "object",
-    "bsonType" : "object",
-    "title" : "User",
-    "desciption" : "Store user data",
-    "required" : ["username", "password", "address", "phoneNumber", "email", "profilePicture", "fullName", "dateOfBith", "defaultAccountNumber", "defaultBank"],
-    "properties" : {
-        "username" : {
-            "bsonType" : "string",
-            "minLength" : 1,
-            "maxLength" : 64
-        },
-        "password" : {
-            "bsonType" : "string",
-            "minLength" : 8,
-            "maxLength" : 64
-        },
-        "address" : {
-            "bsonType" : "string",
-            "maxLength" : 256
-        },
-        "phoneNumber" : {
-            "bsonType" : "string",
-            "pattern" : "0\\d*",
-            "minLength" : 10,
-            "maxLength" : 10
-        },
-        "email" : {
-            "bsonType" : "string",
-            "pattern" : ".+@.+\\..+",
-            "maxLength" : 64
-        },
-        "profilePicture" : {"bsonType" : "string"},
-        "fullName" : {
-            "bsonType" : "string",
-            "maxLength" : 128
-        },
-        "dateOfBith" : {"bsonType" : "date"},
-        "defaultAccountNumber" : {"bsonType" : "string"},
-        "defaultBank" : {"bsonType" : "string"},
-        "pets" : {
-            "bsonType" : "array",
-            "items" : {
-                "bsonType" : "object",
-                "properties" : {
-                    "name" : {"bsonType" : "string"},
-                    "gender" : {"bsonType" : "string"},
-                    "age" : {"bsonType" : "int"},
-                    "type" : {"bsonType" : "string"},
-                    "healthInformation" : {"bsonType" : "string"},
-                    "certificate" : {"bsonType" : "string"},
-                    "behaviouralNotes" : {"bsonType" : "string"},
-                    "vaccinations" : {"bsonType" : "string"},
-                    "dietyPreferences" : {"bsonType" : "string"}
-                }
-            }
+  "type": "object",
+  "bsonType": "object",
+  "title": "User",
+  "desciption": "Store user data",
+  "required": [
+    "username",
+    "password",
+    "address",
+    "phoneNumber",
+    "email",
+    "profilePicture",
+    "fullName",
+    "dateOfBirth",
+    "defaultAccountNumber",
+    "defaultBank"
+  ],
+  "properties": {
+    "username": {
+      "bsonType": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "password": {
+      "bsonType": "string",
+      "minLength": 8,
+      "maxLength": 64
+    },
+    "address": {
+      "bsonType": "string",
+      "maxLength": 256
+    },
+    "phoneNumber": {
+      "bsonType": "string",
+      "pattern": "0\\d*",
+      "minLength": 10,
+      "maxLength": 10
+    },
+    "email": {
+      "bsonType": "string",
+      "pattern": ".+@.+\\..+",
+      "maxLength": 64
+    },
+    "profilePicture": { "bsonType": "string" },
+    "fullName": {
+      "bsonType": "string",
+      "maxLength": 128
+    },
+    "dateOfBirth": { "bsonType": "date" },
+    "defaultAccountNumber": { "bsonType": "string" },
+    "defaultBank": { "bsonType": "string" },
+    "pets": {
+      "bsonType": "array",
+      "items": {
+        "bsonType": "object",
+        "properties": {
+          "name": { "bsonType": "string" },
+          "gender": { "bsonType": "string" },
+          "age": { "bsonType": "int" },
+          "type": { "bsonType": "string" },
+          "healthInformation": { "bsonType": "string" },
+          "certificate": { "bsonType": "string" },
+          "behaviouralNotes": { "bsonType": "string" },
+          "vaccinations": { "bsonType": "string" },
+          "dietyPreferences": { "bsonType": "string" }
         }
+      }
     }
+  }
 }
