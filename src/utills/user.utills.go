@@ -63,7 +63,6 @@ func NewUser(createUser models.CreateUser) (*models.User, error) {
 			IndividualID: newID,
 		},
 		CreateUser:           createUser,
-		PhoneNumber:          "Mock",
 		ProfilePicture:       "Mock",
 		DefaultAccountNumber: "Mock",
 		DefaultBank:          "Mock",
