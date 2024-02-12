@@ -40,6 +40,7 @@ func GetUserPet(db *models.MongoDB, userEmail string) (*[]models.Pet, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	if user.Pets == nil {
 		emptySlice := make([]models.Pet, 0)
 		return &emptySlice, nil
