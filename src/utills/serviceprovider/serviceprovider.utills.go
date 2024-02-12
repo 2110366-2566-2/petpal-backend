@@ -94,23 +94,16 @@ func UpdateSVCP(db *models.MongoDB, id string, svcp models.SVCP) error {
 }
 
 func EditDescription(db *models.MongoDB, email string, description string) error {
-
-	if len(description) == 0 {
-		return mongo.ErrNoDocuments
-	}
 	// get collection
 	collection := db.Collection("svcp")
 
 	// update service provider by *SVCPID*, could be changed to individual id when it exists
 	filter := bson.D{{Key: "SVCPEmail", Value: email}}
 	update := bson.D{{Key: "$set", Value: bson.D{{Key: "description", Value: description}}}}
-	res, err := collection.UpdateOne(context.Background(), filter, update)
+	_, err := collection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
 		return err
 	}
 
-	if res.ModifiedCount == 0 {
-		return mongo.ErrNoDocuments
-	}
 	return nil
 }
