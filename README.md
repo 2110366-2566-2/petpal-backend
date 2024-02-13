@@ -46,9 +46,10 @@ go run main.go
 ## Accessing Swagger
 for local, you can access swagger at `http://localhost:8080/swagger/index.html`
 
-
 # References
 
 - [Gin Documentation](https://gin-gonic.com/docs/quickstart/)
 
 - [Golang Mongodb driver](https://www.mongodb.com/docs/drivers/go/current/usage-examples/)
+
+- [Swagger declarative comment](https://github.com/swaggo/swag?tab=readme-ov-file#declarative-comments-format)
