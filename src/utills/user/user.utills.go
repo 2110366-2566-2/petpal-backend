@@ -327,8 +327,13 @@ func GetProfileImage(email string, userType string, db *models.MongoDB) (gin.H, 
 		// Access the "user" collection in the MongoDB database
 		userCollection := db.Collection("user")
 
+		type user_decode struct {
+			Email          string `json:"email" bson:"email"`
+			ProfilePicture []byte `json:"profilePicture" bson:"profilePicture"`
+		}
+
 		// Find the user by email in the "user" collection
-		var user models.User = models.User{}
+		var user user_decode = user_decode{}
 		filter := bson.D{{Key: "email", Value: email}}
 		err := userCollection.FindOne(context.Background(), filter).Decode(&user)
 		if err != nil {
@@ -337,6 +342,7 @@ func GetProfileImage(email string, userType string, db *models.MongoDB) (gin.H, 
 		}
 
 		// Return the profile picture file content
+
 		results := user.ProfilePicture
 		return gin.H{"message": "Get profile image from 'user' collection", "email": email, "result": results}, nil
 	} else if userType == "svcp" {
@@ -344,7 +350,7 @@ func GetProfileImage(email string, userType string, db *models.MongoDB) (gin.H, 
 		//temporarily struct for svcp
 		type Svcp struct {
 			SVCPEmail string `json:"SVCPEmail"`
-			SVCPImg   string `json:"SVCPImg"`
+			SVCPImg   []byte `json:"SVCPImg" bson:"SVCPImg"`
 		}
 
 		// Access the "svcp" collection in the MongoDB database
