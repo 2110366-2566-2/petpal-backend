@@ -1,0 +1,93 @@
+definitions:
+  models.Pet:
+    properties:
+      age:
+        type: integer
+      behaviouralNotes:
+        type: string
+      certificate:
+        type: string
+      dietyPreferences:
+        type: string
+      gender:
+        type: string
+      healthInformation:
+        type: string
+      name:
+        type: string
+      ownerUsername:
+        type: string
+      type:
+        type: string
+      vaccinations:
+        type: string
+    type: object
+  models.User:
+    properties:
+      address:
+        type: string
+      dateOfBirth:
+        type: string
+      defaultAccountNumber:
+        type: string
+      defaultBank:
+        type: string
+      email:
+        type: string
+      fullName:
+        type: string
+      id:
+        type: string
+      individualID:
+        type: integer
+      password:
+        type: string
+      pets:
+        items:
+          $ref: '#/definitions/models.Pet'
+        type: array
+      phoneNumber:
+        type: string
+      profilePicture:
+        type: string
+      username:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: Get all users
+      parameters:
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: per
+        in: query
+        name: per
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get all users
+      tags:
+      - user
+swagger: "2.0"

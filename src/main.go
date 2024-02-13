@@ -8,6 +8,11 @@ import (
 	"petpal-backend/src/utills"
 
 	"github.com/gin-gonic/gin"
+
+	"petpal-backend/src/docs"
+
+	"github.com/swaggo/files"
+	"github.com/swaggo/gin-swagger"
 )
 
 // Middleware to inject database connection into Gin context
@@ -44,6 +49,15 @@ func main() {
 	routes.UserRoutes(r)
 	routes.ExampleRoutes(r)
 	routes.SVCPRoutes(r)
+
+	// Swagger
+	docs.SwaggerInfo.Title = "PetPal API"
+	docs.SwaggerInfo.Description = "This is a simple API for PetPal project"
+	docs.SwaggerInfo.Version = "1"
+	docs.SwaggerInfo.Host = "localhost:8080"
+	docs.SwaggerInfo.BasePath = "/"
+
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	r.Run("localhost:" + port)
 }

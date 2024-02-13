@@ -25,6 +25,28 @@ cd src
 go run main.go
 ```
 
+# Swagger 
+
+## Installation
+```bash
+# to install swagger
+> go get github.com/swaggo/swag
+# or use this if you clone this repo.
+> go mod tidy
+...
+# to init swagger
+> swag init
+```
+
+## Re-generate swagger
+```bash
+> swag init -g main.go
+```
+
+## Accessing Swagger
+for local, you can access swagger at `http://localhost:8080/swagger/index.html`
+
+
 # References
 
 - [Gin Documentation](https://gin-gonic.com/docs/quickstart/)
