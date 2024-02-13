@@ -128,16 +128,10 @@ func RegisterUserHandler(c *gin.Context, db *models.MongoDB) {
 
 // RegisterHandler handles user registration
 func CurrentUserHandler(c *gin.Context, db *models.MongoDB) {
-	token, err := c.Cookie("token")
+	// Parse request body to get user data
+	user, err := auth.GetCurrentUserByGinContext(c, db)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, "Failed to get token from Cookie plase login first, "+err.Error())
-		return
-	}
-	// Parse request body to get user data
-	user, err := auth.GetCurrentUser(token, db)
-
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, "Failed to get User Email request body :"+err.Error())
 		return
 	}
 	// Set the content type header

@@ -32,6 +32,20 @@ type User struct {
 	DefaultBank          string    `json:"defaultBank" bson:"defaultBank"`
 	Pets                 []Pet     `json:"pets" bson:"pets"`
 }
+
+type UserRes struct {
+	Individual
+	ID             string    `json:"id" bson:"_id"`
+	Username       string    `json:"username" bson:"username"`
+	Email          string    `json:"email" bson:"email"`
+	FullName       string    `json:"fullName" bson:"fullName"`
+	Address        string    `json:"address" bson:"address"`
+	DateOfBirth    time.Time `json:"dateOfBirth" bson:"dateOfBirth"`
+	PhoneNumber    string    `json:"phoneNumber" bson:"phoneNumber"`
+	ProfilePicture string    `json:"profilePicture" bson:"profilePicture"`
+	Pets           []Pet     `json:"pets" bson:"pets"`
+}
+
 type LoginReq struct {
 	Email     string `json:"email"`
 	Password  string `json:"password"`
