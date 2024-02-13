@@ -4,7 +4,6 @@ import (
 	"errors"
 	"petpal-backend/src/models"
 	user_utills "petpal-backend/src/utills/user"
-	"time"
 )
 
 func GetCurrentUser(token string, db *models.MongoDB) (*models.User, error) {
@@ -39,9 +38,9 @@ func NewUser(createUser models.CreateUser) (*models.User, error) {
 		Password:             createUser.Password,
 		Email:                createUser.Email,
 		FullName:             createUser.FullName,
-		Address:              "Defult",
-		DateOfBirth:          time.Now(),
-		PhoneNumber:          "Deflut",
+		Address:              createUser.Address,
+		DateOfBirth:          createUser.DateOfBirth,
+		PhoneNumber:          createUser.PhoneNumber,
 		ProfilePicture:       "Deflut",
 		DefaultAccountNumber: "Deflut",
 		DefaultBank:          "Deflut",
