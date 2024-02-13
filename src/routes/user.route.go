@@ -76,5 +76,11 @@ func UserRoutes(r *gin.Engine) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllers.GetProfileImageHandler(c, "user", db)
 		})
+
+		userGroup.POST("/changePassword", func(c *gin.Context) {
+			db := c.MustGet("db").(*models.MongoDB)
+			controllers.ChangePassword(c.Writer, c.Request, db)
+		})
+
 	}
 }

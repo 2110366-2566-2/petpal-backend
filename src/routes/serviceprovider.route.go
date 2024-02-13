@@ -73,5 +73,9 @@ func SVCPRoutes(r *gin.Engine) {
 			db := c.MustGet("db").(*models.MongoDB)
 			user_controllers.GetProfileImageHandler(c, "svcp", db)
 		})
+		SVCPGroup.POST("/changePassword", func(c *gin.Context) {
+			db := c.MustGet("db").(*models.MongoDB)
+			controllers.ChangePassword(c.Writer, c.Request, db)
+		})
 	}
 }

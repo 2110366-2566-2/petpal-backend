@@ -157,6 +157,38 @@ func LogoutSVCPHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "logout successful"})
 }
 
+func ChangePassword(w http.ResponseWriter, r *http.Request, db *models.MongoDB) {
+	type ChangePasswordReq struct {
+		SVCPEmail   string `json:svcpemail`
+		NewPassword string `json:newpassword`
+	}
+	var user ChangePasswordReq
+	err := json.NewDecoder(r.Body).Decode(&user)
+	if err != nil {
+		http.Error(w, "Failed to parse request body", http.StatusBadRequest)
+		return
+	}
+	hashedPassword, err := auth.HashPassword(user.NewPassword)
+	if err != nil {
+		http.Error(w, "Failed to hash password", http.StatusBadRequest)
+		return
+	}
+	email := user.SVCPEmail
+	newPassword := hashedPassword
+
+	// Call the user service to set change password
+	err_str, err := svcp_utills.ChangePassword(email, newPassword, db)
+	if err != nil {
+		// show error message
+		http.Error(w, err_str, http.StatusInternalServerError)
+		return
+	}
+
+	// Respond with a success message
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode("set new password successfully")
+}
+
 func UploadDescriptionHandler(c *gin.Context, db *models.MongoDB) {
 	var request models.SVCP
 	err := json.NewDecoder(c.Request.Body).Decode(&request)
@@ -221,7 +253,7 @@ func UploadSVCPLicenseHandler(c *gin.Context, db *models.MongoDB) {
 
 func AddServiceHandler(c *gin.Context, db *models.MongoDB) {
 	var request struct {
-		SVCPEmail string `json:"svcpemail"`
+		SVCPEmail string         `json:"svcpemail"`
 		Service   models.Service `json:"service"`
 	}
 
@@ -260,7 +292,7 @@ func DeleteBankAccountHandler(c *gin.Context, db *models.MongoDB) {
 
 func SetDefaultBankAccountHandler(c *gin.Context, db *models.MongoDB) {
 	var request struct {
-		SVCPEmail           string `json:"svcpemail"`
+		SVCPEmail            string `json:"svcpemail"`
 		DefaultAccountNumber string `json:"defaultAccountNumber"`
 		DefaultBank          string `json:"defaultBank"`
 	}
