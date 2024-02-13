@@ -63,6 +63,7 @@ func GetUserByIDHandler(w http.ResponseWriter, r *http.Request, db *models.Mongo
 
 func UpdateUserHandler(c *gin.Context, db *models.MongoDB) {
 	// Parse request body to get user data
+	_authenticate(c, db, c.Param("id"))
 	var user bson.M
 	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -171,6 +172,7 @@ func GetUserPetsHandler(c *gin.Context, db *models.MongoDB) {
 }
 
 func AddUserPetHandler(c *gin.Context, db *models.MongoDB) {
+	_authenticate(c, db, c.Param("id"))
 	var pet models.Pet
 	if err := c.ShouldBindJSON(&pet); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -192,6 +194,7 @@ func AddUserPetHandler(c *gin.Context, db *models.MongoDB) {
 // otherwise the missing fields will be set to their zero values
 // also: this updates the pet at the specified index param `idx`
 func UpdateUserPetHandler(c *gin.Context, db *models.MongoDB) {
+	_authenticate(c, db, c.Param("id"))
 	pet_idx, err := strconv.Atoi(c.Param("idx"))
 	if err != nil || pet_idx < 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to parse pet index"})
@@ -216,6 +219,7 @@ func UpdateUserPetHandler(c *gin.Context, db *models.MongoDB) {
 }
 
 func DeleteUserPetHandler(c *gin.Context, db *models.MongoDB) {
+	_authenticate(c, db, c.Param("id"))
 	pet_idx, err := strconv.Atoi(c.Param("idx"))
 	if err != nil || pet_idx < 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to parse pet index"})
@@ -385,4 +389,18 @@ func GetProfileImageHandler(c *gin.Context, userType string, db *models.MongoDB)
 
 	// If everything is successful, respond with an accepted status and the response
 	c.JSON(http.StatusAccepted, response)
+}
+
+func _authenticate(c *gin.Context, db *models.MongoDB, target_id string) *models.User {
+	cur_user, err := auth.GetCurrentUserByGinContext(c, db)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, "Failed to get token from Cookie plase login first, "+err.Error())
+		return nil
+	}
+	if cur_user.ID != target_id {
+		c.JSON(http.StatusUnauthorized, "You are not authorized to update this user")
+		return nil
+	}
+
+	return cur_user
 }
