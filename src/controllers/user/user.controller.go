@@ -178,16 +178,10 @@ func RegisterUserHandler(c *gin.Context, db *models.MongoDB) {
 // @Failure 500 {string} string "Failed to get User Email request body"
 // @Router /user/me [get]
 func CurrentUserHandler(c *gin.Context, db *models.MongoDB) {
-	token, err := c.Cookie("token")
+	// Parse request body to get user data
+	user, err := auth.GetCurrentUserByGinContext(c, db)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, "Failed to get token from Cookie plase login first, "+err.Error())
-		return
-	}
-	// Parse request body to get user data
-	user, err := auth.GetCurrentUser(token, db)
-
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, "Failed to get User Email request body :"+err.Error())
 		return
 	}
 	// Set the content type header
@@ -238,6 +232,51 @@ func AddUserPetHandler(c *gin.Context, db *models.MongoDB) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Pet added successfully"})
+}
+
+// UpdateUserPetHandler for updating user's pet
+//
+// note: the body of the request should contain all of the updated pet's details
+// otherwise the missing fields will be set to their zero values
+// also: this updates the pet at the specified index param `idx`
+func UpdateUserPetHandler(c *gin.Context, db *models.MongoDB) {
+	pet_idx, err := strconv.Atoi(c.Param("idx"))
+	if err != nil || pet_idx < 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to parse pet index"})
+		return
+	}
+
+	// this binding sets missing fields to their zero values
+	// the pet model does not have any validation tags
+	var pet models.Pet
+	if err := c.ShouldBindJSON(&pet); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err_str, err := user_utills.UpdateUserPet(db, &pet, c.Param("id"), pet_idx)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err_str})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Pet updated successfully"})
+}
+
+func DeleteUserPetHandler(c *gin.Context, db *models.MongoDB) {
+	pet_idx, err := strconv.Atoi(c.Param("idx"))
+	if err != nil || pet_idx < 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to parse pet index"})
+		return
+	}
+	err_str, err := user_utills.DeleteUserPet(db, c.Param("id"), pet_idx)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err_str})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Pet deleted successfully"})
+
 }
 
 func SetDefaultBankAccountHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB) {

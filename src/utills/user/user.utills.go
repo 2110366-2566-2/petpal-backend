@@ -2,6 +2,7 @@ package utills
 
 import (
 	"context"
+	"fmt"
 	"petpal-backend/src/models"
 
 	"github.com/gin-gonic/gin"
@@ -141,7 +142,67 @@ func AddUserPet(db *models.MongoDB, pet *models.Pet, user_id string) (string, er
 	}
 
 	return "", nil
+}
 
+func UpdateUserPet(db *models.MongoDB, pet *models.Pet, user_id string, pet_idx int) (string, error) {
+	// get collection
+	user_collection := db.Collection("user")
+
+	// find user by email
+	user_objectid, err := primitive.ObjectIDFromHex(user_id)
+	if err != nil {
+		return "Invalid user id", err
+	}
+	filter := bson.D{{Key: "_id", Value: user_objectid}}
+	res, err := user_collection.UpdateOne(context.Background(), filter, bson.D{{
+		Key: "$set", Value: bson.D{{
+			Key: "pets." + fmt.Sprint(pet_idx), Value: pet,
+		}},
+	}})
+	if res.MatchedCount == 0 {
+		return "User not found (id=" + user_id + ")", err
+	}
+	if err != nil {
+		return "Failed to update pet", err
+	}
+
+	return "", nil
+
+}
+
+// deletes a pet from a user's pet list by index
+// note that when index is out of range, it will do nothing and *NOT* return an error
+func DeleteUserPet(db *models.MongoDB, user_id string, pet_idx int) (string, error) {
+	// get collection
+	user_collection := db.Collection("user")
+
+	// find user by email
+	user_objectid, err := primitive.ObjectIDFromHex(user_id)
+	if err != nil {
+		return "Invalid user id", err
+	}
+
+	filter := bson.D{{Key: "_id", Value: user_objectid}}
+	res, err := user_collection.UpdateOne(context.Background(), filter, bson.A{bson.D{{
+		Key: "$set", Value: bson.D{{
+			Key: "pets", Value: bson.D{{
+				Key: "$concatArrays", Value: bson.A{
+					bson.D{{Key: "$slice", Value: bson.A{"$pets", pet_idx}}},
+					bson.D{{Key: "$slice", Value: bson.A{"$pets", pet_idx + 1, bson.D{{Key: "$size", Value: "$pets"}}}}},
+				},
+			}},
+		}},
+	}}})
+
+	if res.MatchedCount == 0 {
+		return "User not found (id=" + user_id + ")", err
+	}
+
+	if err != nil {
+		return "Failed to delete pet", err
+	}
+
+	return "", nil
 }
 
 func UpdateUser(db *models.MongoDB, user *bson.M, id string) (string, error) {
@@ -327,8 +388,13 @@ func GetProfileImage(email string, userType string, db *models.MongoDB) (gin.H, 
 		// Access the "user" collection in the MongoDB database
 		userCollection := db.Collection("user")
 
+		type user_decode struct {
+			Email          string `json:"email" bson:"email"`
+			ProfilePicture []byte `json:"profilePicture" bson:"profilePicture"`
+		}
+
 		// Find the user by email in the "user" collection
-		var user models.User = models.User{}
+		var user user_decode = user_decode{}
 		filter := bson.D{{Key: "email", Value: email}}
 		err := userCollection.FindOne(context.Background(), filter).Decode(&user)
 		if err != nil {
@@ -337,6 +403,7 @@ func GetProfileImage(email string, userType string, db *models.MongoDB) (gin.H, 
 		}
 
 		// Return the profile picture file content
+
 		results := user.ProfilePicture
 		return gin.H{"message": "Get profile image from 'user' collection", "email": email, "result": results}, nil
 	} else if userType == "svcp" {
@@ -344,7 +411,7 @@ func GetProfileImage(email string, userType string, db *models.MongoDB) (gin.H, 
 		//temporarily struct for svcp
 		type Svcp struct {
 			SVCPEmail string `json:"SVCPEmail"`
-			SVCPImg   string `json:"SVCPImg"`
+			SVCPImg   []byte `json:"SVCPImg" bson:"SVCPImg"`
 		}
 
 		// Access the "svcp" collection in the MongoDB database

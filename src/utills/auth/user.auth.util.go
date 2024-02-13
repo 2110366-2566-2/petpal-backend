@@ -4,7 +4,8 @@ import (
 	"errors"
 	"petpal-backend/src/models"
 	user_utills "petpal-backend/src/utills/user"
-	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 func GetCurrentUser(token string, db *models.MongoDB) (*models.User, error) {
@@ -23,6 +24,19 @@ func GetCurrentUser(token string, db *models.MongoDB) (*models.User, error) {
 		return nil, errors.New("Get Wrong User type we only accept svcp login type but get " + loginType)
 	}
 }
+func GetCurrentUserByGinContext(c *gin.Context, db *models.MongoDB) (*models.User, error) {
+	token, err := c.Cookie("token")
+	if err != nil {
+		return nil, err
+	}
+	// Parse request body to get user data
+	user, err := GetCurrentUser(token, db)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
 func nextUserId() int {
 	id := 5
 	return id
@@ -39,9 +53,9 @@ func NewUser(createUser models.CreateUser) (*models.User, error) {
 		Password:             createUser.Password,
 		Email:                createUser.Email,
 		FullName:             createUser.FullName,
-		Address:              "Defult",
-		DateOfBirth:          time.Now(),
-		PhoneNumber:          "Deflut",
+		Address:              createUser.Address,
+		DateOfBirth:          createUser.DateOfBirth,
+		PhoneNumber:          createUser.PhoneNumber,
 		ProfilePicture:       "Deflut",
 		DefaultAccountNumber: "Deflut",
 		DefaultBank:          "Deflut",
