@@ -200,6 +200,22 @@ func AddUserPetHandler(c *gin.Context, db *models.MongoDB) {
 	c.JSON(http.StatusOK, gin.H{"message": "Pet added successfully"})
 }
 
+func DeleteUserPetHandler(c *gin.Context, db *models.MongoDB) {
+	pet_idx, err := strconv.Atoi(c.Param("idx"))
+	if err != nil || pet_idx < 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to parse pet index"})
+		return
+	}
+	err_str, err := user_utills.DeleteUserPet(db, c.Param("id"), pet_idx)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err_str})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Pet deleted successfully"})
+
+}
+
 // SetDefaultBankAccountHandler handles the setting of a default bank account for a user
 func SetDefaultBankAccountHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB) {
 	// get user_id, default bank account number, default bank from request body

@@ -54,6 +54,10 @@ func UserRoutes(r *gin.Engine) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllers.AddUserPetHandler(c, db)
 		})
+		userGroup.DELETE("/:id/pets/:idx", func(c *gin.Context) {
+			db := c.MustGet("db").(*models.MongoDB)
+			controllers.DeleteUserPetHandler(c, db)
+		})
 
 		userGroup.POST("/set-default-bank-account", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
