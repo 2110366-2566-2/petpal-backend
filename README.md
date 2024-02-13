@@ -30,7 +30,7 @@ go run main.go
 ## Installation
 ```bash
 # to install swagger
-> go get github.com/swaggo/swag
+> go install github.com/go-swagger/go-swagger/cmd/swagger@latest
 # or use this if you clone this repo.
 > go mod tidy
 ...
