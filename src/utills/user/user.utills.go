@@ -104,8 +104,8 @@ func GetUserByEmail(db *models.MongoDB, email string) (*models.User, error) {
 	return &user, nil
 }
 
-func GetUserPet(db *models.MongoDB, userEmail string) (*[]models.Pet, error) {
-	user, err := GetUserByEmail(db, userEmail)
+func GetUserPet(db *models.MongoDB, id string) (*[]models.Pet, error) {
+	user, err := GetUserByID(db, id)
 	if err != nil {
 		return nil, err
 	}

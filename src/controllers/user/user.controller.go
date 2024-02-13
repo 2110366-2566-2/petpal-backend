@@ -168,20 +168,12 @@ func LogoutUserHandler(c *gin.Context) {
 
 // GetUserPetsHandler for get list of user's pet
 func GetUserPetsHandler(c *gin.Context, db *models.MongoDB) {
-	type GetUserPetReq struct {
-		UserEmail string `json:useremail`
-	}
-	var user GetUserPetReq
-	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	pets, err := user_utills.GetUserPet(db, user.UserEmail)
+	pets, err := user_utills.GetUserPet(db, c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"pets": pets, "useremail": user.UserEmail})
+	c.JSON(http.StatusOK, gin.H{"pets": pets})
 }
 
 func AddUserPetHandler(c *gin.Context, db *models.MongoDB) {

@@ -46,7 +46,7 @@ func UserRoutes(r *gin.Engine) {
 		})
 
 		// userGroup.DELETE("/:id", deleteUser)
-		userGroup.POST("/pets", func(c *gin.Context) {
+		userGroup.GET("/:id/pets", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllers.GetUserPetsHandler(c, db)
 		})
