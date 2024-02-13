@@ -8,15 +8,18 @@ import (
 // User represents a user entity
 type CreateUser struct {
 	// Define the 10 fields here
-	Username string `json:"username" bson:"username"`
-	Password string `json:"password" bson:"password"`
-	Email    string `json:"email" bson:"email"`
-	FullName string `json:"fullName" bson:"fullName"`
+	Username    string    `json:"username" bson:"username"`
+	Password    string    `json:"password" bson:"password"`
+	Email       string    `json:"email" bson:"email"`
+	FullName    string    `json:"fullName" bson:"fullName"`
+	Address     string    `json:"address" bson:"address"`
+	DateOfBirth time.Time `json:"dateOfBirth" bson:"dateOfBirth"`
+	PhoneNumber string    `json:"phoneNumber" bson:"phoneNumber"`
 }
 
 type User struct {
 	Individual
-	ID					 string    `json:"id" bson:"_id"`
+	ID                   string    `json:"id" bson:"_id"`
 	Username             string    `json:"username" bson:"username"`
 	Password             string    `json:"password" bson:"password"`
 	Email                string    `json:"email" bson:"email"`
