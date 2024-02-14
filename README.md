@@ -40,7 +40,7 @@ go run main.go
 
 ## Re-generate swagger
 ```bash
-> swag init -g main.go
+> swag init --parseInternal --parseDependency  -g main.go
 ```
 
 ## Accessing Swagger
