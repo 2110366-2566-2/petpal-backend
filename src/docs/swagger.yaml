@@ -56,11 +56,36 @@ definitions:
 info:
   contact: {}
 paths:
+  /user/me:
+    get:
+      consumes:
+      - application/json
+      description: Get the details of the currently authenticated user
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: User details
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Failed to get token from Cookie plase login first
+          schema:
+            type: string
+        "500":
+          description: Failed to get User Email request body
+          schema:
+            type: string
+      security:
+      - CookieAuth: []
+      summary: Get Current User
+      tags:
+      - user
   /users:
     get:
       consumes:
       - application/json
-      description: Get all users
+      description: Get all users (authentication not required)
       parameters:
       - description: page
         in: query
