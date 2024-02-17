@@ -1,40 +1,36 @@
 package auth
 
 import (
-	"errors"
 	"petpal-backend/src/models"
-	user_utills "petpal-backend/src/utills/user"
+
+	"errors"
 
 	"github.com/gin-gonic/gin"
 )
 
-func GetCurrentUser(token string, db *models.MongoDB) (*models.User, error) {
-	loginRes, err := DecodeToken(token)
-	if err != nil {
-		return nil, err
-	}
-	loginType := loginRes.LoginType
-	if loginType == "user" {
-		user, err := user_utills.GetUserByEmail(db, loginRes.UserEmail)
-		if err != nil {
-			return nil, err
-		}
-		return user, nil
-	} else {
-		return nil, errors.New("Get Wrong User type we only accept svcp login type but get " + loginType)
-	}
+type CurrentEntity interface {
+	// Define methods shared by both models
 }
+
 func GetCurrentUserByGinContext(c *gin.Context, db *models.MongoDB) (*models.User, error) {
 	token, err := c.Cookie("token")
 	if err != nil {
 		return nil, err
 	}
 	// Parse request body to get user data
-	user, err := GetCurrentUser(token, db)
+	entity, err := GetCurrentEntity(token, db)
 	if err != nil {
 		return nil, err
 	}
-	return user, nil
+	switch entity := entity.(type) {
+	case *models.User:
+		return entity, nil
+		// Handle user
+	case *models.SVCP:
+		return nil, errors.New(" Need token of type User but recives SVCP type")
+		// Handle svcp
+	}
+	return nil, errors.New(" Need token of type User but wrong type")
 }
 
 func nextUserId() int {

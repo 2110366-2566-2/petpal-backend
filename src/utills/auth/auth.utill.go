@@ -6,6 +6,7 @@ import (
 	"petpal-backend/src/configs"
 	"petpal-backend/src/models"
 	svcp_utills "petpal-backend/src/utills/serviceprovider"
+	utills "petpal-backend/src/utills/serviceprovider"
 	user_utills "petpal-backend/src/utills/user"
 	"time"
 
@@ -88,4 +89,27 @@ func Login(db *models.MongoDB, req *models.LoginReq) (*models.LoginRes, error) {
 		return &models.LoginRes{AccessToken: ss, LoginType: "user", UserEmail: u.Email}, nil
 	}
 	return &models.LoginRes{}, fmt.Errorf("Invalid Login Type Request")
+}
+
+func GetCurrentEntity(token string, db *models.MongoDB) (CurrentEntity, error) {
+	loginRes, err := DecodeToken(token)
+	if err != nil {
+		return nil, err
+	}
+	loginType := loginRes.LoginType
+	if loginType == "user" {
+		user, err := user_utills.GetUserByEmail(db, loginRes.UserEmail)
+		if err != nil {
+			return nil, err
+		}
+		return user, nil
+	} else if loginType == "svcp" {
+		user, err := utills.GetSVCPByEmail(db, loginRes.UserEmail)
+		if err != nil {
+			return nil, err
+		}
+		return user, nil
+	} else {
+		return nil, errors.New("Get Wrong User type we only accept svcp login type but get " + loginType)
+	}
 }

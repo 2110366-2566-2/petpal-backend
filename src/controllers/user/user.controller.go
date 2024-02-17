@@ -63,8 +63,8 @@ func GetUserByIDHandler(w http.ResponseWriter, r *http.Request, db *models.Mongo
 
 func UpdateUserHandler(c *gin.Context, db *models.MongoDB) {
 	// Parse request body to get user data
-	_, authorized := _authenticate(c, db, c.Param("id"))
-	if !authorized {
+	currentUser, err := _authenticate(c, db)
+	if err != nil {
 		return
 	}
 
@@ -75,7 +75,7 @@ func UpdateUserHandler(c *gin.Context, db *models.MongoDB) {
 	}
 
 	// Call the user service to update the user
-	err_str, err := utills.UpdateUser(db, &user, c.Param("id"))
+	err_str, err := utills.UpdateUser(db, &user, currentUser.ID)
 	if err != nil {
 		// show error message
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err_str})
@@ -134,40 +134,32 @@ func RegisterUserHandler(c *gin.Context, db *models.MongoDB) {
 // RegisterHandler handles user registration
 func CurrentUserHandler(c *gin.Context, db *models.MongoDB) {
 	// Parse request body to get user data
-	user, err := auth.GetCurrentUserByGinContext(c, db)
+	currentUser, err := auth.GetCurrentUserByGinContext(c, db)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, "Failed to get token from Cookie plase login first, "+err.Error())
 		return
 	}
 	// Set the content type header
-	c.JSON(http.StatusAccepted, user)
+	c.JSON(http.StatusAccepted, currentUser)
 }
 
-func LoginUserHandler(c *gin.Context, db *models.MongoDB) {
-	var user models.LoginReq
-	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	u, err := auth.Login(db, &user)
+// GetUserPetsHandler for get list of user's pet
+func GetUserPetsByIdHandler(c *gin.Context, db *models.MongoDB, id string) {
+	pets, err := user_utills.GetUserPet(db, id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
-	c.SetCookie("token", u.AccessToken, 3600, "/", "", false, true)
-	c.JSON(http.StatusOK, u)
-}
-
-// LogoutUserHandler
-func LogoutUserHandler(c *gin.Context) {
-	c.SetCookie("token", "", -1, "", "", false, true)
-	c.JSON(http.StatusOK, gin.H{"message": "logout successful"})
+	c.JSON(http.StatusOK, gin.H{"pets": pets})
 }
 
 // GetUserPetsHandler for get list of user's pet
-func GetUserPetsHandler(c *gin.Context, db *models.MongoDB) {
-	pets, err := user_utills.GetUserPet(db, c.Param("id"))
+func GetCurrentUserPetsHandler(c *gin.Context, db *models.MongoDB) {
+	currentUser, err := _authenticate(c, db)
+	if err != nil {
+		return
+	}
+	pets, err := user_utills.GetUserPet(db, currentUser.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -176,8 +168,8 @@ func GetUserPetsHandler(c *gin.Context, db *models.MongoDB) {
 }
 
 func AddUserPetHandler(c *gin.Context, db *models.MongoDB) {
-	_, authorized := _authenticate(c, db, c.Param("id"))
-	if !authorized {
+	currentUser, err := _authenticate(c, db)
+	if err != nil {
 		return
 	}
 
@@ -187,7 +179,7 @@ func AddUserPetHandler(c *gin.Context, db *models.MongoDB) {
 		return
 	}
 
-	err_str, err := user_utills.AddUserPet(db, &pet, c.Param("id"))
+	err_str, err := user_utills.AddUserPet(db, &pet, currentUser.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err_str})
 		return
@@ -201,13 +193,13 @@ func AddUserPetHandler(c *gin.Context, db *models.MongoDB) {
 // note: the body of the request should contain all of the updated pet's details
 // otherwise the missing fields will be set to their zero values
 // also: this updates the pet at the specified index param `idx`
-func UpdateUserPetHandler(c *gin.Context, db *models.MongoDB) {
-	_, authorized := _authenticate(c, db, c.Param("id"))
-	if !authorized {
+func UpdateUserPetHandler(c *gin.Context, db *models.MongoDB, idx string) {
+	currentUser, err := _authenticate(c, db)
+	if err != nil {
 		return
 	}
 
-	pet_idx, err := strconv.Atoi(c.Param("idx"))
+	pet_idx, err := strconv.Atoi(idx)
 	if err != nil || pet_idx < 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to parse pet index"})
 		return
@@ -221,7 +213,7 @@ func UpdateUserPetHandler(c *gin.Context, db *models.MongoDB) {
 		return
 	}
 
-	err_str, err := user_utills.UpdateUserPet(db, &pet, c.Param("id"), pet_idx)
+	err_str, err := user_utills.UpdateUserPet(db, &pet, currentUser.ID, pet_idx)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err_str})
 		return
@@ -230,18 +222,18 @@ func UpdateUserPetHandler(c *gin.Context, db *models.MongoDB) {
 	c.JSON(http.StatusOK, gin.H{"message": "Pet updated successfully"})
 }
 
-func DeleteUserPetHandler(c *gin.Context, db *models.MongoDB) {
-	_, authorized := _authenticate(c, db, c.Param("id"))
-	if !authorized {
+func DeleteUserPetHandler(c *gin.Context, db *models.MongoDB, idx string) {
+	currentUser, err := _authenticate(c, db)
+	if err != nil {
 		return
 	}
 
-	pet_idx, err := strconv.Atoi(c.Param("idx"))
+	pet_idx, err := strconv.Atoi(idx)
 	if err != nil || pet_idx < 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to parse pet index"})
 		return
 	}
-	err_str, err := user_utills.DeleteUserPet(db, c.Param("id"), pet_idx)
+	err_str, err := user_utills.DeleteUserPet(db, currentUser.ID, pet_idx)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err_str})
 		return
@@ -407,16 +399,11 @@ func GetProfileImageHandler(c *gin.Context, userType string, db *models.MongoDB)
 	c.JSON(http.StatusAccepted, response)
 }
 
-func _authenticate(c *gin.Context, db *models.MongoDB, target_id string) (*models.User, bool) {
+func _authenticate(c *gin.Context, db *models.MongoDB) (*models.User, error) {
 	cur_user, err := auth.GetCurrentUserByGinContext(c, db)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, "Failed to get token from Cookie plase login first, "+err.Error())
-		return nil, false
+		return nil, err
 	}
-	if cur_user.ID != target_id {
-		c.JSON(http.StatusUnauthorized, "You are not authorized to update this user")
-		return nil, false
-	}
-
-	return cur_user, true
+	return cur_user, nil
 }

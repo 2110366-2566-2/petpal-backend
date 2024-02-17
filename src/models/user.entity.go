@@ -62,3 +62,5 @@ func (u *User) editPet(petName string, petDetails Pet) Pet {
 	// Mock Function
 	return petDetails
 }
+
+func (u *User) ImplementCurrentEntity() {} // Empty stub if no shared methods

@@ -5,6 +5,7 @@ import (
 	"petpal-backend/src/configs"
 	"petpal-backend/src/models"
 	"petpal-backend/src/routes"
+	user_route "petpal-backend/src/routes/user"
 	"petpal-backend/src/utills"
 
 	"github.com/gin-gonic/gin"
@@ -40,7 +41,7 @@ func main() {
 	port := configs.GetPort()
 
 	// add router
-	routes.UserRoutes(r)
+	user_route.UserRoutes(r)
 	routes.SVCPRoutes(r)
 
 	r.Run("localhost:" + port)
