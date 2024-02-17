@@ -10,6 +10,7 @@ import (
 	user_utills "petpal-backend/src/utills/user"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 )
 
@@ -91,6 +92,10 @@ func Login(db *models.MongoDB, req *models.LoginReq) (*models.LoginRes, error) {
 	return &models.LoginRes{}, fmt.Errorf("Invalid Login Type Request")
 }
 
+type CurrentEntity interface {
+	// Define methods shared by both models
+}
+
 func GetCurrentEntity(token string, db *models.MongoDB) (CurrentEntity, error) {
 	loginRes, err := DecodeToken(token)
 	if err != nil {
@@ -112,4 +117,17 @@ func GetCurrentEntity(token string, db *models.MongoDB) (CurrentEntity, error) {
 	} else {
 		return nil, errors.New("Get Wrong User type we only accept svcp login type but get " + loginType)
 	}
+}
+
+func GetCurrentEntityByGinContenxt(c *gin.Context, db *models.MongoDB) (CurrentEntity, error) {
+	token, err := c.Cookie("token")
+	if err != nil {
+		return nil, err
+	}
+	// Parse request body to get user data
+	entity, err := GetCurrentEntity(token, db)
+	if err != nil {
+		return nil, err
+	}
+	return entity, nil
 }

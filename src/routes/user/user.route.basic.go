@@ -17,12 +17,6 @@ func UserBaseRoutes(r *gin.RouterGroup) {
 		db := c.MustGet("db").(*models.MongoDB)
 		controllers.GetUserByIDHandler(c.Writer, c.Request, db, c.Param("id"))
 	})
-
-	userGroup.GET("/me", func(c *gin.Context) {
-		db := c.MustGet("db").(*models.MongoDB)
-		controllers.CurrentUserHandler(c, db)
-	})
-
 	userGroup.PUT("/", func(c *gin.Context) {
 		db := c.MustGet("db").(*models.MongoDB)
 		controllers.UpdateUserHandler(c, db)

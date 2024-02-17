@@ -2,36 +2,8 @@ package auth
 
 import (
 	"petpal-backend/src/models"
-
-	"errors"
-
-	"github.com/gin-gonic/gin"
+	user_utills "petpal-backend/src/utills/user"
 )
-
-type CurrentEntity interface {
-	// Define methods shared by both models
-}
-
-func GetCurrentUserByGinContext(c *gin.Context, db *models.MongoDB) (*models.User, error) {
-	token, err := c.Cookie("token")
-	if err != nil {
-		return nil, err
-	}
-	// Parse request body to get user data
-	entity, err := GetCurrentEntity(token, db)
-	if err != nil {
-		return nil, err
-	}
-	switch entity := entity.(type) {
-	case *models.User:
-		return entity, nil
-		// Handle user
-	case *models.SVCP:
-		return nil, errors.New(" Need token of type User but recives SVCP type")
-		// Handle svcp
-	}
-	return nil, errors.New(" Need token of type User but wrong type")
-}
 
 func nextUserId() int {
 	id := 5
@@ -59,4 +31,34 @@ func NewUser(createUser models.CreateUser) (*models.User, error) {
 	}
 
 	return newUser, nil
+}
+
+// RegisterHandler handles user registration
+func RegisterUser(createUser models.CreateUser, db *models.MongoDB) (string, error) {
+
+	// Hash the password securely
+	hashedPassword, err := HashPassword(createUser.Password)
+	if err != nil {
+		return "", err
+	}
+
+	// Create a new user instance
+	createUser.Password = hashedPassword
+	newUser, err := NewUser(createUser)
+	if err != nil {
+		return "", err
+	}
+
+	// Insert the new user into the database
+	newUser, err = user_utills.InsertUser(db, newUser)
+	if err != nil {
+		return "", err
+	}
+
+	// Generate a JWT token
+	tokenString, err := GenerateToken(newUser.Username, newUser.Password, "user")
+	if err != nil {
+		return "", err
+	}
+	return tokenString, nil
 }

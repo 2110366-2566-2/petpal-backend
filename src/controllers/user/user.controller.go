@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"net/http"
 	"petpal-backend/src/models"
@@ -85,62 +86,6 @@ func UpdateUserHandler(c *gin.Context, db *models.MongoDB) {
 	// Respond with a success message
 	c.JSON(http.StatusOK, gin.H{"message": "User updated successfully"})
 
-}
-
-// RegisterHandler handles user registration
-func RegisterUserHandler(c *gin.Context, db *models.MongoDB) {
-	// Parse request body to get user data
-	var createUser models.CreateUser
-	if err := c.ShouldBindJSON(&createUser); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	// Hash the password securely
-	hashedPassword, err := auth.HashPassword(createUser.Password)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to hash password"})
-		return
-	}
-
-	// Create a new user instance
-	createUser.Password = hashedPassword
-	newUser, err := auth.NewUser(createUser)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user "})
-		return
-	}
-
-	// Insert the new user into the database
-	newUser, err = user_utills.InsertUser(db, newUser)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to register user"})
-		return
-	}
-
-	// Generate a JWT token
-	tokenString, err := auth.GenerateToken(newUser.Username, newUser.Password, "user")
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
-		return
-	}
-
-	// Set token in cookies and send to frontend
-	c.SetCookie("token", tokenString, 3600, "/", "", false, true)
-
-	c.JSON(http.StatusOK, gin.H{"message": "User registered successfully", "token": tokenString})
-}
-
-// RegisterHandler handles user registration
-func CurrentUserHandler(c *gin.Context, db *models.MongoDB) {
-	// Parse request body to get user data
-	currentUser, err := auth.GetCurrentUserByGinContext(c, db)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, "Failed to get token from Cookie plase login first, "+err.Error())
-		return
-	}
-	// Set the content type header
-	c.JSON(http.StatusAccepted, currentUser)
 }
 
 // GetUserPetsHandler for get list of user's pet
@@ -269,37 +214,6 @@ func SetDefaultBankAccountHandler(w http.ResponseWriter, r *http.Request, db *mo
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode("Default bank account set successfully")
 }
-func ChangePassword(w http.ResponseWriter, r *http.Request, db *models.MongoDB) {
-	type ChangePasswordReq struct {
-		UserEmail   string `json:useremail`
-		NewPassword string `json:newpassword`
-	}
-	var user ChangePasswordReq
-	err := json.NewDecoder(r.Body).Decode(&user)
-	if err != nil {
-		http.Error(w, "Failed to parse request body", http.StatusBadRequest)
-		return
-	}
-	hashedPassword, err := auth.HashPassword(user.NewPassword)
-	if err != nil {
-		http.Error(w, "Failed to hash password", http.StatusBadRequest)
-		return
-	}
-	email := user.UserEmail
-	newPassword := hashedPassword
-
-	// Call the user service to set change password
-	err_str, err := utills.ChangePassword(email, newPassword, db)
-	if err != nil {
-		// show error message
-		http.Error(w, err_str, http.StatusInternalServerError)
-		return
-	}
-
-	// Respond with a success message
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode("set new password successfully")
-}
 
 // DeleteBankAccountHandler handles the deletion of a bank account for a user
 func DeleteBankAccountHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB) {
@@ -400,10 +314,22 @@ func GetProfileImageHandler(c *gin.Context, userType string, db *models.MongoDB)
 }
 
 func _authenticate(c *gin.Context, db *models.MongoDB) (*models.User, error) {
-	cur_user, err := auth.GetCurrentUserByGinContext(c, db)
+	entity, err := auth.GetCurrentEntityByGinContenxt(c, db)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, "Failed to get token from Cookie plase login first, "+err.Error())
 		return nil, err
 	}
-	return cur_user, nil
+	switch entity := entity.(type) {
+	case *models.User:
+		return entity, nil
+		// Handle user
+	case *models.SVCP:
+		err = errors.New("Need token of type User but recives token SVCP type")
+		c.JSON(http.StatusBadRequest, err.Error())
+		return nil, nil
+		// Handle svcp
+	}
+	err = errors.New("Need token of type User but wrong type")
+	c.JSON(http.StatusBadRequest, err.Error())
+	return nil, err
 }
