@@ -42,6 +42,11 @@ func GetSVCPsHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB)
 		return
 	}
 
+	// remove sensitive data from svcps
+	for i := range svcps {
+		svcps[i].RemoveSensitiveData()
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(svcps)
 }
@@ -54,26 +59,41 @@ func GetSVCPByIDHandler(w http.ResponseWriter, r *http.Request, db *models.Mongo
 		return
 	}
 
+	// remove sensitive data from svcps
+	svcp.RemoveSensitiveData()
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(svcp)
 }
 
-func UpdateSVCPHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB, id string) {
+func UpdateSVCPHandler(c *gin.Context, db *models.MongoDB, id string) {
 	var svcp bson.M
-	err := json.NewDecoder(r.Body).Decode(&svcp)
+	err := json.NewDecoder(c.Request.Body).Decode(&svcp)
 	if err != nil {
-		http.Error(w, "Failed to decode request body", http.StatusBadRequest)
+		http.Error(c.Writer, "Failed to decode request body", http.StatusBadRequest)
+		return
+	}
+
+	// check if the user is same as the svcp to be updated
+	token, _ := c.Cookie("token")
+	current_svcp, err := auth.GetCurrentSVCP(token, db)
+	if err != nil {
+		http.Error(c.Writer, "Failed to get current svcp", http.StatusInternalServerError)
+		return
+	}
+	if id != current_svcp.SVCPID {
+		http.Error(c.Writer, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
 	err = svcp_utills.UpdateSVCP(db, id, &svcp)
 	if err != nil {
-		http.Error(w, "Failed to update service provider", http.StatusInternalServerError)
+		http.Error(c.Writer, "Failed to update service provider", http.StatusInternalServerError)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(svcp)
+	c.Writer.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(c.Writer).Encode(svcp)
 }
 
 // RegisterHandler handles user registration
@@ -133,9 +153,14 @@ func CurrentSVCPHandler(c *gin.Context, db *models.MongoDB) {
 		c.JSON(http.StatusInternalServerError, "Failed to get User Email request body :"+err.Error())
 		return
 	}
+
+	// Remove sensitive data
+	svcp.RemoveSensitiveData()
+	
 	// Set the content type header
 	c.JSON(http.StatusAccepted, svcp)
 }
+
 func LoginSVCPHandler(c *gin.Context, db *models.MongoDB) {
 	var user models.LoginReq
 	if err := c.ShouldBindJSON(&user); err != nil {
@@ -197,7 +222,15 @@ func UploadDescriptionHandler(c *gin.Context, db *models.MongoDB) {
 		return
 	}
 
-	svcp_email := request.SVCPEmail
+	// get current svcp
+	token, err := c.Cookie("token")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, "Failed to get token from Cookie plase login first, "+err.Error())
+		return
+	}
+	current_svcp, err := auth.GetCurrentSVCP(token, db)
+
+	svcp_email := current_svcp.SVCPEmail
 	description := request.Description
 
 	err = svcp_utills.EditDescription(db, svcp_email, description)
@@ -207,7 +240,6 @@ func UploadDescriptionHandler(c *gin.Context, db *models.MongoDB) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Description uploaded successfully"})
-
 }
 
 func UploadSVCPLicenseHandler(c *gin.Context, db *models.MongoDB) {
@@ -216,8 +248,17 @@ func UploadSVCPLicenseHandler(c *gin.Context, db *models.MongoDB) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Unable to parse form"})
 		return
-	} // Get the email from the form
-	email := c.Request.FormValue("svcpEmail")
+	} 
+
+	// Get the email from the current user
+	token, err := c.Cookie("token")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, "Failed to get token from Cookie plase login first, "+err.Error())
+		return
+	}
+	current_svcp, _ := auth.GetCurrentSVCP(token, db)
+	email := current_svcp.SVCPEmail
+
 	// Retrieve the uploaded file
 	file, _, err := c.Request.FormFile("license")
 	if err != nil {
@@ -253,7 +294,6 @@ func UploadSVCPLicenseHandler(c *gin.Context, db *models.MongoDB) {
 
 func AddServiceHandler(c *gin.Context, db *models.MongoDB) {
 	var request struct {
-		SVCPEmail string         `json:"svcpemail"`
 		Service   models.Service `json:"service"`
 	}
 
@@ -262,7 +302,15 @@ func AddServiceHandler(c *gin.Context, db *models.MongoDB) {
 		return
 	}
 
-	err := svcp_utills.AddService(db, request.SVCPEmail, request.Service)
+	token, login_err := c.Cookie("token")
+	if login_err != nil {
+		c.JSON(http.StatusBadRequest, "Failed to get token from Cookie plase login first, "+login_err.Error())
+		return
+	}
+	current_svcp, _ := auth.GetCurrentSVCP(token, db)
+
+	email := current_svcp.SVCPEmail
+	err := svcp_utills.AddService(db, email, request.Service)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -272,16 +320,15 @@ func AddServiceHandler(c *gin.Context, db *models.MongoDB) {
 }
 
 func DeleteBankAccountHandler(c *gin.Context, db *models.MongoDB) {
-	var request struct {
-		SVCPEmail string `json:"svcpemail"`
-	}
-
-	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	// get current svcp
+	token, login_err := c.Cookie("token")
+	if login_err != nil {
+		c.JSON(http.StatusBadRequest, "Failed to get token from Cookie plase login first, "+login_err.Error())
 		return
 	}
+	current_svcp, _ := auth.GetCurrentSVCP(token, db)
 
-	err := svcp_utills.DeleteBankAccount(db, request.SVCPEmail)
+	err := svcp_utills.DeleteBankAccount(db, current_svcp.SVCPEmail)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -292,17 +339,25 @@ func DeleteBankAccountHandler(c *gin.Context, db *models.MongoDB) {
 
 func SetDefaultBankAccountHandler(c *gin.Context, db *models.MongoDB) {
 	var request struct {
-		SVCPEmail            string `json:"svcpemail"`
 		DefaultAccountNumber string `json:"defaultAccountNumber"`
 		DefaultBank          string `json:"defaultBank"`
 	}
+
 	err := json.NewDecoder(c.Request.Body).Decode(&request)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	svcp_email := request.SVCPEmail
+	// get current svcp
+	token, err := c.Cookie("token")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, "Failed to get token from Cookie plase login first, "+err.Error())
+		return
+	}
+	current_svcp, err := auth.GetCurrentSVCP(token, db)
+
+	svcp_email := current_svcp.SVCPEmail
 	default_bank_account := request.DefaultAccountNumber
 	default_bank := request.DefaultBank
 
@@ -313,5 +368,4 @@ func SetDefaultBankAccountHandler(c *gin.Context, db *models.MongoDB) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Default bank account set successfully"})
-
 }
