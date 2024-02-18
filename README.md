@@ -33,9 +33,6 @@ go run main.go
 > go install github.com/go-swagger/go-swagger/cmd/swagger@latest
 # or use this if you clone this repo.
 > go mod tidy
-...
-# to init swagger
-> swag init
 ```
 
 ## Re-generate swagger
