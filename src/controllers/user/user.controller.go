@@ -18,9 +18,9 @@ import (
 
 // GetUsersHandler godoc
 //
-// @Summary     Get all users
-// @Description Retrieve all users
-// @Tags        Users
+// @Summary     Get all user
+// @Description Retrieve all user
+// @Tags        User
 //
 // @Accept      json
 // @Produce     json
@@ -68,7 +68,7 @@ func GetUsersHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB)
 //
 // @Summary     Get user by ID
 // @Description Retrieve user information by ID
-// @Tags        Users
+// @Tags        User
 //
 // @Accept      json
 // @Produce     json
@@ -96,7 +96,7 @@ func GetUserByIDHandler(w http.ResponseWriter, r *http.Request, db *models.Mongo
 //
 // @Summary     Update user information
 // @Description Update user information (authentication required)
-// @Tags        Users
+// @Tags        User
 //
 // @Accept      json
 // @Produce     json
@@ -152,7 +152,7 @@ func UpdateUserHandler(c *gin.Context, db *models.MongoDB) {
 // @Failure     401      {object} object{error=string}  "Unauthorized"
 // @Failure     500      {object} object{error=string}  "Internal server error"
 //
-// @Router      /users/pets/{id} [get]
+// @Router      /user/pets/{id} [get]
 func GetUserPetsByIdHandler(c *gin.Context, db *models.MongoDB, id string) {
 	pets, err := user_utills.GetUserPet(db, id)
 	if err != nil {
@@ -319,7 +319,26 @@ func DeleteUserPetHandler(c *gin.Context, db *models.MongoDB, idx string) {
 	c.JSON(http.StatusOK, gin.H{"message": "Pet deleted successfully"})
 }
 
-// SetDefaultBankAccountHandler handles the setting of a default bank account for a user
+// SetDefaultBankAccountHandler godoc
+//
+// @Summary     Set default bank account
+// @Description Set default bank account for the current user
+// @Tags        User
+//
+// @Accept      json
+// @Produce     json
+//
+// @Security    ApiKeyAuth
+//
+// @Param       default_account_number      body    string    true    "Default account number"
+// @Param       default_bank                body    string    true    "Default bank"
+//
+// @Success     200      {object} object{message=string}    "Success"
+// @Failure     400      {object} object{error=string}      "Bad request"
+// @Failure     401      {object} object{error=string}      "Unauthorized"
+// @Failure     500      {object} object{error=string}      "Internal server error"
+//
+// @Router      /user/set-default-bank-account [post]
 func SetDefaultBankAccountHandler(c *gin.Context, db *models.MongoDB) {
 	currentUser, err := _authenticate(c, db)
 	if err != nil {
@@ -345,7 +364,23 @@ func SetDefaultBankAccountHandler(c *gin.Context, db *models.MongoDB) {
 	c.JSON(http.StatusOK, gin.H{"message": "Default bank account set successfully"})
 }
 
-// DeleteBankAccountHandler handles the deletion of a bank account for a user
+// DeleteBankAccountHandler godoc
+//
+// @Summary     Delete bank account
+// @Description Delete the bank account associated with the current user
+// @Tags        User
+//
+// @Accept      json
+// @Produce     json
+//
+// @Security    ApiKeyAuth
+//
+// @Success     200      {object} object{message=string}    "Success"
+// @Failure     400      {object} object{error=string}      "Bad request"
+// @Failure     401      {object} object{error=string}      "Unauthorized"
+// @Failure     500      {object} object{error=string}      "Internal server error"
+//
+// @Router      /user/delete-bank-account [delete]
 func DeleteBankAccountHandler(c *gin.Context, db *models.MongoDB) {
 	// get user_id from request body
 	currentUser, err := _authenticate(c, db)
@@ -365,7 +400,25 @@ func DeleteBankAccountHandler(c *gin.Context, db *models.MongoDB) {
 	c.JSON(http.StatusOK, gin.H{"message": "Bank account deleted successfully"})
 }
 
-// UploadImageHandler handles the HTTP request for uploading a profile image.
+// UploadImageHandler godoc
+//
+// @Summary     Upload profile image
+// @Description Uploads a profile image for the current user
+// @Tags        User
+//
+// @Accept      multipart/form-data
+// @Produce     json
+//
+// @Security    ApiKeyAuth
+//
+// @Param       profileImage      formData    file      true        "Profile image file to upload"
+//
+// @Success     202      {object} object{message=string}    "Accepted"
+// @Failure     400      {object} object{error=string}      "Bad request"
+// @Failure     401      {object} object{error=string}      "Unauthorized"
+// @Failure     500      {object} object{error=string}      "Internal server error"
+//
+// @Router      /user/uploadProfileImage [post]
 func UploadImageHandler(c *gin.Context, db *models.MongoDB) {
 	// Parse the multipart form data
 	err := c.Request.ParseMultipartForm(10 << 20)
@@ -422,7 +475,7 @@ func UploadImageHandler(c *gin.Context, db *models.MongoDB) {
 //
 // @Summary     Get profile image for a user
 // @Description Get profile image for a user
-// @Tags        Users
+// @Tags        User
 //
 // @Accept      json
 // @Produce     json
