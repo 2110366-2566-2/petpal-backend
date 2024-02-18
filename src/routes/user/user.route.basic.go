@@ -11,11 +11,11 @@ func UserBaseRoutes(r *gin.RouterGroup) {
 	userGroup := r.Group("")
 	userGroup.GET("/", func(c *gin.Context) {
 		db := c.MustGet("db").(*models.MongoDB)
-		controllers.GetUsersHandler(c.Writer, c.Request, db)
+		controllers.GetUsersHandler(c, db)
 	})
 	userGroup.GET("/:id", func(c *gin.Context) {
 		db := c.MustGet("db").(*models.MongoDB)
-		controllers.GetUserByIDHandler(c.Writer, c.Request, db, c.Param("id"))
+		controllers.GetUserByIDHandler(c, db, c.Param("id"))
 	})
 	userGroup.PUT("/", func(c *gin.Context) {
 		db := c.MustGet("db").(*models.MongoDB)
@@ -36,11 +36,5 @@ func UserBaseRoutes(r *gin.RouterGroup) {
 	userGroup.POST("/uploadProfileImage", func(c *gin.Context) {
 		db := c.MustGet("db").(*models.MongoDB)
 		controllers.UploadImageHandler(c, db)
-	})
-
-	// get user profile image  (Form Fields : email:content) (only one image)
-	userGroup.POST("/profileImage", func(c *gin.Context) {
-		db := c.MustGet("db").(*models.MongoDB)
-		controllers.GetProfileImageHandler(c, "user", db)
 	})
 }

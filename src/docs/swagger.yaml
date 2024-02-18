@@ -1,4 +1,21 @@
 definitions:
+  controllers.defaultBankAccountReq:
+    properties:
+      defaultAccountNumber:
+        type: string
+      defaultBank:
+        type: string
+    type: object
+  models.BasicErrorRes:
+    properties:
+      error:
+        type: string
+    type: object
+  models.BasicRes:
+    properties:
+      message:
+        type: string
+    type: object
   models.CreateSVCP:
     properties:
       SVCPEmail:
@@ -11,6 +28,24 @@ definitions:
         description: Define the 10 fields here
         type: string
     type: object
+  models.CreateUser:
+    properties:
+      address:
+        type: string
+      dateOfBirth:
+        type: string
+      email:
+        type: string
+      fullName:
+        type: string
+      password:
+        type: string
+      phoneNumber:
+        type: string
+      username:
+        description: Define the 10 fields here
+        type: string
+    type: object
   models.LoginReq:
     properties:
       email:
@@ -18,15 +53,6 @@ definitions:
       logintype:
         type: string
       password:
-        type: string
-    type: object
-  models.LoginRes:
-    properties:
-      accessToken:
-        type: string
-      logintype:
-        type: string
-      useremail:
         type: string
     type: object
   models.Pet:
@@ -147,6 +173,218 @@ definitions:
 info:
   contact: {}
 paths:
+  /change-password:
+    post:
+      consumes:
+      - application/json
+      description: Change user password
+      parameters:
+      - description: User email
+        in: body
+        name: user_email
+        required: true
+        schema:
+          type: string
+      - description: New password
+        in: body
+        name: new_password
+        required: true
+        schema:
+          type: string
+      - description: Login type
+        in: body
+        name: login_type
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              message:
+                type: string
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+      summary: Change user password
+      tags:
+      - Users
+  /current-entity:
+    get:
+      consumes:
+      - application/json
+      description: Get the current entity based on the provided context
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            properties:
+              message:
+                type: string
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Get current entity
+      tags:
+      - Authentication
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user and generate access token
+      parameters:
+      - description: login request
+        in: body
+        name: loginReq
+        required: true
+        schema:
+          $ref: '#/definitions/models.LoginReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+      summary: User login
+      tags:
+      - Authentication
+  /logout:
+    post:
+      description: Invalidate user session and clear access token
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              message:
+                type: string
+            type: object
+      summary: User logout
+      tags:
+      - Authentication
+  /register-svcp:
+    post:
+      consumes:
+      - application/json
+      description: Register a new service provider
+      parameters:
+      - description: Service provider registration data
+        in: body
+        name: svcp_data
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateSVCP'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              ' token':
+                type: string
+              message:
+                type: string
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+      summary: Service provider registration
+      tags:
+      - Authentication
+  /register-user:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user
+      parameters:
+      - description: User registration data
+        in: body
+        name: user_data
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              ' token':
+                type: string
+              message:
+                type: string
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+      summary: User registration
+      tags:
+      - Authentication
   /serviceproviders:
     get:
       consumes:
@@ -171,6 +409,14 @@ paths:
             items:
               $ref: '#/definitions/models.SVCP'
             type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
       summary: Get all service providers
       tags:
       - ServiceProviders
@@ -193,6 +439,14 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.SVCP'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
       summary: Get service provider by ID
       tags:
       - ServiceProviders
@@ -217,9 +471,15 @@ paths:
       - application/json
       responses:
         "200":
-          description: svcp object that passed in the request
+          description: OK
           schema:
-            type: object
+            $ref: '#/definitions/models.BasicRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
       summary: Update service provider
       tags:
       - ServiceProviders
@@ -245,41 +505,10 @@ paths:
         "200":
           description: OK
           schema:
-            properties:
-              message:
-                type: string
-            type: object
+            $ref: '#/definitions/models.BasicRes'
+      security:
+      - ApiKeyAuth: []
       summary: Add service
-      tags:
-      - ServiceProviders
-  /serviceproviders/changePassword:
-    post:
-      consumes:
-      - application/json
-      description: Change service provider password
-      parameters:
-      - description: Change Password Request Object
-        in: body
-        name: object
-        required: true
-        schema:
-          properties:
-            newpassword:
-              type: string
-            svcpemail:
-              type: string
-          type: object
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            properties:
-              message:
-                type: string
-            type: object
-      summary: Change service provider password
       tags:
       - ServiceProviders
   /serviceproviders/delete-bank-account:
@@ -294,94 +523,10 @@ paths:
         "200":
           description: OK
           schema:
-            properties:
-              message:
-                type: string
-            type: object
+            $ref: '#/definitions/models.BasicRes'
+      security:
+      - ApiKeyAuth: []
       summary: Delete bank account
-      tags:
-      - ServiceProviders
-  /serviceproviders/login:
-    post:
-      consumes:
-      - application/json
-      description: if login is successful, a token is generated and set in the cookies
-        and sent back with the response
-      parameters:
-      - description: Login Request Object
-        in: body
-        name: loginReq
-        required: true
-        schema:
-          $ref: '#/definitions/models.LoginReq'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.LoginRes'
-      summary: Login service provider
-      tags:
-      - ServiceProviders
-  /serviceproviders/logout:
-    post:
-      consumes:
-      - application/json
-      description: the token is deleted from the cookies
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            properties:
-              message:
-                type: string
-            type: object
-      summary: Logout service provider
-      tags:
-      - ServiceProviders
-  /serviceproviders/me:
-    get:
-      consumes:
-      - application/json
-      description: Get current service provider (authentication required)
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.SVCP'
-      summary: Get current service provider
-      tags:
-      - ServiceProviders
-  /serviceproviders/register:
-    post:
-      consumes:
-      - application/json
-      description: Register service provider (authentication not required)
-      parameters:
-      - description: Service Provider Object only nessasary fields
-        in: body
-        name: svcp
-        required: true
-        schema:
-          $ref: '#/definitions/models.CreateSVCP'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            properties:
-              message:
-                type: string
-              token:
-                type: string
-            type: object
-      summary: Register service provider
       tags:
       - ServiceProviders
   /serviceproviders/set-default-bank-account:
@@ -396,22 +541,16 @@ paths:
         name: object
         required: true
         schema:
-          properties:
-            defaultAccountNumber:
-              type: string
-            defaultBank:
-              type: string
-          type: object
+          $ref: '#/definitions/controllers.defaultBankAccountReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            properties:
-              message:
-                type: string
-            type: object
+            $ref: '#/definitions/models.BasicRes'
+      security:
+      - ApiKeyAuth: []
       summary: Set default bank account
       tags:
       - ServiceProviders
@@ -437,10 +576,13 @@ paths:
         "200":
           description: OK
           schema:
-            properties:
-              message:
-                type: string
-            type: object
+            $ref: '#/definitions/models.BasicRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
       summary: Upload service provider description
       tags:
       - ServiceProviders
@@ -467,45 +609,30 @@ paths:
               svcpEmail:
                 type: string
             type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
       summary: Upload service provider license
       tags:
       - ServiceProviders
-  /user/me:
+  /user:
     get:
       consumes:
       - application/json
-      description: Get the details of the currently authenticated user
-      produces:
-      - application/json
-      responses:
-        "202":
-          description: User details
-          schema:
-            $ref: '#/definitions/models.User'
-        "400":
-          description: Failed to get token from Cookie plase login first
-          schema:
-            type: string
-        "500":
-          description: Failed to get User Email request body
-          schema:
-            type: string
-      security:
-      - CookieAuth: []
-      summary: Get Current User
-      tags:
-      - user
-  /users:
-    get:
-      consumes:
-      - application/json
-      description: Get all users (authentication not required)
+      description: Retrieve all user
       parameters:
-      - description: page
+      - description: Page number
         in: query
         name: page
         type: integer
-      - description: per
+      - description: Number of users per page
         in: query
         name: per
         type: integer
@@ -513,20 +640,376 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: Success
           schema:
             items:
               $ref: '#/definitions/models.User'
             type: array
         "400":
-          description: Bad Request
+          description: Bad request
           schema:
-            type: string
+            $ref: '#/definitions/models.BasicErrorRes'
         "500":
-          description: Internal Server Error
+          description: Internal server error
           schema:
-            type: string
-      summary: Get all users
+            $ref: '#/definitions/models.BasicErrorRes'
+      summary: Get all user
       tags:
-      - user
+      - User
+    put:
+      consumes:
+      - application/json
+      description: Update user information (authentication required)
+      parameters:
+      - description: User object that needs to be updated
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/models.BasicRes'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
+      summary: Update user information
+      tags:
+      - User
+  /user/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve user information by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      summary: Get user by ID
+      tags:
+      - User
+  /user/delete-bank-account:
+    delete:
+      consumes:
+      - application/json
+      description: Delete the bank account associated with the current user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/models.BasicRes'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete bank account
+      tags:
+      - User
+  /user/pets:
+    post:
+      consumes:
+      - application/json
+      description: Add a new pet for the user (authentication required)
+      operationId: AddUserPetHandler
+      parameters:
+      - description: Pet object to be added
+        in: body
+        name: pet
+        required: true
+        schema:
+          $ref: '#/definitions/models.Pet'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/models.BasicRes'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
+      summary: Add a new pet for the user
+      tags:
+      - Pets
+  /user/pets/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get user's pets by user ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              pets:
+                items:
+                  $ref: '#/definitions/models.Pet'
+                type: array
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      summary: Get user's pets by user ID
+      tags:
+      - Pets
+  /user/pets/{idx}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete user's pet (authentication required)
+      parameters:
+      - description: Pet Index
+        in: path
+        name: idx
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/models.BasicRes'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete user's pet
+      tags:
+      - Pets
+    put:
+      consumes:
+      - application/json
+      description: Update user's pet information (authentication required)
+      parameters:
+      - description: Pet Index
+        in: path
+        name: idx
+        required: true
+        type: string
+      - description: Pet object that needs to be updated
+        in: body
+        name: pet
+        required: true
+        schema:
+          $ref: '#/definitions/models.Pet'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/models.BasicRes'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
+      summary: Update user's pet information
+      tags:
+      - Pets
+  /user/pets/me:
+    get:
+      description: Get current user's pets (authentication required)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              pets:
+                items:
+                  $ref: '#/definitions/models.Pet'
+                type: array
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
+      summary: Get current user's pets
+      tags:
+      - Pets
+  /user/set-default-bank-account:
+    post:
+      consumes:
+      - application/json
+      description: Set default bank account for the current user
+      parameters:
+      - description: Default account number
+        in: body
+        name: default_account_number
+        required: true
+        schema:
+          type: string
+      - description: Default bank
+        in: body
+        name: default_bank
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/models.BasicRes'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
+      summary: Set default bank account
+      tags:
+      - User
+  /user/uploadProfileImage:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Uploads a profile image for the current user
+      parameters:
+      - description: Profile image file to upload
+        in: formData
+        name: profileImage
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            $ref: '#/definitions/models.BasicRes'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
+      summary: Upload profile image
+      tags:
+      - User
 swagger: "2.0"
