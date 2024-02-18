@@ -19,7 +19,7 @@ func SVCPRoutes(r *gin.Engine) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllers.GetSVCPByIDHandler(c.Writer, c.Request, db, c.Param("id"))
 		})
-		SVCPGroup.PUT("/:id", func(c *gin.Context) {
+		SVCPGroup.PUT("/", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllers.UpdateSVCPHandler(c, db)
 		})
