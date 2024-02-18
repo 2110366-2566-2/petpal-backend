@@ -48,7 +48,7 @@ func SVCPRoutes(r *gin.Engine) {
 		// update svcp profile image (Form Fields : email:content, profileImage:content)
 		SVCPGroup.POST("/uploadProfileImage", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
-			user_controllers.UploadImageHandler(c, "svcp", db)
+			user_controllers.UploadImageHandler(c, db)
 		})
 
 		// get svcp profile image  (Form Fields : email:content) (only one image)

@@ -24,18 +24,18 @@ func UserBaseRoutes(r *gin.RouterGroup) {
 
 	userGroup.POST("/set-default-bank-account", func(c *gin.Context) {
 		db := c.MustGet("db").(*models.MongoDB)
-		controllers.SetDefaultBankAccountHandler(c.Writer, c.Request, db)
+		controllers.SetDefaultBankAccountHandler(c, db)
 	})
 
 	userGroup.DELETE("/delete-bank-account", func(c *gin.Context) {
 		db := c.MustGet("db").(*models.MongoDB)
-		controllers.DeleteBankAccountHandler(c.Writer, c.Request, db)
+		controllers.DeleteBankAccountHandler(c, db)
 	})
 
 	// update user profile image (Form Fields : email:content, profileImage:content)
 	userGroup.POST("/uploadProfileImage", func(c *gin.Context) {
 		db := c.MustGet("db").(*models.MongoDB)
-		controllers.UploadImageHandler(c, "user", db)
+		controllers.UploadImageHandler(c, db)
 	})
 
 	// get user profile image  (Form Fields : email:content) (only one image)
