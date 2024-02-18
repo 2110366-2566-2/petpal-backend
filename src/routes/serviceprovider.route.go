@@ -11,11 +11,6 @@ import (
 func SVCPRoutes(r *gin.Engine) {
 	SVCPGroup := r.Group("/serviceprovider")
 	{
-
-		SVCPGroup.GET("/me", func(c *gin.Context) {
-			db := c.MustGet("db").(*models.MongoDB)
-			controllers.CurrentSVCPHandler(c, db)
-		})
 		SVCPGroup.GET("/", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllers.GetSVCPsHandler(c.Writer, c.Request, db)
@@ -24,21 +19,9 @@ func SVCPRoutes(r *gin.Engine) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllers.GetSVCPByIDHandler(c.Writer, c.Request, db, c.Param("id"))
 		})
-		// SVCPGroup.POST("/", createSVCP)
-		SVCPGroup.PUT("/:id", func(c *gin.Context) {
+		SVCPGroup.PUT("/", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
-			controllers.UpdateSVCPHandler(c.Writer, c.Request, db, c.Param("id"))
-		})
-		SVCPGroup.POST("/register", func(c *gin.Context) {
-			db := c.MustGet("db").(*models.MongoDB)
-			controllers.RegisterSVCPHandler(c, db)
-		})
-		SVCPGroup.POST("/login", func(c *gin.Context) {
-			db := c.MustGet("db").(*models.MongoDB)
-			controllers.LoginSVCPHandler(c, db)
-		})
-		SVCPGroup.POST("/logout", func(c *gin.Context) {
-			controllers.LogoutSVCPHandler(c)
+			controllers.UpdateSVCPHandler(c, db)
 		})
 		// SVCPGroup.DELETE("/:id", deleteSVCP)
 		SVCPGroup.POST("/set-default-bank-account", func(c *gin.Context) {
@@ -72,10 +55,6 @@ func SVCPRoutes(r *gin.Engine) {
 		SVCPGroup.POST("/profileImage", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
 			user_controllers.GetProfileImageHandler(c, "svcp", db)
-		})
-		SVCPGroup.POST("/changePassword", func(c *gin.Context) {
-			db := c.MustGet("db").(*models.MongoDB)
-			controllers.ChangePassword(c.Writer, c.Request, db)
 		})
 	}
 }

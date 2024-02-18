@@ -11,32 +11,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func nextUserId() int {
-	id := 5
-	return id
-}
-
-func NewUser(createUser models.CreateUser) (*models.User, error) {
-	newID := nextUserId()
-	// You can add more validation rules as needed
-	newUser := &models.User{
-		Individual: models.Individual{
-			IndividualID: newID,
-		},
-		Username:             createUser.Username,
-		Password:             createUser.Password,
-		Email:                createUser.Email,
-		FullName:             createUser.FullName,
-		PhoneNumber:          "Mock",
-		ProfilePicture:       "Mock",
-		DefaultAccountNumber: "Mock",
-		DefaultBank:          "Mock",
-		Pets:                 nil,
-	}
-
-	return newUser, nil
-}
-
 func InsertUser(db *models.MongoDB, user *models.User) (*models.User, error) {
 	// Get the users collection
 	collection := db.Collection("user")
@@ -102,46 +76,6 @@ func GetUserByEmail(db *models.MongoDB, email string) (*models.User, error) {
 		return nil, err
 	}
 	return &user, nil
-}
-
-func GetUserPet(db *models.MongoDB, id string) (*[]models.Pet, error) {
-	user, err := GetUserByID(db, id)
-	if err != nil {
-		return nil, err
-	}
-
-	if user.Pets == nil {
-		emptySlice := make([]models.Pet, 0)
-		return &emptySlice, nil
-	}
-	// add pets ownername
-	for i := range user.Pets {
-		user.Pets[i].OwnerUsername = user.Username
-	}
-	return &user.Pets, nil
-}
-
-func AddUserPet(db *models.MongoDB, pet *models.Pet, user_id string) (string, error) {
-	// get collection
-	user_collection := db.Collection("user")
-
-	// find user by email
-	user_objectid, err := primitive.ObjectIDFromHex(user_id)
-	if err != nil {
-		return "Invalid user id", err
-	}
-
-	filter := bson.D{{Key: "_id", Value: user_objectid}}
-	res, err := user_collection.UpdateOne(context.Background(), filter, bson.D{{Key: "$push", Value: bson.D{{Key: "pets", Value: pet}}}})
-	if res.MatchedCount == 0 {
-		return "User not found (id=" + user_id + ")", err
-	}
-	if err != nil {
-		return "Failed to add pet", err
-	}
-
-	return "", nil
-
 }
 
 func UpdateUser(db *models.MongoDB, user *bson.M, id string) (string, error) {
@@ -327,8 +261,13 @@ func GetProfileImage(email string, userType string, db *models.MongoDB) (gin.H, 
 		// Access the "user" collection in the MongoDB database
 		userCollection := db.Collection("user")
 
+		type user_decode struct {
+			Email          string `json:"email" bson:"email"`
+			ProfilePicture []byte `json:"profilePicture" bson:"profilePicture"`
+		}
+
 		// Find the user by email in the "user" collection
-		var user models.User = models.User{}
+		var user user_decode = user_decode{}
 		filter := bson.D{{Key: "email", Value: email}}
 		err := userCollection.FindOne(context.Background(), filter).Decode(&user)
 		if err != nil {
@@ -337,6 +276,7 @@ func GetProfileImage(email string, userType string, db *models.MongoDB) (gin.H, 
 		}
 
 		// Return the profile picture file content
+
 		results := user.ProfilePicture
 		return gin.H{"message": "Get profile image from 'user' collection", "email": email, "result": results}, nil
 	} else if userType == "svcp" {
@@ -344,7 +284,7 @@ func GetProfileImage(email string, userType string, db *models.MongoDB) (gin.H, 
 		//temporarily struct for svcp
 		type Svcp struct {
 			SVCPEmail string `json:"SVCPEmail"`
-			SVCPImg   string `json:"SVCPImg"`
+			SVCPImg   []byte `json:"SVCPImg" bson:"SVCPImg"`
 		}
 
 		// Access the "svcp" collection in the MongoDB database

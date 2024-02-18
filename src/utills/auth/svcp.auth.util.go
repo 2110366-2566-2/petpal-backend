@@ -1,28 +1,10 @@
 package auth
 
 import (
-	"errors"
 	"fmt"
 	"petpal-backend/src/models"
-	utills "petpal-backend/src/utills/serviceprovider"
+	svcp_utills "petpal-backend/src/utills/serviceprovider"
 )
-
-func GetCurrentSVCP(token string, db *models.MongoDB) (*models.SVCP, error) {
-	loginRes, err := DecodeToken(token)
-	if err != nil {
-		return nil, err
-	}
-	loginType := loginRes.LoginType
-	if loginType == "svcp" {
-		user, err := utills.GetSVCPByEmail(db, loginRes.UserEmail)
-		if err != nil {
-			return nil, err
-		}
-		return user, nil
-	} else {
-		return nil, errors.New("Get Wrong User type we only accept user login type but get " + loginType)
-	}
-}
 
 func nextSVCPId() int {
 	id := 5
@@ -53,4 +35,34 @@ func NewSVCP(createSVCP models.CreateSVCP) (*models.SVCP, error) {
 	}
 
 	return newSVCP, nil
+}
+
+// RegisterHandler handles user registration
+func RegisterSVCP(createSVCP models.CreateSVCP, db *models.MongoDB) (string, error) {
+
+	// Hash the password securely
+	hashedPassword, err := HashPassword(createSVCP.SVCPPassword)
+	if err != nil {
+		return "", err
+	}
+
+	// Create a new user instance
+	createSVCP.SVCPPassword = hashedPassword
+	newSVCP, err := NewSVCP(createSVCP)
+	if err != nil {
+		return "", err
+	}
+
+	// Insert the new user into the database
+	newSVCP, err = svcp_utills.InsertSVCP(db, newSVCP)
+	if err != nil {
+		return "", err
+	}
+
+	// Generate a JWT token
+	tokenString, err := GenerateToken(newSVCP.SVCPUsername, newSVCP.SVCPEmail, "svcp")
+	if err != nil {
+		return "", err
+	}
+	return tokenString, nil
 }
