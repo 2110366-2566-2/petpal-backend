@@ -13,11 +13,11 @@ func SVCPRoutes(r *gin.Engine) {
 	{
 		SVCPGroup.GET("/", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
-			controllers.GetSVCPsHandler(c.Writer, c.Request, db)
+			controllers.GetSVCPsHandler(c, db)
 		})
 		SVCPGroup.GET("/:id", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
-			controllers.GetSVCPByIDHandler(c.Writer, c.Request, db, c.Param("id"))
+			controllers.GetSVCPByIDHandler(c, db, c.Param("id"))
 		})
 		SVCPGroup.PUT("/", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
@@ -49,12 +49,6 @@ func SVCPRoutes(r *gin.Engine) {
 		SVCPGroup.POST("/uploadProfileImage", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
 			user_controllers.UploadImageHandler(c, db)
-		})
-
-		// get svcp profile image  (Form Fields : email:content) (only one image)
-		SVCPGroup.POST("/profileImage", func(c *gin.Context) {
-			db := c.MustGet("db").(*models.MongoDB)
-			user_controllers.GetProfileImageHandler(c, "svcp", db)
 		})
 	}
 }

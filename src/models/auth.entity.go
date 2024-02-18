@@ -12,3 +12,10 @@ type LoginRes struct {
 	UserEmail   string `json:"useremail"`
 	LoginType   string `json:"logintype"`
 }
+
+type BasicRes struct {
+	Message string `json:"message"`
+}
+type BasicErrorRes struct {
+	Error string `json:"error"`
+}
