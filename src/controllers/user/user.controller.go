@@ -3,12 +3,11 @@ package controllers
 import (
 	"encoding/json"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"petpal-backend/src/models"
 	"petpal-backend/src/utills/auth"
 	user_utills "petpal-backend/src/utills/user"
-	utills "petpal-backend/src/utills/user"
 	"strconv"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -39,7 +38,7 @@ func GetUsersHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB)
 	}
 
 	// get all users, no filters for now
-	users, err := utills.GetUsers(db, bson.D{}, page-1, per)
+	users, err := user_utills.GetUsers(db, bson.D{}, page-1, per)
 	if err != nil {
 		http.Error(w, "Failed to get users", http.StatusInternalServerError)
 		return
@@ -52,7 +51,7 @@ func GetUsersHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB)
 // GetUserByIDHandler handles the fetching of a user by id
 func GetUserByIDHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB, id string) {
 	// Call the user service to get a user by email
-	user, err := utills.GetUserByID(db, id)
+	user, err := user_utills.GetUserByID(db, id)
 	if err != nil {
 		http.Error(w, "Failed to get user", http.StatusInternalServerError)
 		return
@@ -76,7 +75,7 @@ func UpdateUserHandler(c *gin.Context, db *models.MongoDB) {
 	}
 
 	// Call the user service to update the user
-	err_str, err := utills.UpdateUser(db, &user, currentUser.ID)
+	err_str, err := user_utills.UpdateUser(db, &user, currentUser.ID)
 	if err != nil {
 		// show error message
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err_str})
@@ -189,60 +188,59 @@ func DeleteUserPetHandler(c *gin.Context, db *models.MongoDB, idx string) {
 }
 
 // SetDefaultBankAccountHandler handles the setting of a default bank account for a user
-func SetDefaultBankAccountHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB) {
-	// get user_id, default bank account number, default bank from request body
-	var user models.User
-	err := json.NewDecoder(r.Body).Decode(&user)
+func SetDefaultBankAccountHandler(c *gin.Context, db *models.MongoDB) {
+	currentUser, err := _authenticate(c, db)
 	if err != nil {
-		http.Error(w, "Failed to parse request body", http.StatusBadRequest)
 		return
 	}
-
-	email := user.Email
-	defaultAccountNumber := user.DefaultAccountNumber
-	defaultBank := user.DefaultBank
+	type SetDefaultBankAccountReq struct {
+		DefaultAccountNumber string
+		DefaultBank          string
+	}
+	var req SetDefaultBankAccountReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
 	// Call the user service to set the default bank account
-	err_str, err := utills.SetDefaultBankAccount(email, defaultAccountNumber, defaultBank, db)
+	err_str, err := user_utills.SetDefaultBankAccount(currentUser.Email, req.DefaultAccountNumber, req.DefaultBank, db)
 	if err != nil {
 		// show error message
-		http.Error(w, err_str, http.StatusInternalServerError)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err_str})
 		return
 	}
-
-	// Respond with a success message
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode("Default bank account set successfully")
+	c.JSON(http.StatusOK, gin.H{"message": "Default bank account set successfully"})
 }
 
 // DeleteBankAccountHandler handles the deletion of a bank account for a user
-func DeleteBankAccountHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB) {
+func DeleteBankAccountHandler(c *gin.Context, db *models.MongoDB) {
 	// get user_id from request body
-	var user models.User
-	err := json.NewDecoder(r.Body).Decode(&user)
+	currentUser, err := _authenticate(c, db)
 	if err != nil {
-		http.Error(w, "Failed to parse request body", http.StatusBadRequest)
 		return
 	}
-	email := user.Email
 
 	// Call the user service to delete the bank account
-	err_str, err := utills.DeleteBankAccount(email, db)
+	err_str, err := user_utills.DeleteBankAccount(currentUser.Email, db)
 	if err != nil {
 		// show error message
-		http.Error(w, err_str, http.StatusInternalServerError)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err_str})
 		return
 	}
 
 	// Respond with a success message
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode("Bank account deleted successfully")
+	c.JSON(http.StatusOK, gin.H{"message": "Bank account deleted successfully"})
 }
 
 // UploadImageHandler handles the HTTP request for uploading a profile image.
-func UploadImageHandler(c *gin.Context, userType string, db *models.MongoDB) {
+func UploadImageHandler(c *gin.Context, db *models.MongoDB) {
+	currentUser, err := _authenticate(c, db)
+	if err != nil {
+		return
+	}
 	// Parse the multipart form data
-	err := c.Request.ParseMultipartForm(10 << 20)
+	err = c.Request.ParseMultipartForm(10 << 20)
 	if err != nil {
 		// If unable to parse the form, respond with a bad request and error message
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Unable to parse form"})
@@ -258,18 +256,8 @@ func UploadImageHandler(c *gin.Context, userType string, db *models.MongoDB) {
 	}
 	defer file.Close()
 
-	// Retrieve the email from the form data
-	email := c.Request.FormValue("email")
-
-	// Check if the email is empty
-	if email == "" {
-		// If email is empty, respond with a bad request and error message
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Email is required"})
-		return
-	}
-
 	// Read the content of the uploaded file
-	fileContent, err := ioutil.ReadAll(file)
+	fileContent, err := io.ReadAll(file)
 	if err != nil {
 		// If there is an error reading the file content, respond with a internal server error and error message
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error reading file content"})
@@ -277,7 +265,7 @@ func UploadImageHandler(c *gin.Context, userType string, db *models.MongoDB) {
 	}
 
 	// Perform the upload of the profile image to the database using a utility function
-	response, err := utills.UploadProfileImage(email, fileContent, userType, db)
+	response, err := user_utills.UploadProfileImage(currentUser.Email, fileContent, "user", db)
 	if err != nil {
 		// If there is an error during the profile image upload, respond with an internal server error and error message
 		c.JSON(http.StatusInternalServerError, response)
@@ -290,22 +278,16 @@ func UploadImageHandler(c *gin.Context, userType string, db *models.MongoDB) {
 
 // UploadImageHandler handles the HTTP request for uploading a profile image.
 func GetProfileImageHandler(c *gin.Context, userType string, db *models.MongoDB) {
-
-	// Retrieve the email from the form data
-	email := c.Request.FormValue("email")
-
-	// Check if the email is empty
-	if email == "" {
-		// If email is empty, respond with a bad request and error message
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Email is required"})
+	currentUser, err := _authenticate(c, db)
+	if err != nil {
 		return
 	}
 
 	// // Perform the upload of the profile image to the database using a utility function
-	response, err := utills.GetProfileImage(email, userType, db)
+	response, err := user_utills.GetProfileImage(currentUser.Email, userType, db)
 	if err != nil {
 		// If there is an error during the profile image upload, respond with an internal server error and error message
-		c.JSON(http.StatusInternalServerError, response)
+		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -324,12 +306,12 @@ func _authenticate(c *gin.Context, db *models.MongoDB) (*models.User, error) {
 		return entity, nil
 		// Handle user
 	case *models.SVCP:
-		err = errors.New("Need token of type User but recives token SVCP type")
+		err = errors.New("need token of type User but recives token SVCP type")
 		c.JSON(http.StatusBadRequest, err.Error())
 		return nil, nil
 		// Handle svcp
 	}
-	err = errors.New("Need token of type User but wrong type")
+	err = errors.New("need token of type User but wrong type")
 	c.JSON(http.StatusBadRequest, err.Error())
 	return nil, err
 }
