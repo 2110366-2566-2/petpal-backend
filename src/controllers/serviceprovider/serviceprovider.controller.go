@@ -316,6 +316,10 @@ func DeleteBankAccountHandler(c *gin.Context, db *models.MongoDB) {
 // @Success 200 {object} object{message=string}
 //
 // @Router /serviceproviders/set-default-bank-account [post]
+type defaultBankAccountReq struct {
+	DefaultAccountNumber string `json:"defaultAccountNumber"`
+	DefaultBank          string `json:"defaultBank"`
+}
 func SetDefaultBankAccountHandler(c *gin.Context, db *models.MongoDB) {
 	// get current svcp
 	current_svcp, err := _authenticate(c, db)
@@ -351,13 +355,13 @@ func SetDefaultBankAccountHandler(c *gin.Context, db *models.MongoDB) {
 func _authenticate(c *gin.Context, db *models.MongoDB) (*models.SVCP, error) {
 	entity, err := auth.GetCurrentEntityByGinContenxt(c, db)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, "Failed to get token from Cookie plase login first, "+err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to get token from Cookie plase login first, "+err.Error()})
 		return nil, err
 	}
 	switch entity := entity.(type) {
 	case *models.User:
 		err = errors.New("need token of type SVCP but recives token SVCP type")
-		c.JSON(http.StatusBadRequest, err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return nil, nil
 		// Handle user
 	case *models.SVCP:
@@ -365,6 +369,6 @@ func _authenticate(c *gin.Context, db *models.MongoDB) (*models.SVCP, error) {
 		// Handle svcp
 	}
 	err = errors.New("need token of type SVCP but wrong type")
-	c.JSON(http.StatusBadRequest, err.Error())
+	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	return nil, err
 }

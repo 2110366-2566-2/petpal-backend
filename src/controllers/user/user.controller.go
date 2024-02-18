@@ -471,41 +471,6 @@ func UploadImageHandler(c *gin.Context, db *models.MongoDB) {
 	}
 }
 
-// GetProfileImageHandler godoc
-//
-// @Summary     Get profile image for a user
-// @Description Get profile image for a user
-// @Tags        User
-//
-// @Accept      json
-// @Produce     json
-//
-// @Param       email    query    string    true    "User email"
-// @Param       userType path      string    true    "User type (e.g., 'customer' or 'provider')"
-//
-// @Success     202      {object} object{image=string}    "Accepted"
-// @Failure     400      {object} object{error=string}      "Bad request"
-// @Failure     500      {object} object{error=string}      "Internal server error"
-//
-// @Router      /user/{userType}/profile-image [get]
-func GetProfileImageHandler(c *gin.Context, userType string, db *models.MongoDB) {
-	currentUser, err := _authenticate(c, db)
-	if err != nil {
-		return
-	}
-
-	// // Perform the upload of the profile image to the database using a utility function
-	response, err := user_utills.GetProfileImage(currentUser.Email, userType, db)
-	if err != nil {
-		// If there is an error during the profile image upload, respond with an internal server error and error message
-		c.JSON(http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	// If everything is successful, respond with an accepted status and the response
-	c.JSON(http.StatusAccepted, response)
-}
-
 func _authenticate(c *gin.Context, db *models.MongoDB) (*models.User, error) {
 	entity, err := auth.GetCurrentEntityByGinContenxt(c, db)
 	if err != nil {
