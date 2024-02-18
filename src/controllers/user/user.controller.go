@@ -19,20 +19,21 @@ import (
 
 // GetUsersHandler godoc
 //
-// @Summary		Get all users
-// @Description	Get all users (authentication not required)
-// @Tags		user
+// @Summary     Get all users
+// @Description Retrieve all users
+// @Tags        Users
 //
-// @Accept		json
-// @Produce		json
-// @Param		page	query		int	false	"page"
-// @Param		per		query		int	false	"per"
+// @Accept      json
+// @Produce     json
 //
-// @Success		200		{object}	[]models.User
-// @Failure		400		{object}	string
-// @Failure		500		{object}	string
+// @Param       page      query    int    false        "Page number"
+// @Param       per       query    int    false        "Number of users per page"
 //
-// @Router		/users [get]
+// @Success     200      {array} User    "Success"
+// @Failure     400      {object} object{error=string}      "Bad request"
+// @Failure     500      {object} object{error=string}      "Internal server error"
+//
+// @Router      /user [get]
 func GetUsersHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB) {
 	// Call the user service to get all users
 	params := r.URL.Query()
@@ -64,6 +65,22 @@ func GetUsersHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB)
 	json.NewEncoder(w).Encode(users)
 }
 
+// GetUserByIDHandler godoc
+//
+// @Summary     Get user by ID
+// @Description Retrieve user information by ID
+// @Tags        Users
+//
+// @Accept      json
+// @Produce     json
+//
+// @Param       id      path    string    true        "User ID"
+//
+// @Success     200      {object} User    "Success"
+// @Failure     400      {object} object{error=string}      "Bad request"
+// @Failure     500      {object} object{error=string}      "Internal server error"
+//
+// @Router      /user/{id} [get]
 func GetUserByIDHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB, id string) {
 	// Call the user service to get a user by email
 	user, err := utills.GetUserByID(db, id)
@@ -76,6 +93,25 @@ func GetUserByIDHandler(w http.ResponseWriter, r *http.Request, db *models.Mongo
 	json.NewEncoder(w).Encode(user)
 }
 
+// UpdateUserHandler godoc
+//
+// @Summary     Update user information
+// @Description Update user information (authentication required)
+// @Tags        Users
+//
+// @Accept      json
+// @Produce     json
+//
+// @Security    ApiKeyAuth
+//
+// @Param       user      body    models.User       true        "User object that needs to be updated"
+//
+// @Success     200      {object} object{message=string}    "Success"
+// @Failure     400      {object} object{error=string}      "Bad request"
+// @Failure     401      {object} object{error=string}      "Unauthorized"
+// @Failure     500      {object} object{error=string}      "Internal server error"
+//
+// @Router      /user [put]
 func UpdateUserHandler(c *gin.Context, db *models.MongoDB) {
 	// Parse request body to get user data
 	currentUser, err := _authenticate(c, db)
@@ -101,7 +137,23 @@ func UpdateUserHandler(c *gin.Context, db *models.MongoDB) {
 	c.JSON(http.StatusOK, gin.H{"message": "User updated successfully"})
 }
 
-// GetUserPetsHandler for get list of user's pet
+// GetUserPetsByIdHandler godoc
+//
+// @Summary     Get user's pets by user ID
+// @Description Get user's pets by user ID
+// @Tags        Pets
+//
+// @Accept      json
+// @Produce     json
+//
+// @Param       id      path    string    true        "User ID"
+//
+// @Success     200      {object} object{pets=[]Pet}    "Success"
+// @Failure     400      {object} object{error=string}  "Bad request"
+// @Failure     401      {object} object{error=string}  "Unauthorized"
+// @Failure     500      {object} object{error=string}  "Internal server error"
+//
+// @Router      /users/pets/{id} [get]
 func GetUserPetsByIdHandler(c *gin.Context, db *models.MongoDB, id string) {
 	pets, err := user_utills.GetUserPet(db, id)
 	if err != nil {
@@ -111,17 +163,21 @@ func GetUserPetsByIdHandler(c *gin.Context, db *models.MongoDB, id string) {
 	c.JSON(http.StatusOK, gin.H{"pets": pets})
 }
 
-// CurrentUserHandler godoc
-// @Summary Get Current User
-// @Description Get the details of the currently authenticated user
-// @Tags user
-// @Accept json
-// @Produce json
-// @Security CookieAuth
-// @Success 202 {object} models.User "User details"
-// @Failure 400 {string} string "Failed to get token from Cookie plase login first"
-// @Failure 500 {string} string "Failed to get User Email request body"
-// @Router /user/me [get]
+// GetCurrentUserPetsHandler godoc
+//
+// @Summary     Get current user's pets
+// @Description Get current user's pets (authentication required)
+// @Tags        Pets
+//
+// @Produce     json
+//
+// @Security    ApiKeyAuth
+//
+// @Success     200      {object} object{pets=[]Pet}    "Success"
+// @Failure     401      {object} object{error=string}  "Unauthorized"
+// @Failure     500      {object} object{error=string}  "Internal server error"
+//
+// @Router      /user/pets/me [get]
 func GetCurrentUserPetsHandler(c *gin.Context, db *models.MongoDB) {
 	currentUser, err := _authenticate(c, db)
 	if err != nil {
@@ -135,6 +191,26 @@ func GetCurrentUserPetsHandler(c *gin.Context, db *models.MongoDB) {
 	c.JSON(http.StatusOK, gin.H{"pets": pets})
 }
 
+// AddUserPetHandler godoc
+//
+// @Summary     Add a new pet for the user
+// @Description Add a new pet for the user (authentication required)
+// @Tags        Pets
+// @id		  	AddUserPetHandler
+//
+// @Accept      json
+// @Produce     json
+//
+// @Security    ApiKeyAuth
+//
+// @Param       pet      body    models.Pet       true        "Pet object to be added"
+//
+// @Success     200      {object} object{message=string}    "Success"
+// @Failure     400      {object} object{error=string}      "Bad request"
+// @Failure     401      {object} object{error=string}      "Unauthorized"
+// @Failure     500      {object} object{error=string}      "Internal server error"
+//
+// @Router      user/pets [post]
 func AddUserPetHandler(c *gin.Context, db *models.MongoDB) {
 	currentUser, err := _authenticate(c, db)
 	if err != nil {
@@ -156,11 +232,27 @@ func AddUserPetHandler(c *gin.Context, db *models.MongoDB) {
 	c.JSON(http.StatusOK, gin.H{"message": "Pet added successfully"})
 }
 
-// UpdateUserPetHandler for updating user's pet
+// UpdateUserPetHandler godoc
 //
-// note: the body of the request should contain all of the updated pet's details
-// otherwise the missing fields will be set to their zero values
-// also: this updates the pet at the specified index param `idx`
+// @Summary     Update user's pet information
+// @Description Update user's pet information (authentication required)
+// @Tags        Pets
+//
+// @Accept      json
+// @Produce     json
+//
+// @Security    ApiKeyAuth
+//
+// @Param       idx      path    string    true        "Pet Index"
+// @Param       pet      body    models.Pet       true        "Pet object that needs to be updated"
+//
+// @Success     200      {object} object{message=string}    "Success"
+// @Failure     400      {object} object{error=string}      "Bad request"
+// @Failure     401      {object} object{error=string}      "Unauthorized"
+// @Failure     404      {object} object{error=string}      "Not found"
+// @Failure     500      {object} object{error=string}      "Internal server error"
+//
+// @Router      user/pets/{idx} [put]
 func UpdateUserPetHandler(c *gin.Context, db *models.MongoDB, idx string) {
 	currentUser, err := _authenticate(c, db)
 	if err != nil {
@@ -173,8 +265,6 @@ func UpdateUserPetHandler(c *gin.Context, db *models.MongoDB, idx string) {
 		return
 	}
 
-	// this binding sets missing fields to their zero values
-	// the pet model does not have any validation tags
 	var pet models.Pet
 	if err := c.ShouldBindJSON(&pet); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -190,6 +280,26 @@ func UpdateUserPetHandler(c *gin.Context, db *models.MongoDB, idx string) {
 	c.JSON(http.StatusOK, gin.H{"message": "Pet updated successfully"})
 }
 
+// DeleteUserPetHandler godoc
+//
+// @Summary     Delete user's pet
+// @Description Delete user's pet (authentication required)
+// @Tags        Pets
+//
+// @Accept      json
+// @Produce     json
+//
+// @Security    ApiKeyAuth
+//
+// @Param       idx      path    string    true        "Pet Index"
+//
+// @Success     200      {object} object{message=string}    "Success"
+// @Failure     400      {object} object{error=string}      "Bad request"
+// @Failure     401      {object} object{error=string}      "Unauthorized"
+// @Failure     404      {object} object{error=string}      "Not found"
+// @Failure     500      {object} object{error=string}      "Internal server error"
+//
+// @Router      /user/pets/{idx} [delete]
 func DeleteUserPetHandler(c *gin.Context, db *models.MongoDB, idx string) {
 	currentUser, err := _authenticate(c, db)
 	if err != nil {
@@ -208,9 +318,26 @@ func DeleteUserPetHandler(c *gin.Context, db *models.MongoDB, idx string) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Pet deleted successfully"})
-
 }
 
+// SetDefaultBankAccountHandler godoc
+//
+// @Summary     Set default bank account for a user
+// @Description Set default bank account for a user
+// @Tags        Users
+//
+// @Accept      json
+// @Produce     json
+//
+// @Param       email                body    string    true        "User email"
+// @Param       defaultAccountNumber body    string    true        "Default bank account number"
+// @Param       defaultBank          body    string    true        "Default bank"
+//
+// @Success     200      {object} object{message=string}    "Success"
+// @Failure     400      {object} object{error=string}      "Bad request"
+// @Failure     500      {object} object{error=string}      "Internal server error"
+//
+// @Router      /user/set-default-bank-account [post]
 func SetDefaultBankAccountHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB) {
 	// get user_id, default bank account number, default bank from request body
 	var user models.User
@@ -237,6 +364,22 @@ func SetDefaultBankAccountHandler(w http.ResponseWriter, r *http.Request, db *mo
 	json.NewEncoder(w).Encode("Default bank account set successfully")
 }
 
+// DeleteBankAccountHandler godoc
+//
+// @Summary     Delete bank account for a user
+// @Description Delete bank account for a user
+// @Tags        Users
+//
+// @Accept      json
+// @Produce     json
+//
+// @Param       email    body    string    true    "User email"
+//
+// @Success     200      {object} object{message=string}    "Success"
+// @Failure     400      {object} object{error=string}      "Bad request"
+// @Failure     500      {object} object{error=string}      "Internal server error"
+//
+// @Router      /user/bank-account [delete]
 func DeleteBankAccountHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB) {
 	// get user_id from request body
 	var user models.User
@@ -260,6 +403,24 @@ func DeleteBankAccountHandler(w http.ResponseWriter, r *http.Request, db *models
 	json.NewEncoder(w).Encode("Bank account deleted successfully")
 }
 
+// UploadImageHandler godoc
+//
+// @Summary     Upload profile image for a user
+// @Description Upload profile image for a user
+// @Tags        Users
+//
+// @Accept      multipart/form-data
+// @Produce     json
+//
+// @Param       profileImage    formData    file    true        "Profile image file to upload"
+// @Param       email           formData    string  true        "User email"
+// @Param       userType        path        string  true        "User type (e.g., 'customer' or 'provider')"
+//
+// @Success     202      {object} object{message=string}    "Accepted"
+// @Failure     400      {object} object{error=string}      "Bad request"
+// @Failure     500      {object} object{error=string}      "Internal server error"
+//
+// @Router      /user/{userType}/profile-image [post]
 func UploadImageHandler(c *gin.Context, userType string, db *models.MongoDB) {
 	// Parse the multipart form data
 	err := c.Request.ParseMultipartForm(10 << 20)
@@ -308,6 +469,23 @@ func UploadImageHandler(c *gin.Context, userType string, db *models.MongoDB) {
 	c.JSON(http.StatusAccepted, response)
 }
 
+// GetProfileImageHandler godoc
+//
+// @Summary     Get profile image for a user
+// @Description Get profile image for a user
+// @Tags        Users
+//
+// @Accept      json
+// @Produce     json
+//
+// @Param       email    query    string    true    "User email"
+// @Param       userType path      string    true    "User type (e.g., 'customer' or 'provider')"
+//
+// @Success     202      {object} object{image=string}    "Accepted"
+// @Failure     400      {object} object{error=string}      "Bad request"
+// @Failure     500      {object} object{error=string}      "Internal server error"
+//
+// @Router      /user/{userType}/profile-image [get]
 func GetProfileImageHandler(c *gin.Context, userType string, db *models.MongoDB) {
 
 	// Retrieve the email from the form data
@@ -343,12 +521,12 @@ func _authenticate(c *gin.Context, db *models.MongoDB) (*models.User, error) {
 		return entity, nil
 		// Handle user
 	case *models.SVCP:
-		err = errors.New("Need token of type User but recives token SVCP type")
+		err = errors.New("need token of type User but recives token SVCP type")
 		c.JSON(http.StatusBadRequest, err.Error())
 		return nil, nil
 		// Handle svcp
 	}
-	err = errors.New("Need token of type User but wrong type")
+	err = errors.New("need token of type User but wrong type")
 	c.JSON(http.StatusBadRequest, err.Error())
 	return nil, err
 }
