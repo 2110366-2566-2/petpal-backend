@@ -367,12 +367,8 @@ func DeleteBankAccountHandler(c *gin.Context, db *models.MongoDB) {
 
 // UploadImageHandler handles the HTTP request for uploading a profile image.
 func UploadImageHandler(c *gin.Context, db *models.MongoDB) {
-	currentUser, err := _authenticate(c, db)
-	if err != nil {
-		return
-	}
 	// Parse the multipart form data
-	err = c.Request.ParseMultipartForm(10 << 20)
+	err := c.Request.ParseMultipartForm(10 << 20)
 	if err != nil {
 		// If unable to parse the form, respond with a bad request and error message
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Unable to parse form"})
@@ -396,16 +392,30 @@ func UploadImageHandler(c *gin.Context, db *models.MongoDB) {
 		return
 	}
 
-	// Perform the upload of the profile image to the database using a utility function
-	response, err := user_utills.UploadProfileImage(currentUser.Email, fileContent, "user", db)
+	entity, err := auth.GetCurrentEntityByGinContenxt(c, db)
 	if err != nil {
-		// If there is an error during the profile image upload, respond with an internal server error and error message
-		c.JSON(http.StatusInternalServerError, response)
-		return
+		c.JSON(http.StatusBadRequest, "Failed to get token from Cookie plase login first, "+err.Error())
 	}
-
-	// If everything is successful, respond with an accepted status and the response
-	c.JSON(http.StatusAccepted, response)
+	switch entity := entity.(type) {
+	case *models.User:
+		// Perform the upload of the profile image to the database using a utility function
+		response, err := user_utills.UploadProfileImage(entity.Email, fileContent, "user", db)
+		if err != nil {
+			// If there is an error during the profile image upload, respond with an internal server error and error message
+			c.JSON(http.StatusInternalServerError, response)
+			return
+		}
+		c.JSON(http.StatusAccepted, response)
+		// Handle user
+	case *models.SVCP:
+		response, err := user_utills.UploadProfileImage(entity.SVCPEmail, fileContent, "svcp", db)
+		if err != nil {
+			// If there is an error during the profile image upload, respond with an internal server error and error message
+			c.JSON(http.StatusInternalServerError, response)
+			return
+		}
+		c.JSON(http.StatusAccepted, response)
+	}
 }
 
 // GetProfileImageHandler godoc
