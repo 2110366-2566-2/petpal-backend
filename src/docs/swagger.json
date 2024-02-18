@@ -4,9 +4,537 @@
         "contact": {}
     },
     "paths": {
+        "/serviceproviders": {
+            "get": {
+                "description": "Get all service providers (authentication not required) and sensitive information is censorred",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ServiceProviders"
+                ],
+                "summary": "Get all service providers",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number(default 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of items per page(default 10)",
+                        "name": "per",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.SVCP"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/serviceproviders/add-service": {
+            "post": {
+                "description": "Add service (authentication required and only the service provider can update their own profile)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ServiceProviders"
+                ],
+                "summary": "Add service",
+                "parameters": [
+                    {
+                        "description": "Service Object",
+                        "name": "object",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "service": {
+                                    "$ref": "#/definitions/models.Service"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/serviceproviders/changePassword": {
+            "post": {
+                "description": "Change service provider password",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ServiceProviders"
+                ],
+                "summary": "Change service provider password",
+                "parameters": [
+                    {
+                        "description": "Change Password Request Object",
+                        "name": "object",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "newpassword": {
+                                    "type": "string"
+                                },
+                                "svcpemail": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/serviceproviders/delete-bank-account": {
+            "delete": {
+                "description": "Delete bank account (authentication required and only the service provider can update their own profile)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ServiceProviders"
+                ],
+                "summary": "Delete bank account",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/serviceproviders/login": {
+            "post": {
+                "description": "if login is successful, a token is generated and set in the cookies and sent back with the response",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ServiceProviders"
+                ],
+                "summary": "Login service provider",
+                "parameters": [
+                    {
+                        "description": "Login Request Object",
+                        "name": "loginReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.LoginReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.LoginRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/serviceproviders/logout": {
+            "post": {
+                "description": "the token is deleted from the cookies",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ServiceProviders"
+                ],
+                "summary": "Logout service provider",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/serviceproviders/me": {
+            "get": {
+                "description": "Get current service provider (authentication required)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ServiceProviders"
+                ],
+                "summary": "Get current service provider",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.SVCP"
+                        }
+                    }
+                }
+            }
+        },
+        "/serviceproviders/register": {
+            "post": {
+                "description": "Register service provider (authentication not required)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ServiceProviders"
+                ],
+                "summary": "Register service provider",
+                "parameters": [
+                    {
+                        "description": "Service Provider Object only nessasary fields",
+                        "name": "svcp",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CreateSVCP"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string"
+                                },
+                                "token": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/serviceproviders/set-default-bank-account": {
+            "post": {
+                "description": "Set default bank account (authentication required and only the service provider can update their own profile)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ServiceProviders"
+                ],
+                "summary": "Set default bank account",
+                "parameters": [
+                    {
+                        "description": "Default Bank Account Object",
+                        "name": "object",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "defaultAccountNumber": {
+                                    "type": "string"
+                                },
+                                "defaultBank": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/serviceproviders/upload-description": {
+            "post": {
+                "description": "Upload service provider description (authentication required and only the service provider can update their own profile)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ServiceProviders"
+                ],
+                "summary": "Upload service provider description",
+                "parameters": [
+                    {
+                        "description": "Description Request Object",
+                        "name": "object",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "description": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/serviceproviders/upload-license": {
+            "post": {
+                "description": "Upload service provider license (authentication required)",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ServiceProviders"
+                ],
+                "summary": "Upload service provider license",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "License File",
+                        "name": "license",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string"
+                                },
+                                "svcpEmail": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/serviceproviders/{id}": {
+            "get": {
+                "description": "Get service provider by ID (authentication not required) and sensitive information is censorred",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ServiceProviders"
+                ],
+                "summary": "Get service provider by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Service Provider ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.SVCP"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update service provider (authentication required and only the service provider can update their own profile)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ServiceProviders"
+                ],
+                "summary": "Update service provider",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Service Provider ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Service Provider Object (only the fields to be updated)",
+                        "name": "svcp",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "svcp object that passed in the request",
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/me": {
+            "get": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Get the details of the currently authenticated user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Get Current User",
+                "responses": {
+                    "202": {
+                        "description": "User details",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed to get token from Cookie plase login first",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to get User Email request body",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/users": {
             "get": {
-                "description": "Get all users",
+                "description": "Get all users (authentication not required)",
                 "consumes": [
                     "application/json"
                 ],
@@ -58,6 +586,52 @@
         }
     },
     "definitions": {
+        "models.CreateSVCP": {
+            "type": "object",
+            "properties": {
+                "SVCPEmail": {
+                    "type": "string"
+                },
+                "SVCPPassword": {
+                    "type": "string"
+                },
+                "SVCPServiceType": {
+                    "type": "string"
+                },
+                "SVCPUsername": {
+                    "description": "Define the 10 fields here",
+                    "type": "string"
+                }
+            }
+        },
+        "models.LoginReq": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "logintype": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.LoginRes": {
+            "type": "object",
+            "properties": {
+                "accessToken": {
+                    "type": "string"
+                },
+                "logintype": {
+                    "type": "string"
+                },
+                "useremail": {
+                    "type": "string"
+                }
+            }
+        },
         "models.Pet": {
             "type": "object",
             "properties": {
@@ -89,6 +663,99 @@
                     "type": "string"
                 },
                 "vaccinations": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.SVCP": {
+            "type": "object",
+            "properties": {
+                "SVCPAdditionalImg": {
+                    "type": "string"
+                },
+                "SVCPEmail": {
+                    "type": "string"
+                },
+                "SVCPID": {
+                    "type": "string"
+                },
+                "SVCPImg": {
+                    "type": "string"
+                },
+                "SVCPPassword": {
+                    "type": "string"
+                },
+                "SVCPResponsiblePerson": {
+                    "type": "string"
+                },
+                "SVCPServiceType": {
+                    "type": "string"
+                },
+                "SVCPUsername": {
+                    "type": "string"
+                },
+                "defaultAccountNumber": {
+                    "type": "string"
+                },
+                "defaultBank": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "individualID": {
+                    "type": "integer"
+                },
+                "isVerified": {
+                    "type": "boolean"
+                },
+                "license": {
+                    "type": "string"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "services": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Service"
+                    }
+                }
+            }
+        },
+        "models.Service": {
+            "type": "object",
+            "properties": {
+                "averageRating": {
+                    "type": "number"
+                },
+                "requireCert": {
+                    "type": "boolean"
+                },
+                "serviceDescription": {
+                    "type": "string"
+                },
+                "serviceImg": {
+                    "type": "string"
+                },
+                "serviceType": {
+                    "type": "string"
+                },
+                "timeslots": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Timeslot"
+                    }
+                }
+            }
+        },
+        "models.Timeslot": {
+            "type": "object",
+            "properties": {
+                "endTime": {
+                    "type": "string"
+                },
+                "startTime": {
                     "type": "string"
                 }
             }

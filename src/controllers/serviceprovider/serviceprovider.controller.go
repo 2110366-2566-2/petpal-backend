@@ -16,7 +16,21 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// GetSVCPsHandler handles the fetching of all service providers
+// GetSVCPsHandler godoc
+//
+// @Summary 	Get all service providers
+// @Description Get all service providers (authentication not required) and sensitive information is censorred
+// @Tags 		ServiceProviders
+//
+// @Accept  	json
+// @Produce  	json
+//
+// @Param 		page	query	int 	false	"Page number(default 1)"
+// @Param 		per 	query	int 	false 	"Number of items per page(default 10)"
+//
+// @Success 200 {array} models.SVCP
+//
+// @Router /serviceproviders [get]
 func GetSVCPsHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB) {
 	params := r.URL.Query()
 
@@ -52,7 +66,20 @@ func GetSVCPsHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB)
 	json.NewEncoder(w).Encode(svcps)
 }
 
-// GetSVCPByIDHandler handles the fetching of a service provider by ID
+// GetSVCPByIDHandler godoc
+//
+// @Summary 	Get service provider by ID
+// @Description Get service provider by ID (authentication not required) and sensitive information is censorred
+// @Tags 		ServiceProviders
+//
+// @Accept  	json
+// @Produce  	json
+//
+// @Param 		id	path	string 	true	"Service Provider ID"
+//
+// @Success 200 {object} models.SVCP
+//
+// @Router /serviceproviders/{id} [get]
 func GetSVCPByIDHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB, id string) {
 	svcp, err := svcp_utills.GetSVCPByID(db, id)
 	if err != nil {
@@ -67,6 +94,21 @@ func GetSVCPByIDHandler(w http.ResponseWriter, r *http.Request, db *models.Mongo
 	json.NewEncoder(w).Encode(svcp)
 }
 
+// UpdateSVCPHandler godoc
+//
+// @Summary 	Update service provider
+// @Description Update service provider (authentication required and only the service provider can update their own profile)
+// @Tags 		ServiceProviders
+//
+// @Accept  	json
+// @Produce  	json
+//
+// @Param 		id		path	string 	true	"Service Provider ID"
+// @Param 		svcp	body 	object 	true	"Service Provider Object (only the fields to be updated)"
+//
+// @Success 200 {object} object "svcp object that passed in the request"
+//
+// @Router /serviceproviders/{id} [put]
 func UpdateSVCPHandler(c *gin.Context, db *models.MongoDB) {
 	current_svcp, err := _authenticate(c, db)
 	if err != nil {
@@ -89,6 +131,20 @@ func UpdateSVCPHandler(c *gin.Context, db *models.MongoDB) {
 	c.JSON(http.StatusOK, gin.H{"message": "SVCP updated successfully"})
 }
 
+// UploadDescriptionHandler godoc
+//
+// @Summary 	Upload service provider description
+// @Description Upload service provider description (authentication required and only the service provider can update their own profile)
+// @Tags 		ServiceProviders
+//
+// @Accept  	json
+// @Produce  	json
+//
+// @Param 		object	body 	object{description=string} 	true	"Description Request Object"
+//
+// @Success 200 {object} object{message=string}
+//
+// @Router /serviceproviders/upload-description [post]
 func UploadDescriptionHandler(c *gin.Context, db *models.MongoDB) {
 	var request models.SVCP
 	err := json.NewDecoder(c.Request.Body).Decode(&request)
@@ -116,6 +172,20 @@ func UploadDescriptionHandler(c *gin.Context, db *models.MongoDB) {
 	c.JSON(http.StatusOK, gin.H{"message": "Description uploaded successfully"})
 }
 
+// UploadSVCPLicenseHandler godoc
+//
+// @Summary 	Upload service provider license
+// @Description Upload service provider license (authentication required)
+// @Tags 		ServiceProviders
+//
+// @Accept  	multipart/form-data
+// @Produce  	json
+//
+// @Param 		license	formData 	file 	true	"License File"
+//
+// @Success 200 {object} object{message=string,svcpEmail=string}
+//
+// @Router /serviceproviders/upload-license [post]
 func UploadSVCPLicenseHandler(c *gin.Context, db *models.MongoDB) {
 	// Parse the form data, including the file upload
 	err := c.Request.ParseMultipartForm(10 << 20)
@@ -165,6 +235,20 @@ func UploadSVCPLicenseHandler(c *gin.Context, db *models.MongoDB) {
 	c.JSON(http.StatusAccepted, gin.H{"message": "update license successfull", "svcpEmail": email})
 }
 
+// AddServiceHandler godoc
+//
+// @Summary 	Add service
+// @Description Add service (authentication required and only the service provider can update their own profile)
+// @Tags 		ServiceProviders
+//
+// @Accept  	json
+// @Produce  	json
+//
+// @Param 		object	body 	object{service=models.Service} 	true	"Service Object"
+//
+// @Success 200 {object} object{message=string}
+//
+// @Router /serviceproviders/add-service [post]
 func AddServiceHandler(c *gin.Context, db *models.MongoDB) {
 	var request struct {
 		Service models.Service `json:"service"`
@@ -190,6 +274,18 @@ func AddServiceHandler(c *gin.Context, db *models.MongoDB) {
 	c.JSON(http.StatusOK, gin.H{"message": "Service added successfully"})
 }
 
+// DeleteBankAccountHandler godoc
+//
+// @Summary 	Delete bank account
+// @Description Delete bank account (authentication required and only the service provider can update their own profile)
+// @Tags 		ServiceProviders
+//
+// @Accept  	json
+// @Produce  	json
+//
+// @Success 200 {object} object{message=string}
+//
+// @Router /serviceproviders/delete-bank-account [delete]
 func DeleteBankAccountHandler(c *gin.Context, db *models.MongoDB) {
 	// get current svcp
 	current_svcp, err := _authenticate(c, db)
@@ -206,6 +302,20 @@ func DeleteBankAccountHandler(c *gin.Context, db *models.MongoDB) {
 	c.JSON(http.StatusOK, gin.H{"message": "Bank account deleted successfully"})
 }
 
+// SetDefaultBankAccountHandler godoc
+//
+// @Summary 	Set default bank account
+// @Description Set default bank account (authentication required and only the service provider can update their own profile)
+// @Tags 		ServiceProviders
+//
+// @Accept  	json
+// @Produce  	json
+//
+// @Param 		object	body 	object{defaultAccountNumber=string,defaultBank=string} 	true	"Default Bank Account Object"
+//
+// @Success 200 {object} object{message=string}
+//
+// @Router /serviceproviders/set-default-bank-account [post]
 func SetDefaultBankAccountHandler(c *gin.Context, db *models.MongoDB) {
 	// get current svcp
 	current_svcp, err := _authenticate(c, db)

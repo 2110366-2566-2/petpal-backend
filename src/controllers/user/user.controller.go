@@ -19,17 +19,20 @@ import (
 
 // GetUsersHandler godoc
 //
-//		@Summary		Get all users
-//		@Description	Get all users
-//		@Tags			user
-//		@Accept			json
-//		@Produce		json
-//	 @Success		200		{object}	[]models.User
-//		@Param			page	query		int	false	"page"
-//		@Param			per		query		int	false	"per"
-//		@Failure		400		{object}	string
-//		@Failure		500		{object}	string
-//		@Router			/users [get]
+// @Summary		Get all users
+// @Description	Get all users (authentication not required)
+// @Tags		user
+//
+// @Accept		json
+// @Produce		json
+// @Param		page	query		int	false	"page"
+// @Param		per		query		int	false	"per"
+//
+// @Success		200		{object}	[]models.User
+// @Failure		400		{object}	string
+// @Failure		500		{object}	string
+//
+// @Router		/users [get]
 func GetUsersHandler(w http.ResponseWriter, r *http.Request, db *models.MongoDB) {
 	// Call the user service to get all users
 	params := r.URL.Query()
@@ -73,18 +76,6 @@ func GetUserByIDHandler(w http.ResponseWriter, r *http.Request, db *models.Mongo
 	json.NewEncoder(w).Encode(user)
 }
 
-// UpdateUserHandler godoc
-// @Summary Update User
-// @Description Update an existing user
-// @Tags user
-// @Accept json
-// @Produce json
-// @Param id path string true "User ID"
-// @Param requestBody body bson.M true "User data"
-// @Security CookieAuth
-// @Success 200 {string} string "User updated successfully"
-// @Failure 400 {string} string "Bad request"
-// @Failure 500 {string} string "Internal server error"
 func UpdateUserHandler(c *gin.Context, db *models.MongoDB) {
 	// Parse request body to get user data
 	currentUser, err := _authenticate(c, db)
@@ -108,7 +99,6 @@ func UpdateUserHandler(c *gin.Context, db *models.MongoDB) {
 
 	// Respond with a success message
 	c.JSON(http.StatusOK, gin.H{"message": "User updated successfully"})
-
 }
 
 // GetUserPetsHandler for get list of user's pet
@@ -121,7 +111,17 @@ func GetUserPetsByIdHandler(c *gin.Context, db *models.MongoDB, id string) {
 	c.JSON(http.StatusOK, gin.H{"pets": pets})
 }
 
-// GetUserPetsHandler for get list of user's pet
+// CurrentUserHandler godoc
+// @Summary Get Current User
+// @Description Get the details of the currently authenticated user
+// @Tags user
+// @Accept json
+// @Produce json
+// @Security CookieAuth
+// @Success 202 {object} models.User "User details"
+// @Failure 400 {string} string "Failed to get token from Cookie plase login first"
+// @Failure 500 {string} string "Failed to get User Email request body"
+// @Router /user/me [get]
 func GetCurrentUserPetsHandler(c *gin.Context, db *models.MongoDB) {
 	currentUser, err := _authenticate(c, db)
 	if err != nil {
