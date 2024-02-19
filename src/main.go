@@ -12,8 +12,10 @@ import (
 
 	"petpal-backend/src/docs"
 
-	"github.com/swaggo/files"
-	"github.com/swaggo/gin-swagger"
+	"github.com/gin-contrib/cors"
+
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 // Middleware to inject database connection into Gin context
@@ -42,6 +44,14 @@ func InitGinRouter() *gin.Engine {
 func main() {
 	// Initialize Gin router
 	r := InitGinRouter()
+
+	// set cors
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE"},
+		AllowHeaders:     []string{"*"},
+		AllowCredentials: true,
+	}))
 
 	port := configs.GetPort()
 
