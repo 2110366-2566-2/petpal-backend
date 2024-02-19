@@ -56,10 +56,10 @@
                                 "status" : {"bsonType" : "string"}
                             }
                         }
-                    }
+                    },
+                    "price" : {"bsonType" : "double"}
                 }
             }
-        },
-        "price" : {"bsonType" : "double"}
+        }
     }
 }
