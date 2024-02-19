@@ -10,7 +10,7 @@ from pymongo.server_api import ServerApi
 # Config this part
 CLEAR_PREV = True # clear the collection before inserting new records
 N = 5 # number of records to generate
-COLLECTION_NAMES = ['user','svcp'] # collection name
+COLLECTION_NAMES = ['user','svcp', 'booking'] # collection name
 
 # Connect to MongoDB
 USERNAME = 'inwza'
@@ -80,6 +80,8 @@ def gen_object(id, properties_dict):
             for i in range(random.randint(1, 6)):
                 arr.append(gen_object(1, properties_dict[key]['items']['properties']))
             ret[key] = arr
+        elif t == 'object':
+            ret[key] = gen_object(1, properties_dict[key]['properties'])
         else:
             print('error (type='+properties_dict[key]['bsonType']+') not implemented')
     

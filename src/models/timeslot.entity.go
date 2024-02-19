@@ -5,8 +5,10 @@ import "time"
 
 // User represents a user entity
 type Timeslot struct {
-	StartTime   time.Time `json:"startTime" bson:"startTime"`
-	EndTime     time.Time `json:"endTime" bson:"endTime"`
+	TimeslotID string    `json:"timeslotID" bson:"timeslotID"`
+	StartTime  time.Time `json:"startTime" bson:"startTime"`
+	EndTime    time.Time `json:"endTime" bson:"endTime"`
+	Status     string    `json:"status" bson:"status"`
 }
 
 func (u *Timeslot) editTimeslot(timeslotDetails Timeslot) Timeslot {

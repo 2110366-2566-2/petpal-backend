@@ -1,0 +1,23 @@
+{
+    "type" : "object",
+    "bsonType" : "object",
+    "title" : "booking",
+    "description" : "Service booking and feedback each booking",
+    "properties" : {
+        "userID" : {"bsonType" : "string"},
+        "SVCPID" : {"bsonType" : "string"},
+        "serviceID" : {"bsonType" : "string"},
+        "timeslotsID" : {"bsonType" : "string"},
+        "bookingStatus" : {"bsonType" : "string"},
+        "bookingTimestamp" : {"bsonType" : "date"},
+        "totalBookingPrice" : {"bsonType" : "double"},
+        "feedback" : {
+            "bsonType" : "object",
+            "properties" : {
+                "feedbackID" : {"bsonType" : "string"},
+                "rating" : {"bsonType" : "double"},
+                "content" : {"bsonType" : "string"}
+            }
+        }
+    }
+}

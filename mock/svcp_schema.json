@@ -38,6 +38,8 @@
             "items" : {
                 "bsonType" : "object",
                 "properties" : {
+                    "serviceID" : {"bsonType" : "string"},
+                    "serviceName" : {"bsonType" : "string"},
                     "serviceType" : {"bsonType" : "string"},
                     "serviceDescription" : {"bsonType" : "string"},
                     "serviceImg" : {"bsonType" : "string"},
@@ -48,11 +50,14 @@
                         "items" : {
                             "bsonType" : "object",
                             "properties" : {
+                                "timeslotID" : {"bsonType" : "string"},
                                 "startTime" : {"bsonType" : "date"},
-                                "endTime" : {"bsonType" : "date"}
+                                "endTime" : {"bsonType" : "date"},
+                                "status" : {"bsonType" : "string"}
                             }
                         }
-                    }
+                    },
+                    "price" : {"bsonType" : "double"}
                 }
             }
         }
