@@ -9,7 +9,7 @@ import (
 
 func AuthRoutes(r *gin.Engine) {
 	authGroup := r.Group("")
-	authGroup.POST("/me", func(c *gin.Context) {
+	authGroup.GET("/current-entity", func(c *gin.Context) {
 		db := c.MustGet("db").(*models.MongoDB)
 		controllers.GetCurrentEntityHandler(c, db)
 	})
@@ -19,7 +19,7 @@ func AuthRoutes(r *gin.Engine) {
 	})
 	authGroup.POST("/register-user", func(c *gin.Context) {
 		db := c.MustGet("db").(*models.MongoDB)
-		controllers.RegisterSVCPHandler(c, db)
+		controllers.RegisterUserHandler(c, db)
 	})
 	authGroup.POST("/login", func(c *gin.Context) {
 		db := c.MustGet("db").(*models.MongoDB)

@@ -58,6 +58,7 @@ func main() {
 	// add router
 	user_route.UserRoutes(r)
 	routes.SVCPRoutes(r)
+	routes.AuthRoutes(r)
 
 	// Swagger
 	docs.SwaggerInfo.Title = "PetPal API"

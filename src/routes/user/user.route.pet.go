@@ -20,7 +20,7 @@ func UserPetRoutes(r *gin.RouterGroup) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllers.GetCurrentUserPetsHandler(c, db)
 		})
-		petGroup.PUT("/", func(c *gin.Context) {
+		petGroup.POST("/", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllers.AddUserPetHandler(c, db)
 		})

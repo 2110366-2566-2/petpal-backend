@@ -113,7 +113,7 @@ func GetSVCPByIDHandler(c *gin.Context, db *models.MongoDB, id string) {
 // @Success 200 {object} models.BasicRes 
 // @Failure 400 {object} models.BasicErrorRes
 //
-// @Router /serviceproviders/{id} [put]
+// @Router /serviceproviders [put]
 func UpdateSVCPHandler(c *gin.Context, db *models.MongoDB) {
 	current_svcp, err := _authenticate(c, db)
 	if err != nil {
