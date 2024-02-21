@@ -1,4 +1,11 @@
 definitions:
+  controllers.CreateFeedbackRequest:
+    properties:
+      content:
+        type: string
+      rating:
+        type: number
+    type: object
   controllers.defaultBankAccountReq:
     properties:
       defaultAccountNumber:
@@ -45,6 +52,15 @@ definitions:
       username:
         description: Define the 10 fields here
         type: string
+    type: object
+  models.Feedback:
+    properties:
+      content:
+        type: string
+      feedbackID:
+        type: string
+      rating:
+        type: number
     type: object
   models.LoginReq:
     properties:
@@ -119,11 +135,17 @@ definitions:
     properties:
       averageRating:
         type: number
+      price:
+        type: number
       requireCert:
         type: boolean
       serviceDescription:
         type: string
+      serviceID:
+        type: string
       serviceImg:
+        type: string
+      serviceName:
         type: string
       serviceType:
         type: string
@@ -137,6 +159,10 @@ definitions:
       endTime:
         type: string
       startTime:
+        type: string
+      status:
+        type: string
+      timeslotID:
         type: string
     type: object
   models.User:
@@ -385,6 +411,71 @@ paths:
       summary: User registration
       tags:
       - Authentication
+  /service/feedback/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get feedbacks for a service
+      parameters:
+      - description: Service ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Feedback'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      summary: Get feedbacks
+      tags:
+      - Service
+    post:
+      consumes:
+      - application/json
+      description: Create a feedback for a service
+      parameters:
+      - description: Service ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Feedback rating and content(optional)
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.CreateFeedbackRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Feedback'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      summary: Create a feedback
+      tags:
+      - Service
   /serviceproviders:
     get:
       consumes:
@@ -420,36 +511,6 @@ paths:
       summary: Get all service providers
       tags:
       - ServiceProviders
-  /serviceproviders/{id}:
-    get:
-      consumes:
-      - application/json
-      description: Get service provider by ID (authentication not required) and sensitive
-        information is censorred
-      parameters:
-      - description: Service Provider ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.SVCP'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/models.BasicErrorRes'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.BasicErrorRes'
-      summary: Get service provider by ID
-      tags:
-      - ServiceProviders
     put:
       consumes:
       - application/json
@@ -481,6 +542,36 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Update service provider
+      tags:
+      - ServiceProviders
+  /serviceproviders/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get service provider by ID (authentication not required) and sensitive
+        information is censorred
+      parameters:
+      - description: Service Provider ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SVCP'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      summary: Get service provider by ID
       tags:
       - ServiceProviders
   /serviceproviders/add-service:

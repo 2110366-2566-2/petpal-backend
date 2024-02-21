@@ -347,6 +347,104 @@ const docTemplate = `{
                 }
             }
         },
+        "/service/feedback/{id}": {
+            "get": {
+                "description": "Get feedbacks for a service",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Service"
+                ],
+                "summary": "Get feedbacks",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Service ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Feedback"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a feedback for a service",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Service"
+                ],
+                "summary": "Create a feedback",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Service ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Feedback rating and content(optional)",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controllers.CreateFeedbackRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Feedback"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/serviceproviders": {
             "get": {
                 "description": "Get all service providers (authentication not required) and sensitive information is censorred",
@@ -392,6 +490,56 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Update service provider (authentication required and only the service provider can update their own profile)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ServiceProviders"
+                ],
+                "summary": "Update service provider",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Service Provider ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Service Provider Object (only the fields to be updated)",
+                        "name": "svcp",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/models.BasicErrorRes"
                         }
@@ -654,56 +802,6 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.BasicErrorRes"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Update service provider (authentication required and only the service provider can update their own profile)",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ServiceProviders"
-                ],
-                "summary": "Update service provider",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Service Provider ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Service Provider Object (only the fields to be updated)",
-                        "name": "svcp",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "object"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.BasicRes"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/models.BasicErrorRes"
                         }
@@ -1321,6 +1419,17 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "controllers.CreateFeedbackRequest": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "rating": {
+                    "type": "number"
+                }
+            }
+        },
         "controllers.defaultBankAccountReq": {
             "type": "object",
             "properties": {
@@ -1390,6 +1499,20 @@ const docTemplate = `{
                 "username": {
                     "description": "Define the 10 fields here",
                     "type": "string"
+                }
+            }
+        },
+        "models.Feedback": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "feedbackID": {
+                    "type": "string"
+                },
+                "rating": {
+                    "type": "number"
                 }
             }
         },
@@ -1504,13 +1627,22 @@ const docTemplate = `{
                 "averageRating": {
                     "type": "number"
                 },
+                "price": {
+                    "type": "number"
+                },
                 "requireCert": {
                     "type": "boolean"
                 },
                 "serviceDescription": {
                     "type": "string"
                 },
+                "serviceID": {
+                    "type": "string"
+                },
                 "serviceImg": {
+                    "type": "string"
+                },
+                "serviceName": {
                     "type": "string"
                 },
                 "serviceType": {
@@ -1531,6 +1663,12 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "startTime": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "timeslotID": {
                     "type": "string"
                 }
             }
