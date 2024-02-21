@@ -2,6 +2,7 @@ package chat
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -65,6 +66,7 @@ func JoinChatRoom(c *gin.Context, h *Hub) {
 		Username:    username,
 		Role:        userrole,
 		MessageType: string(Text),
+		TimeStamp:   time.Now(),
 	}
 	h.Register <- client
 	h.Broadcast <- msg

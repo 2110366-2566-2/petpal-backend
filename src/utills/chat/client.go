@@ -3,6 +3,7 @@ package chat
 import (
 	"errors"
 	"log"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -17,11 +18,12 @@ type Client struct {
 }
 
 type Message struct {
-	Content     string `json:"content"`
-	RoomID      string `json:"roomId"`
-	Username    string `json:"username"`
-	Role        string `json:"role"`
-	MessageType string `json:messageType`
+	Content     string    `json:"content"`
+	RoomID      string    `json:"roomId"`
+	Username    string    `json:"username"`
+	Role        string    `json:"role"`
+	MessageType string    `json:messageType`
+	TimeStamp   time.Time `json:timeStamp`
 }
 
 type MessageType string
@@ -47,9 +49,10 @@ func (c *Client) writeMessage() error {
 			return err
 		}
 		// if message content is empty or too long
-		if message.MessageType == string(Text) && (len(message.Content) > 500 || len(message.Content) == 0) {
-			return errors.New("Cannot send empty messsage or too long message")
-		}
+		/*
+			if message.MessageType == string(Text) && (len(message.Content) > 500 || len(message.Content) == 0) {
+				return errors.New("Cannot send empty messsage or too long message")
+			}*/
 	}
 }
 
@@ -73,6 +76,7 @@ func (c *Client) readMessage(h *Hub) error {
 			Username:    c.Username,
 			Role:        c.Role,
 			MessageType: string(Text),
+			TimeStamp:   time.Now(),
 		}
 
 		h.Broadcast <- msg

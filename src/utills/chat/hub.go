@@ -1,5 +1,7 @@
 package chat
 
+import "time"
+
 type ChatRoom struct {
 	ID      string             `json:"roomid"`
 	Clients map[string]*Client `json:"clients"`
@@ -35,9 +37,10 @@ func (h *Hub) Run() {
 			if _, roomExist := h.Rooms[client.RoomID]; roomExist {
 				if len(h.Rooms[client.RoomID].Clients) != 0 {
 					h.Broadcast <- &Message{
-						Content:  "user left the chat",
-						RoomID:   client.RoomID,
-						Username: client.Username,
+						Content:   "user left the chat",
+						RoomID:    client.RoomID,
+						Username:  client.Username,
+						TimeStamp: time.Now(),
 					}
 				}
 
