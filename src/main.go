@@ -6,6 +6,7 @@ import (
 	"petpal-backend/src/models"
 	"petpal-backend/src/routes"
 	user_route "petpal-backend/src/routes/user"
+	service_route "petpal-backend/src/routes/service"
 	"petpal-backend/src/utills"
 
 	"github.com/gin-gonic/gin"
@@ -59,6 +60,7 @@ func main() {
 	user_route.UserRoutes(r)
 	routes.SVCPRoutes(r)
 	routes.AuthRoutes(r)
+	service_route.ServiceRoutes(r)
 
 	// Swagger
 	docs.SwaggerInfo.Title = "PetPal API"
