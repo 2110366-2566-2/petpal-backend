@@ -43,9 +43,12 @@ func (c *Client) writeMessage() error {
 		if !ok {
 			return errors.New("channel closed unexpectedly")
 		}
-
 		if err := c.Connection.WriteJSON(message); err != nil {
 			return err
+		}
+		// if message content is empty or too long
+		if message.MessageType == string(Text) && (len(message.Content) > 500 || len(message.Content) == 0) {
+			return errors.New("Cannot send empty messsage or too long message")
 		}
 	}
 }
@@ -64,7 +67,6 @@ func (c *Client) readMessage(h *Hub) error {
 			}
 			return err
 		}
-
 		msg := &Message{
 			Content:     string(m),
 			RoomID:      c.RoomID,
