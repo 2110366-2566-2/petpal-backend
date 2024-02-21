@@ -117,7 +117,12 @@ func UploadSVCPLicense(db *models.MongoDB, fileContent []byte, SVCPEmail string)
 	svcpCollection := db.Collection("svcp")
 	// Update the license field in "scvp" collection
 	filter := bson.D{{"SVCPEmail", SVCPEmail}}
-	update := bson.D{{"$set", bson.D{{"license", encodedFileContent}}}}
+	update := bson.D{
+		{"$set", bson.D{
+			{"license", encodedFileContent},
+			{"IsVerified", true},
+		}},
+	}
 	// Updates the first document that has the specified "SVCPUsername" value
 	_, err := svcpCollection.UpdateOne(context.TODO(), filter, update)
 	if err != nil {
