@@ -1,6 +1,8 @@
 package chat
 
 import (
+	"log"
+
 	"github.com/gorilla/websocket"
 )
 
@@ -29,3 +31,43 @@ const (
 	Image MessageType = "image"
 	Video MessageType = "video"
 )
+
+func (c *Client) writeMessage() {
+	defer func() {
+		c.Connection.Close()
+	}()
+
+	for {
+		message, ok := <-c.Message
+		if !ok {
+			return
+		}
+		c.Connection.WriteJSON(message)
+	}
+}
+
+func (c *Client) readMessage(h *Hub) {
+	defer func() {
+		h.Unregister <- c
+		c.Connection.Close()
+	}()
+	for {
+		_, m, err := c.Connection.ReadMessage()
+		if err != nil {
+			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+				log.Printf("error: %v", err)
+			}
+			break
+		}
+
+		msg := &Message{
+			Content:     string(m),
+			RoomID:      c.RoomID,
+			Username:    c.Username,
+			Role:        c.Role,
+			MessageType: string(Text),
+		}
+
+		h.Broadcast <- msg
+	}
+}
