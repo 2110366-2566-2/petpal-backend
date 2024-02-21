@@ -14,4 +14,10 @@ func ServiceFeedbackRoutes(r *gin.RouterGroup) {
 		id := c.Param("id")
 		controllers.CreateFeedbackHandler(c, db, id)
 	})
+
+	serviceFeedbackGroup.GET("/:id", func(c *gin.Context, ) {
+		db := c.MustGet("db").(*models.MongoDB)
+		id := c.Param("id")
+		controllers.GetFeedbackHandler(c, db, id)
+	})
 }
