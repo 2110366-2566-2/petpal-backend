@@ -69,8 +69,17 @@ func JoinChatRoom(c *gin.Context, h *Hub) {
 	h.Register <- client
 	h.Broadcast <- msg
 
-	go client.writeMessage()
-	client.readMessage(h)
+	go func() {
+		err := client.writeMessage()
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}()
+
+	err = client.readMessage(h)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 }
 
 type ChatRoomRes struct {

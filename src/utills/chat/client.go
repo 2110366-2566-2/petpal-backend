@@ -1,6 +1,7 @@
 package chat
 
 import (
+	"errors"
 	"log"
 
 	"github.com/gorilla/websocket"
@@ -32,7 +33,7 @@ const (
 	Video MessageType = "video"
 )
 
-func (c *Client) writeMessage() {
+func (c *Client) writeMessage() error {
 	defer func() {
 		c.Connection.Close()
 	}()
@@ -40,24 +41,28 @@ func (c *Client) writeMessage() {
 	for {
 		message, ok := <-c.Message
 		if !ok {
-			return
+			return errors.New("channel closed unexpectedly")
 		}
-		c.Connection.WriteJSON(message)
+
+		if err := c.Connection.WriteJSON(message); err != nil {
+			return err
+		}
 	}
 }
 
-func (c *Client) readMessage(h *Hub) {
+func (c *Client) readMessage(h *Hub) error {
 	defer func() {
 		h.Unregister <- c
 		c.Connection.Close()
 	}()
+
 	for {
 		_, m, err := c.Connection.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 				log.Printf("error: %v", err)
 			}
-			break
+			return err
 		}
 
 		msg := &Message{
