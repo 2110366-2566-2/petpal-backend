@@ -9,4 +9,5 @@ func ServiceRoutes(r *gin.Engine) {
 
 	ServiceBaseRoutes(serviceGroup)
 	ServiceFeedbackRoutes(serviceGroup)
+	ServiceBookingRoutes(serviceGroup)
 }
