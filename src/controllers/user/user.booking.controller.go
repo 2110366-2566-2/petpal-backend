@@ -40,7 +40,7 @@ func CreateBookingHandler(c *gin.Context, db *models.MongoDB) {
 	}
 
 	//400 bad request
-	if err := c.ShouldBindJSON(&request); err != nil {
+	if err := c.ShouldBindJSON(&request.Booking); err != nil {
 		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: err.Error()})
 		return
 	}
