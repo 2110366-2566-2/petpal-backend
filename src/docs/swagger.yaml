@@ -1,4 +1,11 @@
 definitions:
+  controllers.CreateBookingHandlerSuccess:
+    properties:
+      message:
+        type: string
+      result:
+        $ref: '#/definitions/models.Booking'
+    type: object
   controllers.CreateFeedbackRequest:
     properties:
       content:
@@ -23,6 +30,66 @@ definitions:
       message:
         type: string
     type: object
+  models.Booking:
+    properties:
+      SVCPID:
+        type: string
+      bookingStatus:
+        $ref: '#/definitions/models.BookingStatus'
+      bookingTimestamp:
+        type: string
+      feedback:
+        $ref: '#/definitions/models.Feedback'
+      serviceID:
+        type: string
+      timeslotID:
+        type: string
+      totalBookingPrice:
+        type: number
+      userID:
+        type: string
+    type: object
+  models.BookingCreate:
+    properties:
+      SVCPID:
+        type: string
+      serviceID:
+        type: string
+      timeslotID:
+        type: string
+    type: object
+  models.BookingStatus:
+    enum:
+    - pending payment
+    - service provided comfirmed
+    - payment confirmed
+    - completed
+    - cancelled by user
+    - cancelled by service provider
+    - rescheduled
+    - expired from unpaid
+    - expired from pending service provider confirmation
+    type: string
+    x-enum-comments:
+      BookingCanceledSvcp: svcp has cancelled
+      BookingCanceledUser: user has cancelled
+      BookingComfirmed: svcp has confirmed waiting for user to pay
+      BookingCompleted: service has been provided
+      BookingExpiredComfirmed: svcp has not confirmed in time
+      BookingExpiredPaid: user has not paid in time
+      BookingPaid: user has paid
+      BookingPending: waiting for user to pay
+      BookingRescheduled: user has rescheduled
+    x-enum-varnames:
+    - BookingPending
+    - BookingComfirmed
+    - BookingPaid
+    - BookingCompleted
+    - BookingCanceledUser
+    - BookingCanceledSvcp
+    - BookingRescheduled
+    - BookingExpiredPaid
+    - BookingExpiredComfirmed
   models.CreateSVCP:
     properties:
       SVCPEmail:
@@ -412,38 +479,39 @@ paths:
       tags:
       - Authentication
   /service/booking/create:
-    put:
+    post:
       consumes:
       - application/json
-      description: Create a feedback for a service
+      description: User can create a booking for a service
       parameters:
-      - description: Service ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Feedback rating and content(optional)
+      - description: service chosen
         in: body
-        name: body
+        name: service
         required: true
         schema:
-          $ref: '#/definitions/controllers.CreateFeedbackRequest'
+          $ref: '#/definitions/models.BookingCreate'
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
           schema:
-            $ref: '#/definitions/models.Feedback'
+            $ref: '#/definitions/controllers.CreateBookingHandlerSuccess'
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "401":
+          description: Unauthorized
           schema:
             $ref: '#/definitions/models.BasicErrorRes'
         "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.BasicErrorRes'
-      summary: Create a feedback
+      security:
+      - ApiKeyAuth: []
+      summary: Create a Booking
       tags:
       - Service
   /service/feedback/{id}:
