@@ -19,5 +19,20 @@ func ServiceBookingRoutes(r *gin.RouterGroup) {
 			controllers.CreateBookingHandler(c, db)
 		})
 
+		bookingGroup.GET("/all/user", func(c *gin.Context) {
+			db := c.MustGet("db").(*models.MongoDB)
+			controllers.UserGetAllBookingHandler(c, db)
+		})
+
+		bookingGroup.GET("/uncomplete/user", func(c *gin.Context) {
+			db := c.MustGet("db").(*models.MongoDB)
+			controllers.UserGetUncompleteBookingHandler(c, db)
+		})
+
+		bookingGroup.GET("/history/user", func(c *gin.Context) {
+			db := c.MustGet("db").(*models.MongoDB)
+			controllers.UserGetHistoryBookingHandler(c, db)
+		})
+
 	}
 }

@@ -347,6 +347,49 @@ const docTemplate = `{
                 }
             }
         },
+        "/service/booking/all/user": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get all user booking",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking"
+                ],
+                "summary": "get all user booking",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/controllers.GetBookingHandlerSuccess"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/service/booking/create": {
             "post": {
                 "security": [
@@ -362,7 +405,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Service"
+                    "Booking"
                 ],
                 "summary": "Create a Booking",
                 "parameters": [
@@ -387,6 +430,92 @@ const docTemplate = `{
                         "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/service/booking/history/user": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get only booking with status completed, cancelled, expired (all booking that done)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking"
+                ],
+                "summary": "get all user history booking",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/controllers.GetBookingHandlerSuccess"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/service/booking/uncomplete/user": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get only booking with status pending, paid, comfirmed (all booking that not done yet)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking"
+                ],
+                "summary": "get all user uncomplete booking",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/controllers.GetBookingHandlerSuccess"
+                            }
                         }
                     },
                     "401": {
@@ -1498,6 +1627,20 @@ const docTemplate = `{
                 }
             }
         },
+        "controllers.GetBookingHandlerSuccess": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "result": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Booking"
+                    }
+                }
+            }
+        },
         "controllers.defaultBankAccountReq": {
             "type": "object",
             "properties": {
@@ -1572,8 +1715,8 @@ const docTemplate = `{
             "type": "string",
             "enum": [
                 "pending payment",
+                "payment paid",
                 "service provided comfirmed",
-                "payment confirmed",
                 "completed",
                 "cancelled by user",
                 "cancelled by service provider",
@@ -1594,8 +1737,8 @@ const docTemplate = `{
             },
             "x-enum-varnames": [
                 "BookingPending",
-                "BookingComfirmed",
                 "BookingPaid",
+                "BookingComfirmed",
                 "BookingCompleted",
                 "BookingCanceledUser",
                 "BookingCanceledSvcp",

@@ -40,9 +40,11 @@ func InsertBooking(db *models.MongoDB, BookingCreate *models.Booking) (*models.B
 	}
 
 	// Check if the timeslot exists in the service
+	var foundtimeslot models.Timeslot
 	err = errors.New("timeslot not found")
 	for _, t := range foundService.Timeslots {
 		if t.TimeslotID == BookingCreate.TimeslotID {
+			foundtimeslot = t
 			err = nil
 			break
 		}
@@ -54,6 +56,11 @@ func InsertBooking(db *models.MongoDB, BookingCreate *models.Booking) (*models.B
 
 	BookingCreate.TotalBookingPrice = foundService.Price
 
+	// Check if the timeslot has already passed
+	if foundtimeslot.StartTime.Before(BookingCreate.BookingTimestamp) {
+		// return nil, errors.New("timeslot has already passed")
+	}
+
 	// Insert the booking into the collection
 	_, err = collection.InsertOne(context.Background(), BookingCreate)
 	if err != nil {
@@ -62,4 +69,118 @@ func InsertBooking(db *models.MongoDB, BookingCreate *models.Booking) (*models.B
 
 	// Return the inserted booking
 	return BookingCreate, nil
+}
+func ChangeBookingStatus(db *models.MongoDB, bookingID string, status models.BookingStatus) (*models.Booking, error) {
+	// Get the booking collection
+	collection := db.Collection("booking")
+
+	// Find the booking by bookingID
+	var booking models.Booking
+	filter := bson.D{{Key: "bookingID", Value: bookingID}}
+	err := collection.FindOne(context.Background(), filter).Decode(&booking)
+	if err != nil {
+		return nil, err
+	}
+
+	// Update the booking status
+	booking.BookingStatus = status
+
+	// Update the booking in the collection
+	_, err = collection.ReplaceOne(context.Background(), filter, booking)
+	if err != nil {
+		return nil, err
+	}
+
+	return &booking, nil
+}
+
+func GetBooking(db *models.MongoDB, bookingID string) (*models.Booking, error) {
+	// Get the booking collection
+	collection := db.Collection("booking")
+
+	// Find the booking by bookingID
+	var booking models.Booking
+	filter := bson.D{{Key: "bookingID", Value: bookingID}}
+	err := collection.FindOne(context.Background(), filter).Decode(&booking)
+	if err != nil {
+		return nil, err
+	}
+
+	return &booking, nil
+}
+
+func GetBookingsByUser(db *models.MongoDB, userID string, status models.BookingStatus) ([]models.Booking, error) {
+	// Get the booking collection
+	collection := db.Collection("booking")
+
+	// Find the booking by userID
+	filter := bson.D{{Key: "userID", Value: userID}, {Key: "bookingStatus", Value: status}}
+	cursor, err := collection.Find(context.Background(), filter)
+	if err != nil {
+		return nil, err
+	}
+
+	var bookings []models.Booking
+	if err = cursor.All(context.Background(), &bookings); err != nil {
+		return nil, err
+	}
+
+	return bookings, nil
+}
+
+func GetAllBookingsByUser(db *models.MongoDB, userID string) ([]models.Booking, error) {
+	// Get the booking collection
+	collection := db.Collection("booking")
+
+	// Find the booking by userID
+	filter := bson.D{{Key: "userID", Value: userID}}
+	cursor, err := collection.Find(context.Background(), filter)
+	if err != nil {
+		return nil, err
+	}
+
+	var bookings []models.Booking
+	if err = cursor.All(context.Background(), &bookings); err != nil {
+		return nil, err
+	}
+
+	return bookings, nil
+}
+
+func GetBookingsBySVCP(db *models.MongoDB, SVCPID string, status models.BookingStatus) ([]models.Booking, error) {
+	// Get the booking collection
+	collection := db.Collection("booking")
+
+	// Find the booking by SVCPID
+	filter := bson.D{{Key: "SVCPID", Value: SVCPID}, {Key: "bookingStatus", Value: status}}
+	cursor, err := collection.Find(context.Background(), filter)
+	if err != nil {
+		return nil, err
+	}
+
+	var bookings []models.Booking
+	if err = cursor.All(context.Background(), &bookings); err != nil {
+		return nil, err
+	}
+
+	return bookings, nil
+}
+
+func GetAllBookingsBySVCP(db *models.MongoDB, SVCPID string) ([]models.Booking, error) {
+	// Get the booking collection
+	collection := db.Collection("booking")
+
+	// Find the booking by SVCPID
+	filter := bson.D{{Key: "SVCPID", Value: SVCPID}}
+	cursor, err := collection.Find(context.Background(), filter)
+	if err != nil {
+		return nil, err
+	}
+
+	var bookings []models.Booking
+	if err = cursor.All(context.Background(), &bookings); err != nil {
+		return nil, err
+	}
+
+	return bookings, nil
 }

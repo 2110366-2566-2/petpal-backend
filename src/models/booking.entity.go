@@ -25,8 +25,8 @@ type BookingStatus string
 
 const (
 	BookingPending   BookingStatus = "pending payment"            //waiting for user to pay
+	BookingPaid      BookingStatus = "payment paid"               //user has paid
 	BookingComfirmed BookingStatus = "service provided comfirmed" //svcp has confirmed waiting for user to pay
-	BookingPaid      BookingStatus = "payment confirmed"          //user has paid
 	BookingCompleted BookingStatus = "completed"                  //service has been provided
 
 	BookingCanceledUser BookingStatus = "cancelled by user"             //user has cancelled
