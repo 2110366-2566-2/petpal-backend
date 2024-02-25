@@ -9,11 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type CreateBookingHandlerSuccess struct {
-	Message string         `json:"message"`
-	Result  models.Booking `json:"result"`
-}
-
 // CreateBookingHandler godoc
 //
 // @Summary 	Create a Booking
@@ -27,7 +22,7 @@ type CreateBookingHandlerSuccess struct {
 //
 // @Param       service      body   models.BookingRequest    true    "service chosen"
 //
-// @Success 	201 {object} CreateBookingHandlerSuccess
+// @Success 	201 {object} models.BookingBasicRes
 // @Failure 	400 {object} models.BasicErrorRes
 // @Failure 	401 {object} models.BasicErrorRes
 // @Failure 	500 {object} models.BasicErrorRes
@@ -70,7 +65,7 @@ func CreateBookingHandler(c *gin.Context, db *models.MongoDB) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, CreateBookingHandlerSuccess{Message: "Booking created successfully", Result: *returnBooking})
+	c.JSON(http.StatusCreated, models.BookingBasicRes{Message: "Booking created successfully", Result: *returnBooking})
 
 }
 
@@ -115,11 +110,6 @@ func CreateBookingHandler(c *gin.Context, db *models.MongoDB) {
 
 // }
 
-type GetBookingHandlerSuccess struct {
-	Message string                 `json:"message"`
-	Result  []models.BookingWithId `json:"result"`
-}
-
 // UserGetAllBookingHandler godoc
 //
 // @Summary 	get all user booking
@@ -131,7 +121,7 @@ type GetBookingHandlerSuccess struct {
 //
 // @Security    ApiKeyAuth
 //
-// @Success 	200 {array} GetBookingHandlerSuccess
+// @Success 	200 {array} models.BookingWithIdArrayRes
 // @Failure 	401 {object} models.BasicErrorRes
 // @Failure 	500 {object} models.BasicErrorRes
 //
@@ -151,7 +141,7 @@ func UserGetAllBookingHandler(c *gin.Context, db *models.MongoDB) {
 		return
 	}
 
-	c.JSON(http.StatusOK, GetBookingHandlerSuccess{Message: "get all user booking successfully", Result: bookingsList})
+	c.JSON(http.StatusOK, models.BookingWithIdArrayRes{Message: "get all user booking successfully", Result: bookingsList})
 }
 
 // UserGetUncompleteBookingHandler godoc
@@ -165,7 +155,7 @@ func UserGetAllBookingHandler(c *gin.Context, db *models.MongoDB) {
 //
 // @Security    ApiKeyAuth
 //
-// @Success 	200 {array} GetBookingHandlerSuccess
+// @Success 	200 {array} models.BookingWithIdArrayRes
 // @Failure 	401 {object} models.BasicErrorRes
 // @Failure 	500 {object} models.BasicErrorRes
 //
@@ -192,7 +182,7 @@ func UserGetUncompleteBookingHandler(c *gin.Context, db *models.MongoDB) {
 		return
 	}
 
-	c.JSON(http.StatusOK, GetBookingHandlerSuccess{Message: "get user all booking uncomplete successfully", Result: newbookingsList})
+	c.JSON(http.StatusOK, models.BookingWithIdArrayRes{Message: "get user all booking uncomplete successfully", Result: newbookingsList})
 
 }
 
@@ -207,7 +197,7 @@ func UserGetUncompleteBookingHandler(c *gin.Context, db *models.MongoDB) {
 //
 // @Security    ApiKeyAuth
 //
-// @Success 	200 {array} GetBookingHandlerSuccess
+// @Success 	200 {array} models.BookingWithIdArrayRes
 // @Failure 	401 {object} models.BasicErrorRes
 // @Failure 	500 {object} models.BasicErrorRes
 //
@@ -234,12 +224,8 @@ func UserGetHistoryBookingHandler(c *gin.Context, db *models.MongoDB) {
 		return
 	}
 
-	c.JSON(http.StatusOK, GetBookingHandlerSuccess{Message: "get user all booking uncomplete successfully", Result: newbookingsList})
+	c.JSON(http.StatusOK, models.BookingWithIdArrayRes{Message: "get user all booking uncomplete successfully", Result: newbookingsList})
 
-}
-
-type requestBookingId struct {
-	bookingID string `json:"bookingID"`
 }
 
 // UserCancelBookingHandler godoc
@@ -253,7 +239,7 @@ type requestBookingId struct {
 //
 // @Security    ApiKeyAuth
 //
-// @Param       bookingID      body    requestBookingId    true    "booking id"
+// @Param       bookingID      body    models.RequestBookingId    true    "booking id"
 //
 // @Success 	200 {object} models.BasicRes
 // @Failure 	400 {object} models.BasicErrorRes
@@ -263,7 +249,7 @@ type requestBookingId struct {
 // @Router 		/service/booking/cancel/user [post]
 func UserCancelBookingHandler(c *gin.Context, db *models.MongoDB) {
 	// create booking
-	var request requestBookingId
+	var request models.RequestBookingId = models.RequestBookingId{}
 
 	//400 bad request
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -279,13 +265,13 @@ func UserCancelBookingHandler(c *gin.Context, db *models.MongoDB) {
 	}
 
 	// Check for required fields
-	if request.bookingID == "" {
+	if request.BookingID == "" {
 		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "Missing required fields"})
 		return
 	}
 
 	//get booking for checking status
-	booking, err := utills.GetBooking(db, request.bookingID)
+	booking, err := utills.GetBooking(db, request.BookingID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})
 		return
@@ -309,7 +295,7 @@ func UserCancelBookingHandler(c *gin.Context, db *models.MongoDB) {
 	// 	//do something like return money to user all sent notification to svcp?
 	// }
 
-	_, err = utills.ChangeBookingStatus(db, request.bookingID, models.BookingCanceledUser)
+	_, err = utills.ChangeBookingStatus(db, request.BookingID, models.BookingCanceledUser)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})

@@ -360,7 +360,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/controllers.GetBookingHandlerSuccess"
+                                "$ref": "#/definitions/models.BookingWithIdArrayRes"
                             }
                         }
                     },
@@ -404,7 +404,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/controllers.requestBookingId"
+                            "$ref": "#/definitions/models.RequestBookingId"
                         }
                     }
                 ],
@@ -469,7 +469,7 @@
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/controllers.CreateBookingHandlerSuccess"
+                            "$ref": "#/definitions/models.BookingBasicRes"
                         }
                     },
                     "400": {
@@ -517,7 +517,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/controllers.GetBookingHandlerSuccess"
+                                "$ref": "#/definitions/models.BookingWithIdArrayRes"
                             }
                         }
                     },
@@ -560,7 +560,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/controllers.GetBookingHandlerSuccess"
+                                "$ref": "#/definitions/models.BookingWithIdArrayRes"
                             }
                         }
                     },
@@ -1651,17 +1651,6 @@
         }
     },
     "definitions": {
-        "controllers.CreateBookingHandlerSuccess": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string"
-                },
-                "result": {
-                    "$ref": "#/definitions/models.Booking"
-                }
-            }
-        },
         "controllers.CreateFeedbackRequest": {
             "type": "object",
             "properties": {
@@ -1673,20 +1662,6 @@
                 }
             }
         },
-        "controllers.GetBookingHandlerSuccess": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string"
-                },
-                "result": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Booking"
-                    }
-                }
-            }
-        },
         "controllers.defaultBankAccountReq": {
             "type": "object",
             "properties": {
@@ -1694,14 +1669,6 @@
                     "type": "string"
                 },
                 "defaultBank": {
-                    "type": "string"
-                }
-            }
-        },
-        "controllers.requestBookingId": {
-            "type": "object",
-            "properties": {
-                "bookingID": {
                     "type": "string"
                 }
             }
@@ -1748,6 +1715,17 @@
                 },
                 "userID": {
                     "type": "string"
+                }
+            }
+        },
+        "models.BookingBasicRes": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "result": {
+                    "$ref": "#/definitions/models.Booking"
                 }
             }
         },
@@ -1800,6 +1778,52 @@
                 "BookingExpiredPaid",
                 "BookingExpiredComfirmed"
             ]
+        },
+        "models.BookingWithId": {
+            "type": "object",
+            "properties": {
+                "SVCPID": {
+                    "type": "string"
+                },
+                "bookingID": {
+                    "type": "string"
+                },
+                "bookingStatus": {
+                    "$ref": "#/definitions/models.BookingStatus"
+                },
+                "bookingTimestamp": {
+                    "type": "string"
+                },
+                "feedback": {
+                    "$ref": "#/definitions/models.Feedback"
+                },
+                "serviceID": {
+                    "type": "string"
+                },
+                "timeslotID": {
+                    "type": "string"
+                },
+                "totalBookingPrice": {
+                    "type": "number"
+                },
+                "userID": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.BookingWithIdArrayRes": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "result": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.BookingWithId"
+                    }
+                }
+            }
         },
         "models.CreateSVCP": {
             "type": "object",
@@ -1905,6 +1929,14 @@
                     "type": "string"
                 },
                 "vaccinations": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.RequestBookingId": {
+            "type": "object",
+            "properties": {
+                "bookingID": {
                     "type": "string"
                 }
             }

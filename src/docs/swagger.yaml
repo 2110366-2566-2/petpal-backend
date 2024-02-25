@@ -1,11 +1,4 @@
 definitions:
-  controllers.CreateBookingHandlerSuccess:
-    properties:
-      message:
-        type: string
-      result:
-        $ref: '#/definitions/models.Booking'
-    type: object
   controllers.CreateFeedbackRequest:
     properties:
       content:
@@ -13,25 +6,11 @@ definitions:
       rating:
         type: number
     type: object
-  controllers.GetBookingHandlerSuccess:
-    properties:
-      message:
-        type: string
-      result:
-        items:
-          $ref: '#/definitions/models.Booking'
-        type: array
-    type: object
   controllers.defaultBankAccountReq:
     properties:
       defaultAccountNumber:
         type: string
       defaultBank:
-        type: string
-    type: object
-  controllers.requestBookingId:
-    properties:
-      bookingID:
         type: string
     type: object
   models.BasicErrorRes:
@@ -62,6 +41,13 @@ definitions:
         type: number
       userID:
         type: string
+    type: object
+  models.BookingBasicRes:
+    properties:
+      message:
+        type: string
+      result:
+        $ref: '#/definitions/models.Booking'
     type: object
   models.BookingRequest:
     properties:
@@ -104,6 +90,36 @@ definitions:
     - BookingRescheduled
     - BookingExpiredPaid
     - BookingExpiredComfirmed
+  models.BookingWithId:
+    properties:
+      SVCPID:
+        type: string
+      bookingID:
+        type: string
+      bookingStatus:
+        $ref: '#/definitions/models.BookingStatus'
+      bookingTimestamp:
+        type: string
+      feedback:
+        $ref: '#/definitions/models.Feedback'
+      serviceID:
+        type: string
+      timeslotID:
+        type: string
+      totalBookingPrice:
+        type: number
+      userID:
+        type: string
+    type: object
+  models.BookingWithIdArrayRes:
+    properties:
+      message:
+        type: string
+      result:
+        items:
+          $ref: '#/definitions/models.BookingWithId'
+        type: array
+    type: object
   models.CreateSVCP:
     properties:
       SVCPEmail:
@@ -173,6 +189,11 @@ definitions:
       type:
         type: string
       vaccinations:
+        type: string
+    type: object
+  models.RequestBookingId:
+    properties:
+      bookingID:
         type: string
     type: object
   models.SVCP:
@@ -504,7 +525,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/controllers.GetBookingHandlerSuccess'
+              $ref: '#/definitions/models.BookingWithIdArrayRes'
             type: array
         "401":
           description: Unauthorized
@@ -531,7 +552,7 @@ paths:
         name: bookingID
         required: true
         schema:
-          $ref: '#/definitions/controllers.requestBookingId'
+          $ref: '#/definitions/models.RequestBookingId'
       produces:
       - application/json
       responses:
@@ -574,7 +595,7 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/controllers.CreateBookingHandlerSuccess'
+            $ref: '#/definitions/models.BookingBasicRes'
         "400":
           description: Bad Request
           schema:
@@ -605,7 +626,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/controllers.GetBookingHandlerSuccess'
+              $ref: '#/definitions/models.BookingWithIdArrayRes'
             type: array
         "401":
           description: Unauthorized
@@ -633,7 +654,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/controllers.GetBookingHandlerSuccess'
+              $ref: '#/definitions/models.BookingWithIdArrayRes'
             type: array
         "401":
           description: Unauthorized

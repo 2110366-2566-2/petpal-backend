@@ -371,7 +371,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/controllers.GetBookingHandlerSuccess"
+                                "$ref": "#/definitions/models.BookingWithIdArrayRes"
                             }
                         }
                     },
@@ -415,7 +415,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/controllers.requestBookingId"
+                            "$ref": "#/definitions/models.RequestBookingId"
                         }
                     }
                 ],
@@ -480,7 +480,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/controllers.CreateBookingHandlerSuccess"
+                            "$ref": "#/definitions/models.BookingBasicRes"
                         }
                     },
                     "400": {
@@ -528,7 +528,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/controllers.GetBookingHandlerSuccess"
+                                "$ref": "#/definitions/models.BookingWithIdArrayRes"
                             }
                         }
                     },
@@ -571,7 +571,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/controllers.GetBookingHandlerSuccess"
+                                "$ref": "#/definitions/models.BookingWithIdArrayRes"
                             }
                         }
                     },
@@ -1662,17 +1662,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "controllers.CreateBookingHandlerSuccess": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string"
-                },
-                "result": {
-                    "$ref": "#/definitions/models.Booking"
-                }
-            }
-        },
         "controllers.CreateFeedbackRequest": {
             "type": "object",
             "properties": {
@@ -1684,20 +1673,6 @@ const docTemplate = `{
                 }
             }
         },
-        "controllers.GetBookingHandlerSuccess": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string"
-                },
-                "result": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Booking"
-                    }
-                }
-            }
-        },
         "controllers.defaultBankAccountReq": {
             "type": "object",
             "properties": {
@@ -1705,14 +1680,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "defaultBank": {
-                    "type": "string"
-                }
-            }
-        },
-        "controllers.requestBookingId": {
-            "type": "object",
-            "properties": {
-                "bookingID": {
                     "type": "string"
                 }
             }
@@ -1759,6 +1726,17 @@ const docTemplate = `{
                 },
                 "userID": {
                     "type": "string"
+                }
+            }
+        },
+        "models.BookingBasicRes": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "result": {
+                    "$ref": "#/definitions/models.Booking"
                 }
             }
         },
@@ -1811,6 +1789,52 @@ const docTemplate = `{
                 "BookingExpiredPaid",
                 "BookingExpiredComfirmed"
             ]
+        },
+        "models.BookingWithId": {
+            "type": "object",
+            "properties": {
+                "SVCPID": {
+                    "type": "string"
+                },
+                "bookingID": {
+                    "type": "string"
+                },
+                "bookingStatus": {
+                    "$ref": "#/definitions/models.BookingStatus"
+                },
+                "bookingTimestamp": {
+                    "type": "string"
+                },
+                "feedback": {
+                    "$ref": "#/definitions/models.Feedback"
+                },
+                "serviceID": {
+                    "type": "string"
+                },
+                "timeslotID": {
+                    "type": "string"
+                },
+                "totalBookingPrice": {
+                    "type": "number"
+                },
+                "userID": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.BookingWithIdArrayRes": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "result": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.BookingWithId"
+                    }
+                }
+            }
         },
         "models.CreateSVCP": {
             "type": "object",
@@ -1916,6 +1940,14 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "vaccinations": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.RequestBookingId": {
+            "type": "object",
+            "properties": {
+                "bookingID": {
                     "type": "string"
                 }
             }

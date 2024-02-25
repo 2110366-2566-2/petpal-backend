@@ -56,3 +56,22 @@ const (
 	BookingExpiredPaid      BookingStatus = "expired from unpaid"                                //user has not paid in time
 	BookingExpiredComfirmed BookingStatus = "expired from pending service provider confirmation" //svcp has not confirmed in time
 )
+
+type RequestBookingId struct {
+	BookingID string `json:"bookingID"`
+}
+
+type BookingBasicRes struct {
+	Message string  `json:"message"`
+	Result  Booking `json:"result"`
+}
+
+type BookingWithIdRes struct {
+	Message string        `json:"message"`
+	Result  BookingWithId `json:"result"`
+}
+
+type BookingWithIdArrayRes struct {
+	Message string          `json:"message"`
+	Result  []BookingWithId `json:"result"`
+}
