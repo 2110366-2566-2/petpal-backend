@@ -118,7 +118,7 @@ func UserGetAllBookingHandler(c *gin.Context, db *models.MongoDB) {
 // @Failure 	401 {object} models.BasicErrorRes
 // @Failure 	500 {object} models.BasicErrorRes
 //
-// @Router 		/service/booking/incomplete/user [get]
+// @Router 		/service/booking/incoming/user [get]
 func UserGetIncompleteBookingHandler(c *gin.Context, db *models.MongoDB) {
 	//401 not authorized
 	current_user, err := _authenticate(c, db)

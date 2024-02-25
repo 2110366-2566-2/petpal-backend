@@ -24,7 +24,7 @@ func ServiceBookingRoutes(r *gin.RouterGroup) {
 			controllers.UserGetAllBookingHandler(c, db)
 		})
 
-		bookingGroup.GET("/incomplete/user", func(c *gin.Context) {
+		bookingGroup.GET("/incoming/user", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllers.UserGetIncompleteBookingHandler(c, db)
 		})
@@ -43,6 +43,27 @@ func ServiceBookingRoutes(r *gin.RouterGroup) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllers.UserRescheduleBookingHandeler(c, db)
 		})
+
+		// bookingGroup.GET("/all/svcp", func(c *gin.Context) {
+		// 	db := c.MustGet("db").(*models.MongoDB)
+		// 	//controllers.SVCPGetAllBookingHandler(c, db)
+		// })
+		// bookingGroup.GET("/history/svcp", func(c *gin.Context) {
+		// 	db := c.MustGet("db").(*models.MongoDB)
+		// 	//controllers.SVCPGetHistoryBookingHandler(c, db)
+		// })
+		// bookingGroup.GET("/incoming/svcp", func(c *gin.Context) {
+		// 	db := c.MustGet("db").(*models.MongoDB)
+		// 	//controllers.SVCPGetIncompleteBookingHandler(c, db)
+		// })
+		// bookingGroup.POST("/accept/svcp", func(c *gin.Context) {
+		// 	db := c.MustGet("db").(*models.MongoDB)
+		// 	//controllers.SVCPAcceptBookingHandler(c, db)
+		// })
+		// bookingGroup.POST("/cancel/svcp", func(c *gin.Context) {
+		// 	db := c.MustGet("db").(*models.MongoDB)
+		// 	//controllers.SVCPRejectBookingHandler(c, db)
+		// })
 
 	}
 }
