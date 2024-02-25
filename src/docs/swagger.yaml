@@ -645,6 +645,34 @@ paths:
       summary: get all user history booking
       tags:
       - Booking
+  /service/booking/incoming/user:
+    get:
+      consumes:
+      - application/json
+      description: get only booking with status pending, paid, comfirmed (all booking
+        that not done yet)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.BookingWithIdArrayRes'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
+      summary: get all user incomplete booking
+      tags:
+      - Booking
   /service/booking/reschedule/user:
     post:
       consumes:
@@ -680,34 +708,6 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: user reschedule booking
-      tags:
-      - Booking
-  /service/booking/uncomplete/user:
-    get:
-      consumes:
-      - application/json
-      description: get only booking with status pending, paid, comfirmed (all booking
-        that not done yet)
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/models.BookingWithIdArrayRes'
-            type: array
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/models.BasicErrorRes'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.BasicErrorRes'
-      security:
-      - ApiKeyAuth: []
-      summary: get all user uncomplete booking
       tags:
       - Booking
   /service/feedback/{id}:
