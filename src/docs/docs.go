@@ -347,6 +347,306 @@ const docTemplate = `{
                 }
             }
         },
+        "/service/booking/all/user": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get all user booking",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking"
+                ],
+                "summary": "get all user booking",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.BookingWithIdArrayRes"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/service/booking/cancel/user": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "can only cancel booking with status pending, paid, comfirmed (all booking that not done yet)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking"
+                ],
+                "summary": "user cancel booking",
+                "parameters": [
+                    {
+                        "description": "booking id",
+                        "name": "bookingID",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.RequestBookingId"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/service/booking/create": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "User can create a booking for a service",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking"
+                ],
+                "summary": "Create a Booking",
+                "parameters": [
+                    {
+                        "description": "service chosen",
+                        "name": "service",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.BookingRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.BookingBasicRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/service/booking/history/user": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get only booking with status completed, cancelled, expired (all booking that done)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking"
+                ],
+                "summary": "get all user history booking",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.BookingWithIdArrayRes"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/service/booking/incoming/user": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get only booking with status pending, paid, comfirmed (all booking that not done yet)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking"
+                ],
+                "summary": "get all user incomplete booking",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.BookingWithIdArrayRes"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/service/booking/reschedule/user": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "can only reschedule booking with status pending, paid, comfirmed (all booking that not done yet)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking"
+                ],
+                "summary": "user reschedule booking",
+                "parameters": [
+                    {
+                        "description": "booking id and new timeslot id",
+                        "name": "booking",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.RequestBookingRescheduled"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/service/feedback/{id}": {
             "get": {
                 "description": "Get feedbacks for a service",
@@ -1457,6 +1757,139 @@ const docTemplate = `{
                 }
             }
         },
+        "models.Booking": {
+            "type": "object",
+            "properties": {
+                "SVCPID": {
+                    "type": "string"
+                },
+                "bookingStatus": {
+                    "$ref": "#/definitions/models.BookingStatus"
+                },
+                "bookingTimestamp": {
+                    "type": "string"
+                },
+                "feedback": {
+                    "$ref": "#/definitions/models.Feedback"
+                },
+                "serviceID": {
+                    "type": "string"
+                },
+                "timeslotID": {
+                    "type": "string"
+                },
+                "totalBookingPrice": {
+                    "type": "number"
+                },
+                "userID": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.BookingBasicRes": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "result": {
+                    "$ref": "#/definitions/models.Booking"
+                }
+            }
+        },
+        "models.BookingRequest": {
+            "type": "object",
+            "properties": {
+                "SVCPID": {
+                    "type": "string"
+                },
+                "serviceID": {
+                    "type": "string"
+                },
+                "timeslotID": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.BookingStatus": {
+            "type": "string",
+            "enum": [
+                "pending payment",
+                "payment paid",
+                "service provided comfirmed",
+                "completed",
+                "cancelled by user",
+                "cancelled by service provider",
+                "expired from unpaid",
+                "expired from pending service provider confirmation"
+            ],
+            "x-enum-comments": {
+                "BookingCanceledSvcp": "svcp has cancelled",
+                "BookingCanceledUser": "user has cancelled",
+                "BookingComfirmed": "svcp has confirmed waiting for user to pay",
+                "BookingCompleted": "service has been provided",
+                "BookingExpiredComfirmed": "svcp has not confirmed in time",
+                "BookingExpiredPaid": "user has not paid in time",
+                "BookingPaid": "user has paid",
+                "BookingPending": "waiting for user to pay"
+            },
+            "x-enum-varnames": [
+                "BookingPending",
+                "BookingPaid",
+                "BookingComfirmed",
+                "BookingCompleted",
+                "BookingCanceledUser",
+                "BookingCanceledSvcp",
+                "BookingExpiredPaid",
+                "BookingExpiredComfirmed"
+            ]
+        },
+        "models.BookingWithId": {
+            "type": "object",
+            "properties": {
+                "SVCPID": {
+                    "type": "string"
+                },
+                "bookingID": {
+                    "type": "string"
+                },
+                "bookingStatus": {
+                    "$ref": "#/definitions/models.BookingStatus"
+                },
+                "bookingTimestamp": {
+                    "type": "string"
+                },
+                "feedback": {
+                    "$ref": "#/definitions/models.Feedback"
+                },
+                "serviceID": {
+                    "type": "string"
+                },
+                "timeslotID": {
+                    "type": "string"
+                },
+                "totalBookingPrice": {
+                    "type": "number"
+                },
+                "userID": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.BookingWithIdArrayRes": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "result": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.BookingWithId"
+                    }
+                }
+            }
+        },
         "models.CreateSVCP": {
             "type": "object",
             "properties": {
@@ -1561,6 +1994,25 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "vaccinations": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.RequestBookingId": {
+            "type": "object",
+            "properties": {
+                "bookingID": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.RequestBookingRescheduled": {
+            "type": "object",
+            "properties": {
+                "bookingID": {
+                    "type": "string"
+                },
+                "timeslotID": {
                     "type": "string"
                 }
             }

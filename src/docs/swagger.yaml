@@ -23,6 +23,100 @@ definitions:
       message:
         type: string
     type: object
+  models.Booking:
+    properties:
+      SVCPID:
+        type: string
+      bookingStatus:
+        $ref: '#/definitions/models.BookingStatus'
+      bookingTimestamp:
+        type: string
+      feedback:
+        $ref: '#/definitions/models.Feedback'
+      serviceID:
+        type: string
+      timeslotID:
+        type: string
+      totalBookingPrice:
+        type: number
+      userID:
+        type: string
+    type: object
+  models.BookingBasicRes:
+    properties:
+      message:
+        type: string
+      result:
+        $ref: '#/definitions/models.Booking'
+    type: object
+  models.BookingRequest:
+    properties:
+      SVCPID:
+        type: string
+      serviceID:
+        type: string
+      timeslotID:
+        type: string
+    type: object
+  models.BookingStatus:
+    enum:
+    - pending payment
+    - payment paid
+    - service provided comfirmed
+    - completed
+    - cancelled by user
+    - cancelled by service provider
+    - expired from unpaid
+    - expired from pending service provider confirmation
+    type: string
+    x-enum-comments:
+      BookingCanceledSvcp: svcp has cancelled
+      BookingCanceledUser: user has cancelled
+      BookingComfirmed: svcp has confirmed waiting for user to pay
+      BookingCompleted: service has been provided
+      BookingExpiredComfirmed: svcp has not confirmed in time
+      BookingExpiredPaid: user has not paid in time
+      BookingPaid: user has paid
+      BookingPending: waiting for user to pay
+    x-enum-varnames:
+    - BookingPending
+    - BookingPaid
+    - BookingComfirmed
+    - BookingCompleted
+    - BookingCanceledUser
+    - BookingCanceledSvcp
+    - BookingExpiredPaid
+    - BookingExpiredComfirmed
+  models.BookingWithId:
+    properties:
+      SVCPID:
+        type: string
+      bookingID:
+        type: string
+      bookingStatus:
+        $ref: '#/definitions/models.BookingStatus'
+      bookingTimestamp:
+        type: string
+      feedback:
+        $ref: '#/definitions/models.Feedback'
+      serviceID:
+        type: string
+      timeslotID:
+        type: string
+      totalBookingPrice:
+        type: number
+      userID:
+        type: string
+    type: object
+  models.BookingWithIdArrayRes:
+    properties:
+      message:
+        type: string
+      result:
+        items:
+          $ref: '#/definitions/models.BookingWithId'
+        type: array
+    type: object
   models.CreateSVCP:
     properties:
       SVCPEmail:
@@ -92,6 +186,18 @@ definitions:
       type:
         type: string
       vaccinations:
+        type: string
+    type: object
+  models.RequestBookingId:
+    properties:
+      bookingID:
+        type: string
+    type: object
+  models.RequestBookingRescheduled:
+    properties:
+      bookingID:
+        type: string
+      timeslotID:
         type: string
     type: object
   models.SVCP:
@@ -411,6 +517,199 @@ paths:
       summary: User registration
       tags:
       - Authentication
+  /service/booking/all/user:
+    get:
+      consumes:
+      - application/json
+      description: get all user booking
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.BookingWithIdArrayRes'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
+      summary: get all user booking
+      tags:
+      - Booking
+  /service/booking/cancel/user:
+    post:
+      consumes:
+      - application/json
+      description: can only cancel booking with status pending, paid, comfirmed (all
+        booking that not done yet)
+      parameters:
+      - description: booking id
+        in: body
+        name: bookingID
+        required: true
+        schema:
+          $ref: '#/definitions/models.RequestBookingId'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.BasicRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
+      summary: user cancel booking
+      tags:
+      - Booking
+  /service/booking/create:
+    post:
+      consumes:
+      - application/json
+      description: User can create a booking for a service
+      parameters:
+      - description: service chosen
+        in: body
+        name: service
+        required: true
+        schema:
+          $ref: '#/definitions/models.BookingRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.BookingBasicRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a Booking
+      tags:
+      - Booking
+  /service/booking/history/user:
+    get:
+      consumes:
+      - application/json
+      description: get only booking with status completed, cancelled, expired (all
+        booking that done)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.BookingWithIdArrayRes'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
+      summary: get all user history booking
+      tags:
+      - Booking
+  /service/booking/incoming/user:
+    get:
+      consumes:
+      - application/json
+      description: get only booking with status pending, paid, comfirmed (all booking
+        that not done yet)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.BookingWithIdArrayRes'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
+      summary: get all user incomplete booking
+      tags:
+      - Booking
+  /service/booking/reschedule/user:
+    post:
+      consumes:
+      - application/json
+      description: can only reschedule booking with status pending, paid, comfirmed
+        (all booking that not done yet)
+      parameters:
+      - description: booking id and new timeslot id
+        in: body
+        name: booking
+        required: true
+        schema:
+          $ref: '#/definitions/models.RequestBookingRescheduled'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.BasicRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
+      summary: user reschedule booking
+      tags:
+      - Booking
   /service/feedback/{id}:
     get:
       consumes:
