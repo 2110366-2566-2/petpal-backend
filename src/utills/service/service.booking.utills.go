@@ -6,6 +6,7 @@ import (
 	"petpal-backend/src/models"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	// "github.com/gin-gonic/gin"
 	// "go.mongodb.org/mongo-driver/bson/primitive"
 	// "go.mongodb.org/mongo-driver/bson"
@@ -70,14 +71,22 @@ func InsertBooking(db *models.MongoDB, BookingCreate *models.Booking) (*models.B
 	// Return the inserted booking
 	return BookingCreate, nil
 }
+
 func ChangeBookingStatus(db *models.MongoDB, bookingID string, status models.BookingStatus) (*models.Booking, error) {
 	// Get the booking collection
 	collection := db.Collection("booking")
 
 	// Find the booking by bookingID
-	var booking models.Booking
-	filter := bson.D{{Key: "bookingID", Value: bookingID}}
-	err := collection.FindOne(context.Background(), filter).Decode(&booking)
+	var booking models.Booking = models.Booking{}
+
+	// Convert bookingID to ObjectID
+	objID, err := primitive.ObjectIDFromHex(bookingID)
+	if err != nil {
+		return nil, err
+	}
+
+	filter := bson.D{{Key: "_id", Value: objID}}
+	err = collection.FindOne(context.Background(), filter).Decode(&booking)
 	if err != nil {
 		return nil, err
 	}
@@ -99,9 +108,15 @@ func GetBooking(db *models.MongoDB, bookingID string) (*models.Booking, error) {
 	collection := db.Collection("booking")
 
 	// Find the booking by bookingID
-	var booking models.Booking
-	filter := bson.D{{Key: "bookingID", Value: bookingID}}
-	err := collection.FindOne(context.Background(), filter).Decode(&booking)
+	var booking models.Booking = models.Booking{}
+
+	objID, err := primitive.ObjectIDFromHex(bookingID)
+	if err != nil {
+		return nil, err
+	}
+
+	filter := bson.D{{Key: "_id", Value: objID}}
+	err = collection.FindOne(context.Background(), filter).Decode(&booking)
 	if err != nil {
 		return nil, err
 	}

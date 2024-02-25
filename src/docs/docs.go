@@ -390,6 +390,63 @@ const docTemplate = `{
                 }
             }
         },
+        "/service/booking/cancel/user": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "can only cancel booking with status pending, paid, comfirmed (all booking that not done yet)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking"
+                ],
+                "summary": "user cancel booking",
+                "parameters": [
+                    {
+                        "description": "booking id",
+                        "name": "bookingID",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controllers.requestBookingId"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/service/booking/create": {
             "post": {
                 "security": [
@@ -415,7 +472,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.BookingCreate"
+                            "$ref": "#/definitions/models.BookingRequest"
                         }
                     }
                 ],
@@ -1652,6 +1709,14 @@ const docTemplate = `{
                 }
             }
         },
+        "controllers.requestBookingId": {
+            "type": "object",
+            "properties": {
+                "bookingID": {
+                    "type": "string"
+                }
+            }
+        },
         "models.BasicErrorRes": {
             "type": "object",
             "properties": {
@@ -1697,7 +1762,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.BookingCreate": {
+        "models.BookingRequest": {
             "type": "object",
             "properties": {
                 "SVCPID": {

@@ -15,7 +15,14 @@ type Booking struct {
 	Feedback          Feedback      `json:"feedback" bson:"feedback"`
 }
 
-type BookingCreate struct {
+type BookingRequest struct {
+	SVCPID     string `json:"SVCPID" bson:"SVCPID"`
+	ServiceID  string `json:"serviceID" bson:"serviceID"`
+	TimeslotID string `json:"timeslotID" bson:"timeslotID"`
+}
+
+type BookingIndex struct {
+	UserID     string `json:"userID" bson:"userID"`
 	SVCPID     string `json:"SVCPID" bson:"SVCPID"`
 	ServiceID  string `json:"serviceID" bson:"serviceID"`
 	TimeslotID string `json:"timeslotID" bson:"timeslotID"`

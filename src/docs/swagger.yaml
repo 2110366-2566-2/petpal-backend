@@ -29,6 +29,11 @@ definitions:
       defaultBank:
         type: string
     type: object
+  controllers.requestBookingId:
+    properties:
+      bookingID:
+        type: string
+    type: object
   models.BasicErrorRes:
     properties:
       error:
@@ -58,7 +63,7 @@ definitions:
       userID:
         type: string
     type: object
-  models.BookingCreate:
+  models.BookingRequest:
     properties:
       SVCPID:
         type: string
@@ -514,6 +519,43 @@ paths:
       summary: get all user booking
       tags:
       - Booking
+  /service/booking/cancel/user:
+    post:
+      consumes:
+      - application/json
+      description: can only cancel booking with status pending, paid, comfirmed (all
+        booking that not done yet)
+      parameters:
+      - description: booking id
+        in: body
+        name: bookingID
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.requestBookingId'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.BasicRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
+      summary: user cancel booking
+      tags:
+      - Booking
   /service/booking/create:
     post:
       consumes:
@@ -525,7 +567,7 @@ paths:
         name: service
         required: true
         schema:
-          $ref: '#/definitions/models.BookingCreate'
+          $ref: '#/definitions/models.BookingRequest'
       produces:
       - application/json
       responses:
