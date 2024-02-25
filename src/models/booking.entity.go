@@ -51,10 +51,15 @@ const (
 	BookingCanceledUser BookingStatus = "cancelled by user"             //user has cancelled
 	BookingCanceledSvcp BookingStatus = "cancelled by service provider" //svcp has cancelled
 
-	BookingRescheduled BookingStatus = "rescheduled" //user has rescheduled
+	//BookingRescheduled BookingStatus = "rescheduled" //user has rescheduled
 
 	BookingExpiredPaid      BookingStatus = "expired from unpaid"                                //user has not paid in time
 	BookingExpiredComfirmed BookingStatus = "expired from pending service provider confirmation" //svcp has not confirmed in time
+)
+
+var (
+	BookingStatusDone    = []BookingStatus{BookingCompleted, BookingCanceledUser, BookingCanceledSvcp, BookingExpiredPaid, BookingExpiredComfirmed}
+	BookingStatusNotdone = []BookingStatus{BookingPending, BookingPaid, BookingComfirmed}
 )
 
 type RequestBookingId struct {
@@ -74,4 +79,9 @@ type BookingWithIdRes struct {
 type BookingWithIdArrayRes struct {
 	Message string          `json:"message"`
 	Result  []BookingWithId `json:"result"`
+}
+
+type RequestBookingRescheduled struct {
+	BookingID  string `json:"bookingID"`
+	TimeslotID string `json:"timeslotID" bson:"timeslotID"`
 }

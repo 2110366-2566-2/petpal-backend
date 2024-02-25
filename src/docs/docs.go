@@ -547,6 +547,63 @@ const docTemplate = `{
                 }
             }
         },
+        "/service/booking/reschedule/user": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "can only reschedule booking with status pending, paid, comfirmed (all booking that not done yet)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking"
+                ],
+                "summary": "user reschedule booking",
+                "parameters": [
+                    {
+                        "description": "booking id and new timeslot id",
+                        "name": "booking",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.RequestBookingRescheduled"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/service/booking/uncomplete/user": {
             "get": {
                 "security": [
@@ -1763,7 +1820,6 @@ const docTemplate = `{
                 "completed",
                 "cancelled by user",
                 "cancelled by service provider",
-                "rescheduled",
                 "expired from unpaid",
                 "expired from pending service provider confirmation"
             ],
@@ -1775,8 +1831,7 @@ const docTemplate = `{
                 "BookingExpiredComfirmed": "svcp has not confirmed in time",
                 "BookingExpiredPaid": "user has not paid in time",
                 "BookingPaid": "user has paid",
-                "BookingPending": "waiting for user to pay",
-                "BookingRescheduled": "user has rescheduled"
+                "BookingPending": "waiting for user to pay"
             },
             "x-enum-varnames": [
                 "BookingPending",
@@ -1785,7 +1840,6 @@ const docTemplate = `{
                 "BookingCompleted",
                 "BookingCanceledUser",
                 "BookingCanceledSvcp",
-                "BookingRescheduled",
                 "BookingExpiredPaid",
                 "BookingExpiredComfirmed"
             ]
@@ -1948,6 +2002,17 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "bookingID": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.RequestBookingRescheduled": {
+            "type": "object",
+            "properties": {
+                "bookingID": {
+                    "type": "string"
+                },
+                "timeslotID": {
                     "type": "string"
                 }
             }

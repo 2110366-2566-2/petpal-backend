@@ -29,7 +29,7 @@ func InsertBooking(db *models.MongoDB, BookingCreate *models.Booking) (*models.B
 	var foundService models.Service
 	err = errors.New("service not found")
 	for _, s := range svcp.Services {
-		println(s.ServiceID, BookingCreate.ServiceID)
+		//println(s.ServiceID, BookingCreate.ServiceID)
 		if s.ServiceID == BookingCreate.ServiceID {
 			foundService = s
 			err = nil
@@ -103,12 +103,12 @@ func ChangeBookingStatus(db *models.MongoDB, bookingID string, status models.Boo
 	return &booking, nil
 }
 
-func GetBooking(db *models.MongoDB, bookingID string) (*models.Booking, error) {
+func GetBooking(db *models.MongoDB, bookingID string) (*models.BookingWithId, error) {
 	// Get the booking collection
 	collection := db.Collection("booking")
 
 	// Find the booking by bookingID
-	var booking models.Booking = models.Booking{}
+	var booking models.BookingWithId = models.BookingWithId{}
 
 	objID, err := primitive.ObjectIDFromHex(bookingID)
 	if err != nil {
@@ -198,4 +198,140 @@ func GetAllBookingsBySVCP(db *models.MongoDB, SVCPID string) ([]models.Booking, 
 	}
 
 	return bookings, nil
+}
+
+func ChangeBookingStatusIsDone(books models.BookingStatus) bool {
+	for _, s := range models.BookingStatusDone {
+		if books == s {
+			return true
+		}
+	}
+	return false
+}
+
+func ChangeBookingStatusIsNotdone(books models.BookingStatus) bool {
+	for _, s := range models.BookingStatusNotdone {
+		if books == s {
+			return true
+		}
+	}
+	return false
+}
+
+func CheckBookingIsDone(b models.BookingWithId) bool {
+
+	// Check if the booking is complete
+	for _, s := range models.BookingStatusDone {
+		if b.BookingStatus == s {
+			return true
+		}
+	}
+
+	return false
+
+}
+
+func CheckBookingIsNotdone(b models.BookingWithId) bool {
+
+	// Check if the booking is complete
+	for _, s := range models.BookingStatusNotdone {
+		if b.BookingStatus == s {
+			return true
+		}
+	}
+
+	return false
+
+}
+
+func ChangeBookingScheduled(db *models.MongoDB, bookingID string, newTimeslotID string) (*models.Booking, error) {
+
+	// Get the booking collection
+	collection := db.Collection("booking")
+
+	// Find the booking by bookingID
+	var booking models.Booking = models.Booking{}
+
+	// Convert bookingID to ObjectID
+	objID, err := primitive.ObjectIDFromHex(bookingID)
+	if err != nil {
+		return nil, err
+	}
+
+	filter := bson.D{{Key: "_id", Value: objID}}
+	err = collection.FindOne(context.Background(), filter).Decode(&booking)
+	if err != nil {
+		return nil, err
+	}
+
+	if booking.TimeslotID == newTimeslotID {
+		return nil, errors.New("new timeslot is the same as the old timeslot")
+	}
+
+	if ChangeBookingStatusIsDone(booking.BookingStatus) {
+		return nil, errors.New("booking is already done cannot be rescheduled")
+	}
+	if booking.BookingStatus == models.BookingComfirmed {
+		booking.BookingStatus = models.BookingPaid
+	}
+
+	collectionSVCP := db.Collection("svcp")
+	var svcp models.SVCP = models.SVCP{}
+	filterSvcp := bson.D{{Key: "SVCPID", Value: booking.SVCPID}}
+	err = collectionSVCP.FindOne(context.Background(), filterSvcp).Decode(&svcp)
+	if err != nil {
+		return nil, err
+	}
+
+	// Check if the service exists in the service provider
+	var foundService models.Service
+	err = errors.New("service not found")
+	for _, s := range svcp.Services {
+		//println(s.ServiceID, booking.ServiceID)
+		if s.ServiceID == booking.ServiceID {
+			foundService = s
+			err = nil
+			break
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	// Check if the timeslot exists in the service
+	var foundtimeslot models.Timeslot
+	err = errors.New("timeslot not found")
+	for _, t := range foundService.Timeslots {
+		if t.TimeslotID == newTimeslotID {
+			foundtimeslot = t
+			err = nil
+			break
+		}
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	// Check if the timeslot has already passed
+	if foundtimeslot.StartTime.Before(booking.BookingTimestamp) {
+		// return nil, errors.New("timeslot has already passed")
+	}
+
+	// Update the booking status
+	booking.TimeslotID = newTimeslotID
+
+	// Update the booking in the collection
+	_, err = collection.ReplaceOne(context.Background(), filter, booking)
+	if err != nil {
+		return nil, err
+	}
+
+	return &booking, nil
+}
+
+func BookingRefund() {
+	//todo
+	println("booking refund payment to user")
+
 }

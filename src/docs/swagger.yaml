@@ -66,7 +66,6 @@ definitions:
     - completed
     - cancelled by user
     - cancelled by service provider
-    - rescheduled
     - expired from unpaid
     - expired from pending service provider confirmation
     type: string
@@ -79,7 +78,6 @@ definitions:
       BookingExpiredPaid: user has not paid in time
       BookingPaid: user has paid
       BookingPending: waiting for user to pay
-      BookingRescheduled: user has rescheduled
     x-enum-varnames:
     - BookingPending
     - BookingPaid
@@ -87,7 +85,6 @@ definitions:
     - BookingCompleted
     - BookingCanceledUser
     - BookingCanceledSvcp
-    - BookingRescheduled
     - BookingExpiredPaid
     - BookingExpiredComfirmed
   models.BookingWithId:
@@ -194,6 +191,13 @@ definitions:
   models.RequestBookingId:
     properties:
       bookingID:
+        type: string
+    type: object
+  models.RequestBookingRescheduled:
+    properties:
+      bookingID:
+        type: string
+      timeslotID:
         type: string
     type: object
   models.SVCP:
@@ -639,6 +643,43 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: get all user history booking
+      tags:
+      - Booking
+  /service/booking/reschedule/user:
+    post:
+      consumes:
+      - application/json
+      description: can only reschedule booking with status pending, paid, comfirmed
+        (all booking that not done yet)
+      parameters:
+      - description: booking id and new timeslot id
+        in: body
+        name: booking
+        required: true
+        schema:
+          $ref: '#/definitions/models.RequestBookingRescheduled'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.BasicRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
+      summary: user reschedule booking
       tags:
       - Booking
   /service/booking/uncomplete/user:
