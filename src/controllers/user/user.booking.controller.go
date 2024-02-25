@@ -116,8 +116,8 @@ func CreateBookingHandler(c *gin.Context, db *models.MongoDB) {
 // }
 
 type GetBookingHandlerSuccess struct {
-	Message string           `json:"message"`
-	Result  []models.Booking `json:"result"`
+	Message string                 `json:"message"`
+	Result  []models.BookingWithId `json:"result"`
 }
 
 // UserGetAllBookingHandler godoc
@@ -179,7 +179,7 @@ func UserGetUncompleteBookingHandler(c *gin.Context, db *models.MongoDB) {
 	}
 
 	bookingsList, err := utills.GetAllBookingsByUser(db, current_user.ID)
-	var newbookingsList []models.Booking
+	var newbookingsList []models.BookingWithId
 
 	for _, booking := range bookingsList {
 		if booking.BookingStatus == models.BookingPending || booking.BookingStatus == models.BookingPaid || booking.BookingStatus == models.BookingComfirmed {
@@ -221,7 +221,7 @@ func UserGetHistoryBookingHandler(c *gin.Context, db *models.MongoDB) {
 	}
 
 	bookingsList, err := utills.GetAllBookingsByUser(db, current_user.ID)
-	var newbookingsList []models.Booking
+	var newbookingsList []models.BookingWithId
 
 	for _, booking := range bookingsList {
 		if booking.BookingStatus != models.BookingRescheduled && booking.BookingStatus != models.BookingPending && booking.BookingStatus != models.BookingPaid && booking.BookingStatus != models.BookingComfirmed {
@@ -239,7 +239,7 @@ func UserGetHistoryBookingHandler(c *gin.Context, db *models.MongoDB) {
 }
 
 type requestBookingId struct {
-	ID string `json:"bookingID"`
+	bookingID string `json:"bookingID"`
 }
 
 // UserCancelBookingHandler godoc
@@ -279,13 +279,13 @@ func UserCancelBookingHandler(c *gin.Context, db *models.MongoDB) {
 	}
 
 	// Check for required fields
-	if request.ID == "" {
+	if request.bookingID == "" {
 		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "Missing required fields"})
 		return
 	}
 
 	//get booking for checking status
-	booking, err := utills.GetBooking(db, request.ID)
+	booking, err := utills.GetBooking(db, request.bookingID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})
 		return
@@ -309,7 +309,7 @@ func UserCancelBookingHandler(c *gin.Context, db *models.MongoDB) {
 	// 	//do something like return money to user all sent notification to svcp?
 	// }
 
-	_, err = utills.ChangeBookingStatus(db, request.ID, models.BookingCanceledUser)
+	_, err = utills.ChangeBookingStatus(db, request.bookingID, models.BookingCanceledUser)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})

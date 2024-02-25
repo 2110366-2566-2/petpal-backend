@@ -15,6 +15,18 @@ type Booking struct {
 	Feedback          Feedback      `json:"feedback" bson:"feedback"`
 }
 
+type BookingWithId struct {
+	BookingID         string        `json:"bookingID" bson:"_id"`
+	UserID            string        `json:"userID" bson:"userID"`
+	SVCPID            string        `json:"SVCPID" bson:"SVCPID"`
+	ServiceID         string        `json:"serviceID" bson:"serviceID"`
+	TimeslotID        string        `json:"timeslotID" bson:"timeslotID"`
+	BookingStatus     BookingStatus `json:"bookingStatus" bson:"bookingStatus"`
+	BookingTimestamp  time.Time     `json:"bookingTimestamp" bson:"bookingTimestamp"`
+	TotalBookingPrice float64       `json:"totalBookingPrice" bson:"totalBookingPrice"`
+	Feedback          Feedback      `json:"feedback" bson:"feedback"`
+}
+
 type BookingRequest struct {
 	SVCPID     string `json:"SVCPID" bson:"SVCPID"`
 	ServiceID  string `json:"serviceID" bson:"serviceID"`

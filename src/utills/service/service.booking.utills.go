@@ -124,7 +124,7 @@ func GetBooking(db *models.MongoDB, bookingID string) (*models.Booking, error) {
 	return &booking, nil
 }
 
-func GetBookingsByUser(db *models.MongoDB, userID string, status models.BookingStatus) ([]models.Booking, error) {
+func GetBookingsByUser(db *models.MongoDB, userID string, status models.BookingStatus) ([]models.BookingWithId, error) {
 	// Get the booking collection
 	collection := db.Collection("booking")
 
@@ -135,7 +135,7 @@ func GetBookingsByUser(db *models.MongoDB, userID string, status models.BookingS
 		return nil, err
 	}
 
-	var bookings []models.Booking
+	var bookings []models.BookingWithId
 	if err = cursor.All(context.Background(), &bookings); err != nil {
 		return nil, err
 	}
@@ -143,7 +143,7 @@ func GetBookingsByUser(db *models.MongoDB, userID string, status models.BookingS
 	return bookings, nil
 }
 
-func GetAllBookingsByUser(db *models.MongoDB, userID string) ([]models.Booking, error) {
+func GetAllBookingsByUser(db *models.MongoDB, userID string) ([]models.BookingWithId, error) {
 	// Get the booking collection
 	collection := db.Collection("booking")
 
@@ -154,7 +154,7 @@ func GetAllBookingsByUser(db *models.MongoDB, userID string) ([]models.Booking, 
 		return nil, err
 	}
 
-	var bookings []models.Booking
+	var bookings []models.BookingWithId
 	if err = cursor.All(context.Background(), &bookings); err != nil {
 		return nil, err
 	}
