@@ -65,6 +65,39 @@
           "dietyPreferences": { "bsonType": "string" }
         }
       }
+    },
+    "search_history": {
+      "bsonType": "array",
+      "items": {
+        "bsonType": "object",
+        "properties": {
+          "date": { "bsonType": "date" },
+          "search_filters": {
+            "bsonType": "object",
+            "properties": {
+              "serviceName": {
+                "bsonType": "string",
+                "pattern": "serviceName\\d"
+              },
+              "serviceType": {
+                "bsonType": "string",
+                "pattern": "serviceType\\d"
+              },
+              "serviceDescription": {
+                "bsonType": "string",
+                "pattern": "serviceDescription\\d"
+              },
+              "timeslot": { "bsonType": "date" },
+              "averageRating": {
+                "bsonType": "object",
+                "properties": {
+                  "$gt": { "bsonType": "double" }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
