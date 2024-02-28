@@ -16,6 +16,7 @@ import (
 // @Summary Create a feedback
 // @Description Create a feedback for a service
 // @Tags Service
+// @Security ApiKeyAuth
 //
 // @Accept json
 // @Produce json
