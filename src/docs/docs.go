@@ -113,15 +113,10 @@ const docTemplate = `{
                 ],
                 "summary": "Get current entity",
                 "responses": {
-                    "202": {
+                    "200": {
                         "description": "Accepted",
                         "schema": {
-                            "type": "object",
-                            "properties": {
-                                "message": {
-                                    "type": "string"
-                                }
-                            }
+                            "$ref": "#/definitions/models.User"
                         }
                     },
                     "400": {
@@ -1262,6 +1257,57 @@ const docTemplate = `{
                 }
             }
         },
+        "/user/get-search-history": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Gets the search history of the current user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get search history",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "history": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/definitions/models.SearchHistory"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/user/pets": {
             "post": {
                 "security": [
@@ -1963,6 +2009,17 @@ const docTemplate = `{
                 }
             }
         },
+        "models.NumericComparison": {
+            "type": "object",
+            "properties": {
+                "greaterThan": {
+                    "type": "number"
+                },
+                "lessThan": {
+                    "type": "number"
+                }
+            }
+        },
         "models.Pet": {
             "type": "object",
             "properties": {
@@ -2073,6 +2130,17 @@ const docTemplate = `{
                 }
             }
         },
+        "models.SearchHistory": {
+            "type": "object",
+            "properties": {
+                "date": {
+                    "type": "string"
+                },
+                "search_filters": {
+                    "$ref": "#/definitions/models.ServiceSearchFilters"
+                }
+            }
+        },
         "models.Service": {
             "type": "object",
             "properties": {
@@ -2105,6 +2173,26 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/models.Timeslot"
                     }
+                }
+            }
+        },
+        "models.ServiceSearchFilters": {
+            "type": "object",
+            "properties": {
+                "averageRating": {
+                    "$ref": "#/definitions/models.NumericComparison"
+                },
+                "serviceDescription": {
+                    "type": "string"
+                },
+                "serviceName": {
+                    "type": "string"
+                },
+                "serviceType": {
+                    "type": "string"
+                },
+                "timeslot": {
+                    "type": "string"
                 }
             }
         },
@@ -2166,6 +2254,12 @@ const docTemplate = `{
                 },
                 "profilePicture": {
                     "type": "string"
+                },
+                "search_history": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.SearchHistory"
+                    }
                 },
                 "username": {
                     "type": "string"

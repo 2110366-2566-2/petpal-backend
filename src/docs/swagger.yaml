@@ -165,6 +165,13 @@ definitions:
       password:
         type: string
     type: object
+  models.NumericComparison:
+    properties:
+      greaterThan:
+        type: number
+      lessThan:
+        type: number
+    type: object
   models.Pet:
     properties:
       age:
@@ -237,6 +244,13 @@ definitions:
           $ref: '#/definitions/models.Service'
         type: array
     type: object
+  models.SearchHistory:
+    properties:
+      date:
+        type: string
+      search_filters:
+        $ref: '#/definitions/models.ServiceSearchFilters'
+    type: object
   models.Service:
     properties:
       averageRating:
@@ -259,6 +273,19 @@ definitions:
         items:
           $ref: '#/definitions/models.Timeslot'
         type: array
+    type: object
+  models.ServiceSearchFilters:
+    properties:
+      averageRating:
+        $ref: '#/definitions/models.NumericComparison'
+      serviceDescription:
+        type: string
+      serviceName:
+        type: string
+      serviceType:
+        type: string
+      timeslot:
+        type: string
     type: object
   models.Timeslot:
     properties:
@@ -299,6 +326,10 @@ definitions:
         type: string
       profilePicture:
         type: string
+      search_history:
+        items:
+          $ref: '#/definitions/models.SearchHistory'
+        type: array
       username:
         type: string
     type: object
@@ -364,13 +395,10 @@ paths:
       produces:
       - application/json
       responses:
-        "202":
+        "200":
           description: Accepted
           schema:
-            properties:
-              message:
-                type: string
-            type: object
+            $ref: '#/definitions/models.User'
         "400":
           description: Bad request
           schema:
@@ -1137,6 +1165,38 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Delete bank account
+      tags:
+      - User
+  /user/get-search-history:
+    get:
+      description: Gets the search history of the current user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              history:
+                items:
+                  $ref: '#/definitions/models.SearchHistory'
+                type: array
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
+      summary: Get search history
       tags:
       - User
   /user/pets:

@@ -72,7 +72,7 @@ func ChangePassword(w http.ResponseWriter, r *http.Request, db *models.MongoDB) 
 //
 // @Security    ApiKeyAuth
 //
-// @Success     200      {object} models.User or models.SVCP    "Accepted"
+// @Success     200      {object} models.User     			"Accepted"
 // @Failure     400      {object} object{error=string}      "Bad request"
 //
 // @Router      /current-entity [get]
