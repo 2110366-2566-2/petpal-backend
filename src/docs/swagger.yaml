@@ -376,7 +376,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: Accepted
           schema:
             $ref: '#/definitions/models.User'
         "400":
@@ -529,7 +529,14 @@ paths:
     get:
       consumes:
       - application/json
-      description: get all user booking
+      description: |-
+        body not required if you dont want to filter(get all)
+        option body to filter booking by timeslotStartBefore,statusAllow,reservationType.
+        waring if you use fillter some booking with worng(not found,deleted etc) svcpid ,serviceid ,timeslotid will skip if you want to get all dont use filter
+        timeslotStartBefore is filter booking that has timeslot Start Before this time
+        statusAllow array filter by array of status  (string status)
+        reservationType is booking is "incoming" or "outgoing"
+        filter is and condition
       parameters:
       - description: get all booking after this timeslot
         in: body
@@ -540,11 +547,15 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: get all user booking successfully
           schema:
             items:
               $ref: '#/definitions/models.BookingWithIdArrayRes'
             type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
         "401":
           description: Unauthorized
           schema:
@@ -555,7 +566,7 @@ paths:
             $ref: '#/definitions/models.BasicErrorRes'
       security:
       - ApiKeyAuth: []
-      summary: get all user booking
+      summary: get all user booking with filter(optional)
       tags:
       - Booking
   /service/booking/cancel/user:
@@ -575,7 +586,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: Booking cancelled successfully
           schema:
             $ref: '#/definitions/models.BasicRes'
         "400":
@@ -611,7 +622,7 @@ paths:
       - application/json
       responses:
         "201":
-          description: Created
+          description: Booking created successfully
           schema:
             $ref: '#/definitions/models.BookingBasicRes'
         "400":
@@ -647,8 +658,8 @@ paths:
       produces:
       - application/json
       responses:
-        "201":
-          description: Created
+        "200":
+          description: Booking rescheduled successfully
           schema:
             $ref: '#/definitions/models.BasicRes'
         "400":

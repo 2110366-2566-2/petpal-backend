@@ -114,7 +114,7 @@ const docTemplate = `{
                 "summary": "Get current entity",
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Accepted",
                         "schema": {
                             "$ref": "#/definitions/models.User"
                         }
@@ -349,7 +349,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "get all user booking",
+                "description": "body not required if you dont want to filter(get all)\noption body to filter booking by timeslotStartBefore,statusAllow,reservationType.\nwaring if you use fillter some booking with worng(not found,deleted etc) svcpid ,serviceid ,timeslotid will skip if you want to get all dont use filter\ntimeslotStartBefore is filter booking that has timeslot Start Before this time\nstatusAllow array filter by array of status  (string status)\nreservationType is booking is \"incoming\" or \"outgoing\"\nfilter is and condition",
                 "consumes": [
                     "application/json"
                 ],
@@ -359,7 +359,7 @@ const docTemplate = `{
                 "tags": [
                     "Booking"
                 ],
-                "summary": "get all user booking",
+                "summary": "get all user booking with filter(optional)",
                 "parameters": [
                     {
                         "description": "get all booking after this timeslot",
@@ -372,12 +372,18 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "get all user booking successfully",
                         "schema": {
                             "type": "array",
                             "items": {
                                 "$ref": "#/definitions/models.BookingWithIdArrayRes"
                             }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
                         }
                     },
                     "401": {
@@ -426,7 +432,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Booking cancelled successfully",
                         "schema": {
                             "$ref": "#/definitions/models.BasicRes"
                         }
@@ -483,7 +489,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "201": {
-                        "description": "Created",
+                        "description": "Booking created successfully",
                         "schema": {
                             "$ref": "#/definitions/models.BookingBasicRes"
                         }
@@ -539,8 +545,8 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "201": {
-                        "description": "Created",
+                    "200": {
+                        "description": "Booking rescheduled successfully",
                         "schema": {
                             "$ref": "#/definitions/models.BasicRes"
                         }

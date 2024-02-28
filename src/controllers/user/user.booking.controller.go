@@ -22,7 +22,7 @@ import (
 //
 // @Param       service      body   models.BookingRequest    true    "service chosen"
 //
-// @Success 	201 {object} models.BookingBasicRes
+// @Success 	201 {object} models.BookingBasicRes	"Booking created successfully"
 // @Failure 	400 {object} models.BasicErrorRes
 // @Failure 	401 {object} models.BasicErrorRes
 // @Failure 	500 {object} models.BasicErrorRes
@@ -71,7 +71,14 @@ func CreateBookingHandler(c *gin.Context, db *models.MongoDB) {
 
 // UserGetAllBookingHandler godoc
 //
-// @Summary 	get all user booking
+// @Summary 	get all user booking with filter(optional)
+// @Description	body not required if you dont want to filter(get all)
+// @Description	option body to filter booking by timeslotStartBefore,statusAllow,reservationType.
+// @Description waring if you use fillter some booking with worng(not found,deleted etc) svcpid ,serviceid ,timeslotid will skip if you want to get all dont use filter
+// @Description  timeslotStartBefore is filter booking that has timeslot Start Before this time
+// @Description statusAllow array filter by array of status  (string status)
+// @Description  reservationType is booking is "incoming" or "outgoing"
+// @Description filter is and condition
 // @Tags 		Booking
 //
 // @Accept		json
@@ -81,7 +88,7 @@ func CreateBookingHandler(c *gin.Context, db *models.MongoDB) {
 //
 // @Param       service      body    models.RequestBookingAll    false    "get all booking after this timeslot"
 //
-// @Success 	200 {array} models.BookingWithIdArrayRes
+// @Success 	200 {array} models.BookingWithIdArrayRes "get all user booking successfully"
 // @Failure 	400 {object} models.BasicErrorRes
 // @Failure 	401 {object} models.BasicErrorRes
 // @Failure 	500 {object} models.BasicErrorRes
@@ -119,6 +126,7 @@ func UserGetAllBookingHandler(c *gin.Context, db *models.MongoDB) {
 	c.JSON(http.StatusOK, models.BookingWithIdArrayRes{Message: "get all user booking successfully", Result: bookingsList})
 }
 
+// not used
 func UserGetIncompleteBookingHandler(c *gin.Context, db *models.MongoDB) {
 	//401 not authorized
 	current_user, err := _authenticate(c, db)
@@ -145,6 +153,7 @@ func UserGetIncompleteBookingHandler(c *gin.Context, db *models.MongoDB) {
 
 }
 
+// not used
 func UserGetHistoryBookingHandler(c *gin.Context, db *models.MongoDB) {
 	//401 not authorized
 	current_user, err := _authenticate(c, db)
@@ -185,7 +194,7 @@ func UserGetHistoryBookingHandler(c *gin.Context, db *models.MongoDB) {
 //
 // @Param       bookingID      body    models.RequestBookingId    true    "booking id"
 //
-// @Success 	200 {object} models.BasicRes
+// @Success 	200 {object} models.BasicRes "Booking cancelled successfully"
 // @Failure 	400 {object} models.BasicErrorRes
 // @Failure 	401 {object} models.BasicErrorRes
 // @Failure 	500 {object} models.BasicErrorRes
@@ -246,7 +255,7 @@ func UserCancelBookingHandler(c *gin.Context, db *models.MongoDB) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, models.BasicRes{Message: "Booking cancelled successfully"})
+	c.JSON(http.StatusOK, models.BasicRes{Message: "Booking cancelled successfully"})
 
 }
 
@@ -263,7 +272,7 @@ func UserCancelBookingHandler(c *gin.Context, db *models.MongoDB) {
 //
 // @Param       booking      body    models.RequestBookingRescheduled    true    "booking id and new timeslot id"
 //
-// @Success 	201 {object} models.BasicRes
+// @Success 	200 {object} models.BasicRes "Booking rescheduled successfully"
 // @Failure 	400 {object} models.BasicErrorRes
 // @Failure 	401 {object} models.BasicErrorRes
 // @Failure 	500 {object} models.BasicErrorRes
@@ -318,6 +327,6 @@ func UserRescheduleBookingHandeler(c *gin.Context, db *models.MongoDB) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, models.BasicRes{Message: "Booking rescheduled successfully"})
+	c.JSON(http.StatusOK, models.BasicRes{Message: "Booking rescheduled successfully"})
 
 }
