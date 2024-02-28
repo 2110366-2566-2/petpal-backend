@@ -59,3 +59,23 @@ func UpdateFeedbackToService(db *models.MongoDB, service_id string, user_id stri
 
 	return nil
 }
+
+func GetFeedbacksByServiceID(db *models.MongoDB, service_id string) ([]models.Feedback, error) {
+	// get feedback from service
+	booking_collection := db.Client.Database("petpal").Collection("booking")
+	temp, err := booking_collection.Aggregate(context.Background(), bson.A{
+		bson.M{"$unwind": "$feedback"},
+		bson.M{"$match": bson.M{"serviceID": service_id}},
+		bson.M{"$project": bson.M{"feedback": 1, "_id": 0}},
+		bson.M{"$replaceRoot": bson.M{"newRoot": "$feedback"}},
+	})
+	if err != nil {
+		return nil, err
+	}
+	var feedbacks []models.Feedback
+	if err := temp.All(context.Background(), &feedbacks); err != nil {
+		return nil, err
+	}
+
+	return feedbacks, nil
+}

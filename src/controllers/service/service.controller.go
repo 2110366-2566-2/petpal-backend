@@ -74,13 +74,17 @@ type CreateFeedbackRequest struct {
 // @Param id path string true "Service ID"
 //
 // @Success 200 {object} []models.Feedback
-// @Failure 400 {object} models.BasicErrorRes
 // @Failure 500 {object} models.BasicErrorRes
 //
 // @Router /service/feedback/{id} [get]
 func GetFeedbackHandler(c *gin.Context, db *models.MongoDB, service_id string) {
-	
-	// get feedbacks for a service
+	// get feedbacks
+	feedbacks, err := service_utills.GetFeedbacksByServiceID(db, service_id)
+	if err != nil {
+		c.JSON(500, models.BasicErrorRes{Error: err.Error()})
+		return
+	}
+	c.JSON(200, feedbacks)
 }
 
 func _authenticate(c *gin.Context, db *models.MongoDB) (*models.User, error) {
