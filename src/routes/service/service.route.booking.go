@@ -24,15 +24,15 @@ func ServiceBookingRoutes(r *gin.RouterGroup) {
 			controllers.UserGetAllBookingHandler(c, db)
 		})
 
-		bookingGroup.GET("/incoming/user", func(c *gin.Context) {
-			db := c.MustGet("db").(*models.MongoDB)
-			controllers.UserGetIncompleteBookingHandler(c, db)
-		})
+		// bookingGroup.GET("/incoming/user", func(c *gin.Context) {
+		// 	db := c.MustGet("db").(*models.MongoDB)
+		// 	controllers.UserGetIncompleteBookingHandler(c, db)
+		// })
 
-		bookingGroup.GET("/history/user", func(c *gin.Context) {
-			db := c.MustGet("db").(*models.MongoDB)
-			controllers.UserGetHistoryBookingHandler(c, db)
-		})
+		// bookingGroup.GET("/history/user", func(c *gin.Context) {
+		// 	db := c.MustGet("db").(*models.MongoDB)
+		// 	controllers.UserGetHistoryBookingHandler(c, db)
+		// })
 
 		bookingGroup.POST("/cancel/user", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)

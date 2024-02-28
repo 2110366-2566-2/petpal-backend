@@ -85,3 +85,11 @@ type RequestBookingRescheduled struct {
 	BookingID  string `json:"bookingID"`
 	TimeslotID string `json:"timeslotID" bson:"timeslotID"`
 }
+
+//ReservationType = "incoming" or "outgoing"
+
+type RequestBookingAll struct {
+	TimeslotStartAfter time.Time       `json:"timeslotStartBefore" `
+	StatusAllow        []BookingStatus `json:"statusAllow"`
+	ReservationType    string          `json:"reservationType"`
+}

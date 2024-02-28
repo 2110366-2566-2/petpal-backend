@@ -188,6 +188,17 @@ definitions:
       vaccinations:
         type: string
     type: object
+  models.RequestBookingAll:
+    properties:
+      reservationType:
+        type: string
+      statusAllow:
+        items:
+          $ref: '#/definitions/models.BookingStatus'
+        type: array
+      timeslotStartBefore:
+        type: string
+    type: object
   models.RequestBookingId:
     properties:
       bookingID:
@@ -364,13 +375,10 @@ paths:
       produces:
       - application/json
       responses:
-        "202":
-          description: Accepted
+        "200":
+          description: OK
           schema:
-            properties:
-              message:
-                type: string
-            type: object
+            $ref: '#/definitions/models.User'
         "400":
           description: Bad request
           schema:
@@ -522,6 +530,12 @@ paths:
       consumes:
       - application/json
       description: get all user booking
+      parameters:
+      - description: get all booking after this timeslot
+        in: body
+        name: service
+        schema:
+          $ref: '#/definitions/models.RequestBookingAll'
       produces:
       - application/json
       responses:
@@ -615,62 +629,6 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Create a Booking
-      tags:
-      - Booking
-  /service/booking/history/user:
-    get:
-      consumes:
-      - application/json
-      description: get only booking with status completed, cancelled, expired (all
-        booking that done)
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/models.BookingWithIdArrayRes'
-            type: array
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/models.BasicErrorRes'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.BasicErrorRes'
-      security:
-      - ApiKeyAuth: []
-      summary: get all user history booking
-      tags:
-      - Booking
-  /service/booking/incoming/user:
-    get:
-      consumes:
-      - application/json
-      description: get only booking with status pending, paid, comfirmed (all booking
-        that not done yet)
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/models.BookingWithIdArrayRes'
-            type: array
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/models.BasicErrorRes'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.BasicErrorRes'
-      security:
-      - ApiKeyAuth: []
-      summary: get all user incomplete booking
       tags:
       - Booking
   /service/booking/reschedule/user:

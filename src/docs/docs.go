@@ -113,15 +113,10 @@ const docTemplate = `{
                 ],
                 "summary": "Get current entity",
                 "responses": {
-                    "202": {
-                        "description": "Accepted",
+                    "200": {
+                        "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "properties": {
-                                "message": {
-                                    "type": "string"
-                                }
-                            }
+                            "$ref": "#/definitions/models.User"
                         }
                     },
                     "400": {
@@ -365,6 +360,16 @@ const docTemplate = `{
                     "Booking"
                 ],
                 "summary": "get all user booking",
+                "parameters": [
+                    {
+                        "description": "get all booking after this timeslot",
+                        "name": "service",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/models.RequestBookingAll"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -487,92 +492,6 @@ const docTemplate = `{
                         "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/models.BasicErrorRes"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/models.BasicErrorRes"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.BasicErrorRes"
-                        }
-                    }
-                }
-            }
-        },
-        "/service/booking/history/user": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "get only booking with status completed, cancelled, expired (all booking that done)",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Booking"
-                ],
-                "summary": "get all user history booking",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.BookingWithIdArrayRes"
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/models.BasicErrorRes"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.BasicErrorRes"
-                        }
-                    }
-                }
-            }
-        },
-        "/service/booking/incoming/user": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "get only booking with status pending, paid, comfirmed (all booking that not done yet)",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Booking"
-                ],
-                "summary": "get all user incomplete booking",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.BookingWithIdArrayRes"
-                            }
                         }
                     },
                     "401": {
@@ -1994,6 +1913,23 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "vaccinations": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.RequestBookingAll": {
+            "type": "object",
+            "properties": {
+                "reservationType": {
+                    "type": "string"
+                },
+                "statusAllow": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.BookingStatus"
+                    }
+                },
+                "timeslotStartBefore": {
                     "type": "string"
                 }
             }

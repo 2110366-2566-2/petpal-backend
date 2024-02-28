@@ -72,7 +72,6 @@ func CreateBookingHandler(c *gin.Context, db *models.MongoDB) {
 // UserGetAllBookingHandler godoc
 //
 // @Summary 	get all user booking
-// @Description	get all user booking
 // @Tags 		Booking
 //
 // @Accept		json
@@ -80,16 +79,28 @@ func CreateBookingHandler(c *gin.Context, db *models.MongoDB) {
 //
 // @Security    ApiKeyAuth
 //
+// @Param       service      body    models.RequestBookingAll    false    "get all booking after this timeslot"
+//
 // @Success 	200 {array} models.BookingWithIdArrayRes
+// @Failure 	400 {object} models.BasicErrorRes
 // @Failure 	401 {object} models.BasicErrorRes
 // @Failure 	500 {object} models.BasicErrorRes
 //
 // @Router 		/service/booking/all/user [get]
 func UserGetAllBookingHandler(c *gin.Context, db *models.MongoDB) {
+
+	request := models.RequestBookingAll{}
+
 	//401 not authorized
 	current_user, err := _authenticate(c, db)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, models.BasicErrorRes{Error: err.Error()})
+		return
+	}
+
+	//400 bad request
+	if err := c.ShouldBindJSON(&request); err != nil && err.Error() != "EOF" {
+		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: err.Error()})
 		return
 	}
 
@@ -100,25 +111,14 @@ func UserGetAllBookingHandler(c *gin.Context, db *models.MongoDB) {
 		return
 	}
 
+	if !(request.TimeslotStartAfter.IsZero() && request.StatusAllow == nil && request.ReservationType == "") {
+		bookingsList = utills.AllBookFilter(db, bookingsList, request)
+
+	}
+
 	c.JSON(http.StatusOK, models.BookingWithIdArrayRes{Message: "get all user booking successfully", Result: bookingsList})
 }
 
-// UserGetIncompleteBookingHandler godoc
-//
-// @Summary 	get all user incomplete booking
-// @Description	get only booking with status pending, paid, comfirmed (all booking that not done yet)
-// @Tags 		Booking
-//
-// @Accept		json
-// @Produce 	json
-//
-// @Security    ApiKeyAuth
-//
-// @Success 	200 {array} models.BookingWithIdArrayRes
-// @Failure 	401 {object} models.BasicErrorRes
-// @Failure 	500 {object} models.BasicErrorRes
-//
-// @Router 		/service/booking/incoming/user [get]
 func UserGetIncompleteBookingHandler(c *gin.Context, db *models.MongoDB) {
 	//401 not authorized
 	current_user, err := _authenticate(c, db)
@@ -145,22 +145,6 @@ func UserGetIncompleteBookingHandler(c *gin.Context, db *models.MongoDB) {
 
 }
 
-// UserGetHistoryBookingHandler godoc
-//
-// @Summary 	get all user history booking
-// @Description	get only booking with status completed, cancelled, expired (all booking that done)
-// @Tags 		Booking
-//
-// @Accept		json
-// @Produce 	json
-//
-// @Security    ApiKeyAuth
-//
-// @Success 	200 {array} models.BookingWithIdArrayRes
-// @Failure 	401 {object} models.BasicErrorRes
-// @Failure 	500 {object} models.BasicErrorRes
-//
-// @Router 		/service/booking/history/user [get]
 func UserGetHistoryBookingHandler(c *gin.Context, db *models.MongoDB) {
 	//401 not authorized
 	current_user, err := _authenticate(c, db)

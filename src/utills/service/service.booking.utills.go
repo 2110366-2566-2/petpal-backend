@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"petpal-backend/src/models"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -334,4 +335,123 @@ func BookingRefund() {
 	//todo
 	println("booking refund payment to user")
 
+}
+
+func BookingGetTimeSlot(db *models.MongoDB, bookingID string) (*models.Timeslot, error) {
+	// Get the booking collection
+	collection := db.Collection("booking")
+
+	// Find the booking by bookingID
+	var booking models.Booking = models.Booking{}
+
+	// Convert bookingID to ObjectID
+	objID, err := primitive.ObjectIDFromHex(bookingID)
+	if err != nil {
+		return nil, err
+	}
+
+	filter := bson.D{{Key: "_id", Value: objID}}
+	err = collection.FindOne(context.Background(), filter).Decode(&booking)
+	if err != nil {
+		return nil, err
+	}
+
+	collectionSVCP := db.Collection("svcp")
+	var svcp models.SVCP = models.SVCP{}
+	filterSvcp := bson.D{{Key: "SVCPID", Value: booking.SVCPID}}
+	err = collectionSVCP.FindOne(context.Background(), filterSvcp).Decode(&svcp)
+	if err != nil {
+		return nil, err
+	}
+
+	// Check if the service exists in the service provider
+	var foundService models.Service
+	err = errors.New("service not found")
+	for _, s := range svcp.Services {
+		//println(s.ServiceID, booking.ServiceID)
+		if s.ServiceID == booking.ServiceID {
+			foundService = s
+			err = nil
+			break
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	// Check if the timeslot exists in the service
+	var foundtimeslot models.Timeslot
+	err = errors.New("timeslot not found")
+	for _, t := range foundService.Timeslots {
+		if t.TimeslotID == booking.TimeslotID {
+			foundtimeslot = t
+			err = nil
+			break
+		}
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &foundtimeslot, nil
+}
+func BookingArrayGetTimeSlot(db *models.MongoDB, bookingArray []models.BookingWithId) []models.Timeslot {
+	var timeslotArray []models.Timeslot
+	for _, b := range bookingArray {
+		timeslot, err := BookingGetTimeSlot(db, b.BookingID)
+		if err != nil {
+			timeslotArray = append(timeslotArray, models.Timeslot{})
+			continue
+		}
+		timeslotArray = append(timeslotArray, *timeslot)
+	}
+	return timeslotArray
+}
+
+func CheckBookingHasStatus(booking models.BookingWithId, status []models.BookingStatus) bool {
+	for _, s := range status {
+
+		if booking.BookingStatus == s {
+			return true
+		}
+	}
+	return false
+}
+
+func AllBookFilter(db *models.MongoDB, bookingArray []models.BookingWithId, Bookfilter models.RequestBookingAll) []models.BookingWithId {
+
+	var filteredBooking []models.BookingWithId
+	TimeslotdArray := BookingArrayGetTimeSlot(db, bookingArray)
+
+	for i, b := range bookingArray {
+		if !Bookfilter.TimeslotStartAfter.IsZero() {
+			if TimeslotdArray[i].StartTime.Before(Bookfilter.TimeslotStartAfter) {
+				continue
+			}
+		}
+
+		if Bookfilter.StatusAllow != nil {
+			if !CheckBookingHasStatus(b, Bookfilter.StatusAllow) {
+				continue
+			}
+		}
+
+		if Bookfilter.ReservationType != "" {
+			if Bookfilter.ReservationType == "incoming" {
+				if !TimeslotdArray[i].StartTime.Before(time.Now()) {
+					continue
+				}
+			} else if Bookfilter.ReservationType == "outgoing" {
+				if !TimeslotdArray[i].StartTime.After(time.Now()) {
+					continue
+				}
+			}
+		}
+
+		filteredBooking = append(filteredBooking, b)
+
+	}
+
+	return filteredBooking
 }
