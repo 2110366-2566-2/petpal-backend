@@ -1,0 +1,11 @@
+{
+    "type" : "object",
+    "bsonType" : "object",
+    "title" : "Admin",
+    "properties" : {
+        "adminID" : {"bsonType" : "string"},
+        "adminName" : {"bsonType" : "string"},
+        "adminEmail" : {"bsonType" : "string"},
+        "adminPassword" : {"bsonType" : "string"}
+    }
+}

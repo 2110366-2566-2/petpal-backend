@@ -1,0 +1,12 @@
+{
+    "type" : "object",
+    "bsonType" : "object",
+    "properties" : {
+        "issueID" : {"bsonType" : "string"},
+        "reporterID" : {"bsonType" : "string"},
+        "reporterType" : {"bsonType" : "string"},
+        "issueTitle" : {"bsonType" : "string"},
+        "issueData" : {"bsonType" : "string"},
+        "isSolved" : {"bsonType" : "bool"}
+    }
+}
