@@ -328,6 +328,8 @@ func ChangeBookingScheduled(db *models.MongoDB, bookingID string, newTimeslotID 
 
 	// Update the booking status
 	booking.TimeslotID = newTimeslotID
+	booking.Status.SvcpConfirmed = false
+	booking.Status.RescheduleStatus = true
 
 	// Update the booking in the collection
 	_, err = collection.ReplaceOne(context.Background(), filter, booking)
@@ -478,4 +480,41 @@ func FillSVCPDetail(db *models.MongoDB, bookingArray []models.BookingShowALL) []
 	}
 
 	return bookingArray
+}
+
+func CompleteBooking(db *models.MongoDB, bookingID string, userType string) (*models.Booking, error) {
+	// Get the booking collection
+	collection := db.Collection("booking")
+
+	// Find the booking by bookingID
+	var booking models.Booking = models.Booking{}
+
+	// Convert bookingID to ObjectID
+	objID, err := primitive.ObjectIDFromHex(bookingID)
+	if err != nil {
+		return nil, err
+	}
+
+	filter := bson.D{{Key: "_id", Value: objID}}
+	err = collection.FindOne(context.Background(), filter).Decode(&booking)
+	if err != nil {
+		return nil, err
+	}
+
+	// Update the booking status
+	if userType == "svcp" {
+		booking.Status.SvcpCompleted = true
+		booking.Status.SvcpCompletedTimestamp = time.Now()
+	} else if userType == "user" {
+
+		booking.Status.UserCompleted = true
+		booking.Status.UserCompletedTimestamp = time.Now()
+	}
+	// Update the booking in the collection
+	_, err = collection.ReplaceOne(context.Background(), filter, booking)
+	if err != nil {
+		return nil, err
+	}
+
+	return &booking, nil
 }

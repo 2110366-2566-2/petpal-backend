@@ -173,18 +173,28 @@ type RequestBookingId struct {
 	BookingID string `json:"bookingID"`
 }
 
+type RequestBookingRescheduled struct {
+	BookingID  string `json:"bookingID"`
+	TimeslotID string `json:"timeslotID" bson:"timeslotID"`
+}
+
+type RequestBookingAll struct {
+	StartAfter      time.Time `json:"startAfter" `
+	ReservationType string    `json:"reservationType"`
+	CancelStatus    int       `json:"cancelStatus" bson:"cancelStatus"`
+	PaymentStatus   int       `json:"paymentStatus" bson:"paymentStatus"`
+	SvcpConfirmed   int       `json:"svcpConfirmed" bson:"svcpConfirmed"`
+	SvcpCompleted   int       `json:"svcpCompleted" bson:"svcpCompleted"`
+	UserCompleted   int       `json:"userCompleted" bson:"userCompleted"`
+}
 type BookkingDetailRes struct {
 	Message string      `json:"message"`
 	Result  BookingFull `json:"result"`
 }
 
-type BookingInsert struct {
+type BookingBasicRes struct {
 	Message string  `json:"message"`
 	Result  Booking `json:"result"`
-}
-type BookingBasicRes struct {
-	Message string          `json:"message"`
-	Result  BookingFullNoID `json:"result"`
 }
 
 // type BookingWithIdRes struct {
@@ -195,21 +205,4 @@ type BookingBasicRes struct {
 type BookingWithIdArrayRes struct {
 	Message string           `json:"message"`
 	Result  []BookingShowALL `json:"result"`
-}
-
-type RequestBookingRescheduled struct {
-	BookingID  string `json:"bookingID"`
-	TimeslotID string `json:"timeslotID" bson:"timeslotID"`
-}
-
-//ReservationType = "incoming" or "outgoing"
-
-type RequestBookingAll struct {
-	StartAfter      time.Time `json:"startAfter" `
-	ReservationType string    `json:"reservationType"`
-	CancelStatus    int       `json:"cancelStatus" bson:"cancelStatus"`
-	PaymentStatus   int       `json:"paymentStatus" bson:"paymentStatus"`
-	SvcpConfirmed   int       `json:"svcpConfirmed" bson:"svcpConfirmed"`
-	SvcpCompleted   int       `json:"svcpCompleted" bson:"svcpCompleted"`
-	UserCompleted   int       `json:"userCompleted" bson:"userCompleted"`
 }
