@@ -140,6 +140,7 @@ func UserGetAllBookingHandler(c *gin.Context, db *models.MongoDB) {
 // @Success 	200 {object} models.BookkingDetailRes "get detail booking"
 // @Failure 	400 {object} models.BasicErrorRes
 // @Failure 	401 {object} models.BasicErrorRes
+// @Failure 	403 {object} models.BasicErrorRes
 // @Failure 	500 {object} models.BasicErrorRes
 //
 // @Router 		/service/booking/detail/user [post]
@@ -171,7 +172,7 @@ func UserGetDetailBookingHandler(c *gin.Context, db *models.MongoDB) {
 	}
 
 	if booking.UserID != current_user.ID {
-		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: "This booking is not belong to you"})
+		c.JSON(http.StatusForbidden, models.BasicErrorRes{Error: "This booking is not belong to you"})
 		return
 	}
 
@@ -194,9 +195,10 @@ func UserGetDetailBookingHandler(c *gin.Context, db *models.MongoDB) {
 // @Success 	200 {object}  models.BookingBasicRes "Booking cancelled successfully"
 // @Failure 	400 {object} models.BasicErrorRes
 // @Failure 	401 {object} models.BasicErrorRes
+// @Failure 	403 {object} models.BasicErrorRes
 // @Failure 	500 {object} models.BasicErrorRes
 //
-// @Router 		/service/booking/cancel/user [post]
+// @Router 		/service/booking/cancel/user [patch]
 func UserCancelBookingHandler(c *gin.Context, db *models.MongoDB) {
 	// create booking
 	request := models.RequestCancelBooking{}
@@ -228,16 +230,16 @@ func UserCancelBookingHandler(c *gin.Context, db *models.MongoDB) {
 	}
 
 	if booking.UserID != current_user.ID {
-		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "This booking is not belong to you"})
+		c.JSON(http.StatusForbidden, models.BasicErrorRes{Error: "This booking is not belong to you"})
 		return
 	}
 
 	if booking.Status.UserCompleted {
-		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "This booking is already completed  by user"})
+		c.JSON(http.StatusForbidden, models.BasicErrorRes{Error: "This booking is already completed  by user"})
 		return
 	}
 	if booking.Cancel.CancelStatus {
-		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "This booking is already cancelled"})
+		c.JSON(http.StatusForbidden, models.BasicErrorRes{Error: "This booking is already cancelled"})
 		return
 	}
 	if booking.Status.PaymentStatus {
@@ -280,9 +282,10 @@ func UserCancelBookingHandler(c *gin.Context, db *models.MongoDB) {
 // @Success 	200 {object}  models.BookingBasicRes "Booking rescheduled successfully"
 // @Failure 	400 {object} models.BasicErrorRes
 // @Failure 	401 {object} models.BasicErrorRes
+// @Failure 	403 {object} models.BasicErrorRes
 // @Failure 	500 {object} models.BasicErrorRes
 //
-// @Router 		/service/booking/reschedule/user [post]
+// @Router 		/service/booking/reschedule/user [patch]
 func UserRescheduleBookingHandeler(c *gin.Context, db *models.MongoDB) {
 	// create booking
 	request := models.RequestBookingRescheduled{}
@@ -314,16 +317,16 @@ func UserRescheduleBookingHandeler(c *gin.Context, db *models.MongoDB) {
 	}
 
 	if booking.UserID != current_user.ID {
-		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "This booking is not belong to you"})
+		c.JSON(http.StatusForbidden, models.BasicErrorRes{Error: "This booking is not belong to you"})
 		return
 	}
 
 	if booking.Status.UserCompleted {
-		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "This booking is already completed by user"})
+		c.JSON(http.StatusForbidden, models.BasicErrorRes{Error: "This booking is already completed by user"})
 		return
 	}
 	if booking.Cancel.CancelStatus {
-		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "This booking is already cancelled"})
+		c.JSON(http.StatusForbidden, models.BasicErrorRes{Error: "This booking is already cancelled"})
 		return
 	}
 
@@ -341,7 +344,7 @@ func UserRescheduleBookingHandeler(c *gin.Context, db *models.MongoDB) {
 // UserCompleteBookingHandler godoc
 //
 // @Summary 	set complete user for booking by booking id
-// @Description	can only complete not completed booking by user ,not cancelled ,startime is passed and paid.
+// @Description	can only complete not completed booking by user ,not cancelled and startime is passed.
 // @Tags 		Booking user
 //
 // @Accept		json
@@ -354,9 +357,10 @@ func UserRescheduleBookingHandeler(c *gin.Context, db *models.MongoDB) {
 // @Success 	200 {object} models.BookingBasicRes "Booking completed successfully"
 // @Failure 	400 {object} models.BasicErrorRes
 // @Failure 	401 {object} models.BasicErrorRes
+// @Failure 	403 {object} models.BasicErrorRes
 // @Failure 	500 {object} models.BasicErrorRes
 //
-// @Router 		/service/booking/complete/user [post]
+// @Router 		/service/booking/complete/user [patch]
 func UserCompleteBookingHandler(c *gin.Context, db *models.MongoDB) {
 	// create booking
 	request := models.RequestBookingId{}
@@ -388,27 +392,27 @@ func UserCompleteBookingHandler(c *gin.Context, db *models.MongoDB) {
 	}
 
 	if booking.UserID != current_user.ID {
-		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "This booking is not belong to you"})
+		c.JSON(http.StatusForbidden, models.BasicErrorRes{Error: "This booking is not belong to you"})
 		return
 	}
 
 	if booking.Status.UserCompleted {
-		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "This booking is already user completed"})
+		c.JSON(http.StatusForbidden, models.BasicErrorRes{Error: "This booking is already user completed"})
 		return
 	}
 	if booking.Cancel.CancelStatus {
-		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "This booking is already cancelled"})
+		c.JSON(http.StatusForbidden, models.BasicErrorRes{Error: "This booking is already cancelled"})
 		return
 	}
 
 	if booking.StartTime.After(time.Now()) {
-		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "This booking is not started yet"})
+		c.JSON(http.StatusForbidden, models.BasicErrorRes{Error: "This booking is not started yet"})
 		return
 	}
-	if !(booking.Status.PaymentStatus) {
-		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "This booking is not payment yet"})
-		return
-	}
+	// if !(booking.Status.PaymentStatus) {
+	// 	c.JSON(http.StatusForbidden, models.BasicErrorRes{Error: "This booking is not payment yet"})
+	// 	return
+	// }
 
 	//Change booking sheduled
 	returnBooking, err := utills.CompleteBooking(db, request.BookingID, "user")

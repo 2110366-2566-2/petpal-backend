@@ -68,7 +68,63 @@ func SVCPGetAllBookingHandler(c *gin.Context, db *models.MongoDB) {
 
 }
 
-// SVCPComfirmBookingHandler godoc
+// SVCPGetDetailBookingHandler godoc
+//
+// @Summary 	svcp get a booking detail by booking id
+// @Description	get a booking detail by booking id
+// @Tags 		Booking svcp
+//
+// @Accept		json
+// @Produce 	json
+//
+// @Security    ApiKeyAuth
+//
+// @Param       bookingID      body    models.RequestBookingId    true    "booking id"
+//
+// @Success 	200 {object} models.BookkingDetailRes "get detail booking"
+// @Failure 	400 {object} models.BasicErrorRes
+// @Failure 	401 {object} models.BasicErrorRes
+// @Failure 	403 {object} models.BasicErrorRes
+// @Failure 	500 {object} models.BasicErrorRes
+//
+// @Router 		/service/booking/detail/svcp [post]
+func SVCPGetDetailBookingHandler(c *gin.Context, db *models.MongoDB) {
+
+	//401 not authorized
+	current_svcp, err := _authenticate(c, db)
+	if err != nil {
+		http.Error(c.Writer, "Failed to get current svcp", http.StatusInternalServerError)
+		return
+	}
+	request := models.RequestBookingId{}
+
+	//400 bad request
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: err.Error()})
+		return
+	}
+
+	if request.BookingID == "" {
+		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "Missing required fields"})
+		return
+	}
+
+	booking, err := utills.GetABookingDetail(db, request.BookingID)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})
+		return
+	}
+
+	if booking.SVCPID != current_svcp.SVCPID {
+		c.JSON(http.StatusForbidden, models.BasicErrorRes{Error: "This booking is not belong to you"})
+		return
+	}
+
+	c.JSON(http.StatusOK, models.BookkingDetailRes{Message: "get detail user booking successfully", Result: *booking})
+}
+
+// SVCPConfirmBookingHandler godoc
 //
 // @Summary 	set comfirm svcp for booking by booking id
 // @Description	can only comfirm booking that is not comfirmed by svcp and not cancelled
@@ -84,10 +140,11 @@ func SVCPGetAllBookingHandler(c *gin.Context, db *models.MongoDB) {
 // @Success 	200 {object}  models.BookingBasicRes "Booking svcp completed successfully"
 // @Failure 	400 {object} models.BasicErrorRes
 // @Failure 	401 {object} models.BasicErrorRes
+// @Failure 	403 {object} models.BasicErrorRes
 // @Failure 	500 {object} models.BasicErrorRes
 //
-// @Router 		/service/booking/comfirm/svcp [post]
-func SVCPComfirmBookingHandler(c *gin.Context, db *models.MongoDB) {
+// @Router 		/service/booking/confirm/svcp [patch]
+func SVCPConfirmBookingHandler(c *gin.Context, db *models.MongoDB) {
 
 	request := models.RequestBookingId{}
 
@@ -149,9 +206,10 @@ func SVCPComfirmBookingHandler(c *gin.Context, db *models.MongoDB) {
 // @Success 	200 {object} models.BookingBasicRes "Booking completed successfully"
 // @Failure 	400 {object} models.BasicErrorRes
 // @Failure 	401 {object} models.BasicErrorRes
+// @Failure 	403 {object} models.BasicErrorRes
 // @Failure 	500 {object} models.BasicErrorRes
 //
-// @Router 		/service/booking/complete/svcp [post]
+// @Router 		/service/booking/complete/svcp [patch]
 func SVCPCompleteBookingHandler(c *gin.Context, db *models.MongoDB) {
 
 	request := models.RequestBookingId{}
@@ -189,7 +247,7 @@ func SVCPCompleteBookingHandler(c *gin.Context, db *models.MongoDB) {
 	}
 
 	if booking.StartTime.After(time.Now()) {
-		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "This booking is not started yet"})
+		c.JSON(http.StatusForbidden, models.BasicErrorRes{Error: "This booking is not started yet"})
 		return
 	}
 
@@ -226,9 +284,10 @@ func SVCPCompleteBookingHandler(c *gin.Context, db *models.MongoDB) {
 // @Success 	200 {object}  models.BookingBasicRes "Booking cancelled successfully"
 // @Failure 	400 {object} models.BasicErrorRes
 // @Failure 	401 {object} models.BasicErrorRes
+// @Failure 	403 {object} models.BasicErrorRes
 // @Failure 	500 {object} models.BasicErrorRes
 //
-// @Router 		/service/booking/cancel/svcp [post]
+// @Router 		/service/booking/cancel/svcp [patch]
 func SVCPCancelBookingHandler(c *gin.Context, db *models.MongoDB) {
 
 	request := models.RequestCancelBooking{}
