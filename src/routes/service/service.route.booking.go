@@ -52,10 +52,6 @@ func ServiceBookingRoutes(r *gin.RouterGroup) {
 		// 	db := c.MustGet("db").(*models.MongoDB)
 		// 	//controllers.SVCPGetHistoryBookingHandler(c, db)
 		// })
-		// bookingGroup.GET("/incoming/svcp", func(c *gin.Context) {
-		// 	db := c.MustGet("db").(*models.MongoDB)
-		// 	//controllers.SVCPGetIncompleteBookingHandler(c, db)
-		// })
 		// bookingGroup.POST("/accept/svcp", func(c *gin.Context) {
 		// 	db := c.MustGet("db").(*models.MongoDB)
 		// 	//controllers.SVCPAcceptBookingHandler(c, db)
