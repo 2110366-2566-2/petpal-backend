@@ -23,23 +23,35 @@ definitions:
       message:
         type: string
     type: object
-  models.BookingBasicRes:
-    properties:
-      message:
-        type: string
-      result:
-        $ref: '#/definitions/models.BookingFullNoID'
-    type: object
-  models.BookingFullNoID:
+  models.Booking:
     properties:
       SVCPID:
         type: string
-      SVCPName:
-        type: string
-      averageRating:
-        type: number
       bookingTimestamp:
         type: string
+      cancel:
+        $ref: '#/definitions/models.BookingCancel'
+      endTime:
+        type: string
+      feedback:
+        $ref: '#/definitions/models.Feedback'
+      serviceID:
+        type: string
+      serviceName:
+        type: string
+      startTime:
+        type: string
+      status:
+        $ref: '#/definitions/models.BookingStatus'
+      timeslotID:
+        type: string
+      totalBookingPrice:
+        type: number
+      userID:
+        type: string
+    type: object
+  models.BookingCancel:
+    properties:
       cancelBy:
         description: who cancelled
         type: string
@@ -52,43 +64,51 @@ definitions:
       cancelTimestamp:
         description: time of cancellation
         type: string
+    type: object
+  models.BookingFull:
+    properties:
+      SVCPID:
+        type: string
+      SVCPName:
+        type: string
+      averageRating:
+        type: number
+      bookingID:
+        type: string
+      bookingTimestamp:
+        type: string
+      cancel:
+        $ref: '#/definitions/models.BookingCancel'
       endTime:
         type: string
       feedback:
         $ref: '#/definitions/models.Feedback'
-      paymentStatus:
-        type: boolean
-      paymentTimestamp:
-        type: string
-      rescheduleStatus:
-        description: true if rescheduled
-        type: boolean
       serviceDescription:
         type: string
       serviceID:
         type: string
       serviceImg:
         type: string
+      serviceName:
+        description: service name
+        type: string
       startTime:
         type: string
-      svcpCompleted:
-        type: boolean
-      svcpCompletedTimestamp:
-        type: string
-      svcpConfirmed:
-        type: boolean
-      svcpConfirmedTimestamp:
-        type: string
+      status:
+        $ref: '#/definitions/models.BookingStatus'
       timeslotID:
         type: string
       totalBookingPrice:
         type: number
-      userCompleted:
-        type: boolean
-      userCompletedTimestamp:
-        type: string
       userID:
         type: string
+    type: object
+  models.BookingInsert:
+    properties:
+      message:
+        type: string
+      result:
+        $ref: '#/definitions/models.Booking'
     type: object
   models.BookingRequest:
     properties:
@@ -109,34 +129,47 @@ definitions:
         type: string
       bookingTimestamp:
         type: string
-      cancelStatus:
-        description: true if cancelled
-        type: boolean
+      cancel:
+        $ref: '#/definitions/models.BookingCancel'
       endTime:
         type: string
-      paymentStatus:
-        description: true if paid
-        type: boolean
+      feedback:
+        $ref: '#/definitions/models.Feedback'
       serviceID:
         type: string
       serviceName:
         type: string
       startTime:
         type: string
-      svcpCompleted:
-        description: true if completed by svcp
-        type: boolean
-      svcpConfirmed:
-        description: true if confirmed by svcp
-        type: boolean
+      status:
+        $ref: '#/definitions/models.BookingStatus'
       timeslotID:
         type: string
       totalBookingPrice:
         type: number
-      userCompleted:
-        description: true if completed by user
-        type: boolean
       userID:
+        type: string
+    type: object
+  models.BookingStatus:
+    properties:
+      paymentStatus:
+        type: boolean
+      paymentTimestamp:
+        type: string
+      rescheduleStatus:
+        description: true if rescheduled
+        type: boolean
+      svcpCompleted:
+        type: boolean
+      svcpCompletedTimestamp:
+        type: string
+      svcpConfirmed:
+        type: boolean
+      svcpConfirmedTimestamp:
+        type: string
+      userCompleted:
+        type: boolean
+      userCompletedTimestamp:
         type: string
     type: object
   models.BookingWithIdArrayRes:
@@ -147,6 +180,13 @@ definitions:
         items:
           $ref: '#/definitions/models.BookingShowALL'
         type: array
+    type: object
+  models.BookkingDetailRes:
+    properties:
+      message:
+        type: string
+      result:
+        $ref: '#/definitions/models.BookingFull'
     type: object
   models.CreateSVCP:
     properties:
@@ -239,13 +279,6 @@ definitions:
   models.RequestBookingId:
     properties:
       bookingID:
-        type: string
-    type: object
-  models.RequestBookingRescheduled:
-    properties:
-      bookingID:
-        type: string
-      timeslotID:
         type: string
     type: object
   models.SVCP:
@@ -607,43 +640,6 @@ paths:
       summary: get all user booking with filter(optional)
       tags:
       - Booking
-  /service/booking/cancel/user:
-    post:
-      consumes:
-      - application/json
-      description: can only cancel booking with status pending, paid, comfirmed (all
-        booking that not done yet)
-      parameters:
-      - description: booking id
-        in: body
-        name: bookingID
-        required: true
-        schema:
-          $ref: '#/definitions/models.RequestBookingId'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Booking cancelled successfully
-          schema:
-            $ref: '#/definitions/models.BasicRes'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/models.BasicErrorRes'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/models.BasicErrorRes'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.BasicErrorRes'
-      security:
-      - ApiKeyAuth: []
-      summary: user cancel booking
-      tags:
-      - Booking
   /service/booking/create:
     post:
       consumes:
@@ -662,7 +658,7 @@ paths:
         "201":
           description: Booking created successfully
           schema:
-            $ref: '#/definitions/models.BookingBasicRes'
+            $ref: '#/definitions/models.BookingInsert'
         "400":
           description: Bad Request
           schema:
@@ -680,26 +676,25 @@ paths:
       summary: Create a Booking
       tags:
       - Booking
-  /service/booking/reschedule/user:
+  /service/booking/detail/user:
     post:
       consumes:
       - application/json
-      description: can only reschedule booking with status pending, paid, comfirmed
-        (all booking that not done yet)
+      description: get a booking detail by booking id
       parameters:
-      - description: booking id and new timeslot id
+      - description: booking id
         in: body
-        name: booking
+        name: bookingID
         required: true
         schema:
-          $ref: '#/definitions/models.RequestBookingRescheduled'
+          $ref: '#/definitions/models.RequestBookingId'
       produces:
       - application/json
       responses:
         "200":
-          description: Booking rescheduled successfully
+          description: get detail booking
           schema:
-            $ref: '#/definitions/models.BasicRes'
+            $ref: '#/definitions/models.BookkingDetailRes'
         "400":
           description: Bad Request
           schema:
@@ -714,7 +709,7 @@ paths:
             $ref: '#/definitions/models.BasicErrorRes'
       security:
       - ApiKeyAuth: []
-      summary: user reschedule booking
+      summary: user get a booking detail
       tags:
       - Booking
   /service/feedback/{id}:

@@ -124,6 +124,60 @@ func UserGetAllBookingHandler(c *gin.Context, db *models.MongoDB) {
 	c.JSON(http.StatusOK, models.BookingWithIdArrayRes{Message: "get all user booking successfully", Result: bookingsList})
 }
 
+// UserGetDetailBookingHandler godoc
+//
+// @Summary 	user get a booking detail
+// @Description	get a booking detail by booking id
+// @Tags 		Booking
+//
+// @Accept		json
+// @Produce 	json
+//
+// @Security    ApiKeyAuth
+//
+// @Param       bookingID      body    models.RequestBookingId    true    "booking id"
+//
+// @Success 	200 {object} models.BookkingDetailRes "get detail booking"
+// @Failure 	400 {object} models.BasicErrorRes
+// @Failure 	401 {object} models.BasicErrorRes
+// @Failure 	500 {object} models.BasicErrorRes
+//
+// @Router 		/service/booking/detail/user [post]
+func UserGetDetailBookingHandler(c *gin.Context, db *models.MongoDB) {
+	//401 not authorized
+	current_user, err := _authenticate(c, db)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, models.BasicErrorRes{Error: err.Error()})
+		return
+	}
+	request := models.RequestBookingId{}
+
+	//400 bad request
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: err.Error()})
+		return
+	}
+
+	if request.BookingID == "" {
+		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "Missing required fields"})
+		return
+	}
+
+	booking, err := utills.GetABookingDetail(db, request.BookingID)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})
+		return
+	}
+
+	if booking.UserID != current_user.ID {
+		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: "This booking is not belong to you"})
+		return
+	}
+
+	c.JSON(http.StatusOK, models.BookkingDetailRes{Message: "get all user booking successfully", Result: *booking})
+}
+
 // UserCancelBookingHandler godoc
 //
 // @Summary 	user cancel booking

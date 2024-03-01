@@ -72,6 +72,8 @@ type BookingShowALL struct {
 
 	Status BookingStatus `json:"status" bson:"status"`
 
+	Feedback Feedback `json:"feedback" bson:"feedback"`
+
 	// BookingStatus BookingStatus `json:"bookingStatus" bson:"bookingStatus"`
 }
 
@@ -86,6 +88,7 @@ type BookingFull struct {
 	TotalBookingPrice float64   `json:"totalBookingPrice" bson:"totalBookingPrice"`
 
 	SVCPName           string  `json:"SVCPName" bson:"SVCPName"`
+	ServiceName        string  `json:"serviceName" bson:"serviceName"` //service name
 	AverageRating      float64 `json:"averageRating" bson:"averageRating"`
 	ServiceImg         string  `json:"serviceImg" bson:"serviceImg"`
 	ServiceDescription string  `json:"serviceDescription" bson:"serviceDescription"`
@@ -164,6 +167,11 @@ type BookingIndex struct {
 
 type RequestBookingId struct {
 	BookingID string `json:"bookingID"`
+}
+
+type BookkingDetailRes struct {
+	Message string      `json:"message"`
+	Result  BookingFull `json:"result"`
 }
 
 type BookingInsert struct {

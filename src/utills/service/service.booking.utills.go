@@ -81,28 +81,57 @@ func InsertBooking(db *models.MongoDB, BookingCreate *models.Booking) (*models.B
 	return BookingCreate, nil
 }
 
-// func GetBooking(db *models.MongoDB, bookingID string) (*models.BookingWithId, error) {
-// 	// Get the booking collection
-// 	collection := db.Collection("booking")
+func GetABookingDetail(db *models.MongoDB, bookingID string) (*models.BookingFull, error) {
+	// Get the booking collection
+	collection := db.Collection("booking")
 
-// 	// Find the booking by bookingID
-// 	var booking models.BookingWithId = models.BookingWithId{}
+	// Find the booking by bookingID
+	booking := models.BookingFull{}
 
-// 	objID, err := primitive.ObjectIDFromHex(bookingID)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	objID, err := primitive.ObjectIDFromHex(bookingID)
+	if err != nil {
+		return nil, err
+	}
 
-// 	filter := bson.D{{Key: "_id", Value: objID}}
-// 	err = collection.FindOne(context.Background(), filter).Decode(&booking)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	filter := bson.D{{Key: "_id", Value: objID}}
+	err = collection.FindOne(context.Background(), filter).Decode(&booking)
+	if err != nil {
+		return nil, err
+	}
 
-// 	return &booking, nil
-// }
+	collectionSVCP := db.Collection("svcp")
+	var svcp models.SVCP = models.SVCP{}
+	filterSvcp := bson.D{{Key: "SVCPID", Value: booking.SVCPID}}
+	err = collectionSVCP.FindOne(context.Background(), filterSvcp).Decode(&svcp)
+	if err != nil {
+		return nil, err
+	}
 
-// func GetBookingsByUser(db *models.MongoDB, userID string) ([]models.BookingWithId, error) {
+	// Check if the service exists in the service provider
+	var foundService models.Service
+	err = errors.New("service not found")
+	for _, s := range svcp.Services {
+		//println(s.ServiceID, booking.ServiceID)
+		if s.ServiceID == booking.ServiceID {
+			foundService = s
+			err = nil
+			break
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	booking.SVCPName = svcp.SVCPUsername
+	booking.ServiceName = foundService.ServiceName
+	booking.AverageRating = foundService.AverageRating
+	booking.ServiceImg = foundService.ServiceImg
+	booking.ServiceDescription = foundService.ServiceDescription
+
+	return &booking, nil
+}
+
+// func GetBookingsAByUser(db *models.MongoDB, userID string) ([]models.BookingWithId, error) {
 // 	// Get the booking collection
 // 	collection := db.Collection("booking")
 
