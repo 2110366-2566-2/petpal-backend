@@ -14,7 +14,7 @@ import (
 	// "go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func InsertBooking(db *models.MongoDB, BookingCreate *models.Booking) (*models.Booking, error) {
+func InsertBooking(db *models.MongoDB, BookingCreate *models.BookingFullNoID) (*models.BookingFullNoID, error) {
 	// Get the booking collection
 	collection := db.Collection("booking")
 	collectionSVCP := db.Collection("svcp")
@@ -58,6 +58,13 @@ func InsertBooking(db *models.MongoDB, BookingCreate *models.Booking) (*models.B
 
 	BookingCreate.TotalBookingPrice = foundService.Price
 
+	BookingCreate.SVCPName = svcp.SVCPUsername
+	BookingCreate.AverageRating = foundService.AverageRating
+	BookingCreate.ServiceImg = foundService.ServiceImg
+	BookingCreate.ServiceDescription = foundService.ServiceDescription
+	BookingCreate.StartTime = foundtimeslot.StartTime
+	BookingCreate.EndTime = foundtimeslot.EndTime
+
 	// Check if the timeslot has already passed
 	if foundtimeslot.StartTime.Before(BookingCreate.BookingTimestamp) {
 		// return nil, errors.New("timeslot has already passed")
@@ -71,37 +78,6 @@ func InsertBooking(db *models.MongoDB, BookingCreate *models.Booking) (*models.B
 
 	// Return the inserted booking
 	return BookingCreate, nil
-}
-
-func ChangeBookingStatus(db *models.MongoDB, bookingID string, status models.BookingStatus) (*models.Booking, error) {
-	// Get the booking collection
-	collection := db.Collection("booking")
-
-	// Find the booking by bookingID
-	var booking models.Booking = models.Booking{}
-
-	// Convert bookingID to ObjectID
-	objID, err := primitive.ObjectIDFromHex(bookingID)
-	if err != nil {
-		return nil, err
-	}
-
-	filter := bson.D{{Key: "_id", Value: objID}}
-	err = collection.FindOne(context.Background(), filter).Decode(&booking)
-	if err != nil {
-		return nil, err
-	}
-
-	// Update the booking status
-	booking.BookingStatus = status
-
-	// Update the booking in the collection
-	_, err = collection.ReplaceOne(context.Background(), filter, booking)
-	if err != nil {
-		return nil, err
-	}
-
-	return &booking, nil
 }
 
 func GetBooking(db *models.MongoDB, bookingID string) (*models.BookingWithId, error) {
@@ -125,12 +101,12 @@ func GetBooking(db *models.MongoDB, bookingID string) (*models.BookingWithId, er
 	return &booking, nil
 }
 
-func GetBookingsByUser(db *models.MongoDB, userID string, status models.BookingStatus) ([]models.BookingWithId, error) {
+func GetBookingsByUser(db *models.MongoDB, userID string) ([]models.BookingWithId, error) {
 	// Get the booking collection
 	collection := db.Collection("booking")
 
 	// Find the booking by userID
-	filter := bson.D{{Key: "userID", Value: userID}, {Key: "bookingStatus", Value: status}}
+	filter := bson.D{{Key: "userID", Value: userID}}
 	cursor, err := collection.Find(context.Background(), filter)
 	if err != nil {
 		return nil, err
@@ -163,12 +139,12 @@ func GetAllBookingsByUser(db *models.MongoDB, userID string) ([]models.BookingWi
 	return bookings, nil
 }
 
-func GetBookingsBySVCP(db *models.MongoDB, SVCPID string, status models.BookingStatus) ([]models.Booking, error) {
+func GetBookingsBySVCP(db *models.MongoDB, SVCPID string) ([]models.Booking, error) {
 	// Get the booking collection
 	collection := db.Collection("booking")
 
 	// Find the booking by SVCPID
-	filter := bson.D{{Key: "SVCPID", Value: SVCPID}, {Key: "bookingStatus", Value: status}}
+	filter := bson.D{{Key: "SVCPID", Value: SVCPID}}
 	cursor, err := collection.Find(context.Background(), filter)
 	if err != nil {
 		return nil, err
@@ -201,50 +177,6 @@ func GetAllBookingsBySVCP(db *models.MongoDB, SVCPID string) ([]models.Booking, 
 	return bookings, nil
 }
 
-func ChangeBookingStatusIsDone(books models.BookingStatus) bool {
-	for _, s := range models.BookingStatusDone {
-		if books == s {
-			return true
-		}
-	}
-	return false
-}
-
-func ChangeBookingStatusIsNotdone(books models.BookingStatus) bool {
-	for _, s := range models.BookingStatusNotdone {
-		if books == s {
-			return true
-		}
-	}
-	return false
-}
-
-func CheckBookingIsDone(b models.BookingWithId) bool {
-
-	// Check if the booking is complete
-	for _, s := range models.BookingStatusDone {
-		if b.BookingStatus == s {
-			return true
-		}
-	}
-
-	return false
-
-}
-
-func CheckBookingIsNotdone(b models.BookingWithId) bool {
-
-	// Check if the booking is complete
-	for _, s := range models.BookingStatusNotdone {
-		if b.BookingStatus == s {
-			return true
-		}
-	}
-
-	return false
-
-}
-
 func ChangeBookingScheduled(db *models.MongoDB, bookingID string, newTimeslotID string) (*models.Booking, error) {
 
 	// Get the booking collection
@@ -267,13 +199,6 @@ func ChangeBookingScheduled(db *models.MongoDB, bookingID string, newTimeslotID 
 
 	if booking.TimeslotID == newTimeslotID {
 		return nil, errors.New("new timeslot is the same as the old timeslot")
-	}
-
-	if ChangeBookingStatusIsDone(booking.BookingStatus) {
-		return nil, errors.New("booking is already done cannot be rescheduled")
-	}
-	if booking.BookingStatus == models.BookingComfirmed {
-		booking.BookingStatus = models.BookingPaid
 	}
 
 	collectionSVCP := db.Collection("svcp")
@@ -409,16 +334,6 @@ func BookingArrayGetTimeSlot(db *models.MongoDB, bookingArray []models.BookingWi
 	return timeslotArray
 }
 
-func CheckBookingHasStatus(booking models.BookingWithId, status []models.BookingStatus) bool {
-	for _, s := range status {
-
-		if booking.BookingStatus == s {
-			return true
-		}
-	}
-	return false
-}
-
 func AllBookFilter(db *models.MongoDB, bookingArray []models.BookingWithId, Bookfilter models.RequestBookingAll) []models.BookingWithId {
 
 	var filteredBooking []models.BookingWithId
@@ -427,12 +342,6 @@ func AllBookFilter(db *models.MongoDB, bookingArray []models.BookingWithId, Book
 	for i, b := range bookingArray {
 		if !Bookfilter.TimeslotStartAfter.IsZero() {
 			if TimeslotdArray[i].StartTime.Before(Bookfilter.TimeslotStartAfter) {
-				continue
-			}
-		}
-
-		if Bookfilter.StatusAllow != nil {
-			if !CheckBookingHasStatus(b, Bookfilter.StatusAllow) {
 				continue
 			}
 		}

@@ -30,12 +30,10 @@ import (
 // @Router 		/service/booking/create [post]
 func CreateBookingHandler(c *gin.Context, db *models.MongoDB) {
 	// create booking
-	var request struct {
-		Booking models.Booking `json:"booking"`
-	}
+	request := models.BookingFullNoID{}
 
 	//400 bad request
-	if err := c.ShouldBindJSON(&request.Booking); err != nil {
+	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: err.Error()})
 		return
 	}
@@ -46,19 +44,17 @@ func CreateBookingHandler(c *gin.Context, db *models.MongoDB) {
 		c.JSON(http.StatusUnauthorized, models.BasicErrorRes{Error: err.Error()})
 		return
 	}
-	request.Booking.UserID = current_user.ID
+	request.UserID = current_user.ID
 
 	// Check for required fields
-	if request.Booking.ServiceID == "" || request.Booking.TimeslotID == "" || request.Booking.SVCPID == "" {
+	if request.ServiceID == "" || request.TimeslotID == "" || request.SVCPID == "" {
 		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "Missing required fields"})
 		return
 	}
 
-	request.Booking.BookingStatus = models.BookingPending
+	request.BookingTimestamp = time.Now()
 
-	request.Booking.BookingTimestamp = time.Now()
-
-	returnBooking, err := utills.InsertBooking(db, &request.Booking)
+	returnBooking, err := utills.InsertBooking(db, &request)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})
@@ -118,67 +114,12 @@ func UserGetAllBookingHandler(c *gin.Context, db *models.MongoDB) {
 		return
 	}
 
-	if !(request.TimeslotStartAfter.IsZero() && request.StatusAllow == nil && request.ReservationType == "") {
+	if !(request.TimeslotStartAfter.IsZero() && request.ReservationType == "") {
 		bookingsList = utills.AllBookFilter(db, bookingsList, request)
 
 	}
 
 	c.JSON(http.StatusOK, models.BookingWithIdArrayRes{Message: "get all user booking successfully", Result: bookingsList})
-}
-
-// not used
-func UserGetIncompleteBookingHandler(c *gin.Context, db *models.MongoDB) {
-	//401 not authorized
-	current_user, err := _authenticate(c, db)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, models.BasicErrorRes{Error: err.Error()})
-		return
-	}
-
-	bookingsList, err := utills.GetAllBookingsByUser(db, current_user.ID)
-	var newbookingsList []models.BookingWithId
-
-	for _, booking := range bookingsList {
-		if utills.CheckBookingIsNotdone(booking) {
-			newbookingsList = append(newbookingsList, booking)
-		}
-	}
-
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, models.BookingWithIdArrayRes{Message: "get user all booking incomplete successfully", Result: newbookingsList})
-
-}
-
-// not used
-func UserGetHistoryBookingHandler(c *gin.Context, db *models.MongoDB) {
-	//401 not authorized
-	current_user, err := _authenticate(c, db)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, models.BasicErrorRes{Error: err.Error()})
-		return
-	}
-
-	bookingsList, err := utills.GetAllBookingsByUser(db, current_user.ID)
-	var newbookingsList []models.BookingWithId
-
-	//get only booking with status completed, cancelled, expired
-	for _, booking := range bookingsList {
-		if utills.CheckBookingIsDone(booking) {
-			newbookingsList = append(newbookingsList, booking)
-		}
-	}
-
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, models.BookingWithIdArrayRes{Message: "get user all booking incomplete successfully", Result: newbookingsList})
-
 }
 
 // UserCancelBookingHandler godoc
@@ -236,10 +177,6 @@ func UserCancelBookingHandler(c *gin.Context, db *models.MongoDB) {
 	}
 
 	//check if booking status is pending, paid, comfirmed
-	if !utills.CheckBookingIsNotdone(*booking) {
-		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "Booking already done cannot be cancelled"})
-		return
-	}
 
 	// if booking.BookingStatus == models.BookingPaid {
 	// 	//do something like return money to user
@@ -247,8 +184,6 @@ func UserCancelBookingHandler(c *gin.Context, db *models.MongoDB) {
 	// if booking.BookingStatus == models.BookingComfirmed {
 	// 	//do something like return money to user all sent notification to svcp?
 	// }
-
-	_, err = utills.ChangeBookingStatus(db, request.BookingID, models.BookingCanceledUser)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})
@@ -315,10 +250,6 @@ func UserRescheduleBookingHandeler(c *gin.Context, db *models.MongoDB) {
 	}
 
 	//check if booking status is pending, paid, comfirmed
-	if !utills.CheckBookingIsNotdone(*booking) {
-		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "Booking already done cannot be cancelled"})
-		return
-	}
 
 	//Change booking sheduled
 	_, err = utills.ChangeBookingScheduled(db, request.BookingID, request.TimeslotID)

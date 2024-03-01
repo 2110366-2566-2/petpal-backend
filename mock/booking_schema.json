@@ -19,14 +19,22 @@
 
         
 
-        "bookingStatus" : {"bsonType" : "string"},
+        "cancelStatus" : {"bsonType" : "bool"},
+        "cancelTimestamp" : {"bsonType" : "date"},
+        "cancelReason" : {"bsonType" : "string"},
+        "cancelBy" : {"bsonType" : "string"},
+
+        "rescheduleStatus" : {"bsonType" : "bool"},
 
         "paymentStatus" : {"bsonType" : "bool"},
         "paymentTimestamp" : {"bsonType" : "date"},
+
         "svcpConfirmed" : {"bsonType" : "bool"},
         "svcpConfirmedTimestamp" : {"bsonType" : "date"},
+
         "svcpCompleted" : {"bsonType" : "bool"},
         "svcpCompletedTimestamp" : {"bsonType" : "date"},
+        
         "userCompleted" : {"bsonType" : "bool"},
         "userCompletedTimestamp" : {"bsonType" : "date"},
 
