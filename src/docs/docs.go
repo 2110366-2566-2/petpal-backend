@@ -461,7 +461,7 @@ const docTemplate = `{
             }
         },
         "/service/booking/cancel/svcp": {
-            "post": {
+            "patch": {
                 "security": [
                     {
                         "ApiKeyAuth": []
@@ -508,6 +508,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/models.BasicErrorRes"
                         }
                     },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -518,7 +524,7 @@ const docTemplate = `{
             }
         },
         "/service/booking/cancel/user": {
-            "post": {
+            "patch": {
                 "security": [
                     {
                         "ApiKeyAuth": []
@@ -565,59 +571,8 @@ const docTemplate = `{
                             "$ref": "#/definitions/models.BasicErrorRes"
                         }
                     },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.BasicErrorRes"
-                        }
-                    }
-                }
-            }
-        },
-        "/service/booking/comfirm/svcp": {
-            "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "can only comfirm booking that is not comfirmed by svcp and not cancelled",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Booking svcp"
-                ],
-                "summary": "set comfirm svcp for booking by booking id",
-                "parameters": [
-                    {
-                        "description": "booking id",
-                        "name": "bookingID",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.RequestBookingId"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Booking svcp completed successfully",
-                        "schema": {
-                            "$ref": "#/definitions/models.BookingBasicRes"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.BasicErrorRes"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
+                    "403": {
+                        "description": "Forbidden",
                         "schema": {
                             "$ref": "#/definitions/models.BasicErrorRes"
                         }
@@ -632,7 +587,7 @@ const docTemplate = `{
             }
         },
         "/service/booking/complete/svcp": {
-            "post": {
+            "patch": {
                 "security": [
                     {
                         "ApiKeyAuth": []
@@ -679,6 +634,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/models.BasicErrorRes"
                         }
                     },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -689,13 +650,13 @@ const docTemplate = `{
             }
         },
         "/service/booking/complete/user": {
-            "post": {
+            "patch": {
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "can only complete not completed booking by user ,not cancelled ,startime is passed and paid.",
+                "description": "can only complete not completed booking by user ,not cancelled and startime is passed.",
                 "consumes": [
                     "application/json"
                 ],
@@ -732,6 +693,75 @@ const docTemplate = `{
                     },
                     "401": {
                         "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/service/booking/confirm/svcp": {
+            "patch": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "can only comfirm booking that is not comfirmed by svcp and not cancelled",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking svcp"
+                ],
+                "summary": "set comfirm svcp for booking by booking id",
+                "parameters": [
+                    {
+                        "description": "booking id",
+                        "name": "bookingID",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.RequestBookingId"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Booking svcp completed successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.BookingBasicRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
                         "schema": {
                             "$ref": "#/definitions/models.BasicErrorRes"
                         }
@@ -850,6 +880,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/models.BasicErrorRes"
                         }
                     },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -907,6 +943,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/models.BasicErrorRes"
                         }
                     },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -917,7 +959,7 @@ const docTemplate = `{
             }
         },
         "/service/booking/reschedule/user": {
-            "post": {
+            "patch": {
                 "security": [
                     {
                         "ApiKeyAuth": []
@@ -960,6 +1002,12 @@ const docTemplate = `{
                     },
                     "401": {
                         "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
                         "schema": {
                             "$ref": "#/definitions/models.BasicErrorRes"
                         }
