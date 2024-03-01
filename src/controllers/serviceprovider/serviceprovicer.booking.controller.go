@@ -11,7 +11,7 @@ import (
 
 // SVCPGetAllBookingHandler godoc
 //
-// @Summary 	get all svcp booking with filter(optional)
+// @Summary 	get all booking of svcp with filter(optional)
 // @Description	json body not required if you dont want to filter result
 // @Description  startAfter is filter booking that has timeslot Start Before this time
 // @Description  reservationType is checking booking is "incoming" or "outgoing"
@@ -20,7 +20,7 @@ import (
 // @Description filter is and-condition(&&)
 // @Description example {}
 // @Description example {"reservationType":"incoming","svcpCompleted": 1,"userCompleted": 0}
-// @Tags 		Booking
+// @Tags 		Booking svcp
 //
 // @Accept		json
 // @Produce 	json
@@ -70,9 +70,9 @@ func SVCPGetAllBookingHandler(c *gin.Context, db *models.MongoDB) {
 
 // SVCPComfirmBookingHandler godoc
 //
-// @Summary 	svcp Comfirm booking
+// @Summary 	set comfirm svcp for booking by booking id
 // @Description	can only comfirm booking that is not comfirmed by svcp and not cancelled
-// @Tags 		Booking
+// @Tags 		Booking svcp
 //
 // @Accept		json
 // @Produce 	json
@@ -134,10 +134,10 @@ func SVCPComfirmBookingHandler(c *gin.Context, db *models.MongoDB) {
 
 // SVCPCompleteBookingHandler godoc
 //
-// @Summary 	complete a svcp booking
+// @Summary 	set complete svcp for booking by booking id
 // @Description	can only complete not completed booking by svcp ,not cancelled ,startime is pass
 // @Description if svcp not comfirmed booking it will auto comfirm first
-// @Tags 		Booking
+// @Tags 		Booking svcp
 //
 // @Accept		json
 // @Produce 	json
@@ -214,7 +214,7 @@ func SVCPCompleteBookingHandler(c *gin.Context, db *models.MongoDB) {
 //
 // @Summary 	svcp cancel booking
 // @Description	can only cancel not completed by svcp booking and not cancelled
-// @Tags 		Booking
+// @Tags 		Booking svcp
 //
 // @Accept		json
 // @Produce 	json

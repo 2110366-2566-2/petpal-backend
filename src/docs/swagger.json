@@ -331,6 +331,65 @@
                 }
             }
         },
+        "/service/booking/all/svcp": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "json body not required if you dont want to filter result\nstartAfter is filter booking that has timeslot Start Before this time\nreservationType is checking booking is \"incoming\" or \"outgoing\"\ncancelStatus ,paymentStatus ,svcpConfirmed ,svcpCompleted ,userCompleted is filter booking with status 0 == false, 1 == true, 2 == dont care(or you can unuse this filed in json body)\nif dont want to filter that field dont use that field in json body\nfilter is and-condition(\u0026\u0026)\nexample {}\nexample {\"reservationType\":\"incoming\",\"svcpCompleted\": 1,\"userCompleted\": 0}",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking svcp"
+                ],
+                "summary": "get all booking of svcp with filter(optional)",
+                "parameters": [
+                    {
+                        "description": "get all booking with filter(optional)",
+                        "name": "service",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/models.RequestBookingAll"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "get all svcp booking successfully",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.BookingWithIdArrayRes"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/service/booking/all/user": {
             "post": {
                 "security": [
@@ -346,9 +405,9 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Booking"
+                    "Booking user"
                 ],
-                "summary": "get all user booking with filter(optional)",
+                "summary": "get all booking of with filter(optional)",
                 "parameters": [
                     {
                         "description": "get all booking with filter(optional)",
@@ -390,14 +449,14 @@
                 }
             }
         },
-        "/service/booking/cancel/user": {
+        "/service/booking/cancel/svcp": {
             "post": {
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "can only cancel not completed by user booking and not cancelled",
+                "description": "can only cancel not completed by svcp booking and not cancelled",
                 "consumes": [
                     "application/json"
                 ],
@@ -405,9 +464,9 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Booking"
+                    "Booking svcp"
                 ],
-                "summary": "user cancel booking",
+                "summary": "svcp cancel booking",
                 "parameters": [
                     {
                         "description": "booking id",
@@ -447,14 +506,14 @@
                 }
             }
         },
-        "/service/booking/complete/user": {
+        "/service/booking/cancel/user": {
             "post": {
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "can only complete not completed booking by user ,not cancelled ,startime is pass ,paid and svcp comfirmed",
+                "description": "can only cancel not completed by user booking and not cancelled",
                 "consumes": [
                     "application/json"
                 ],
@@ -462,9 +521,180 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Booking"
+                    "Booking user"
                 ],
-                "summary": "complete a user booking",
+                "summary": "user cancel booking by booking id",
+                "parameters": [
+                    {
+                        "description": "booking id",
+                        "name": "bookingID",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.RequestCancelBooking"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Booking cancelled successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.BookingBasicRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/service/booking/comfirm/svcp": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "can only comfirm booking that is not comfirmed by svcp and not cancelled",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking svcp"
+                ],
+                "summary": "set comfirm svcp for booking by booking id",
+                "parameters": [
+                    {
+                        "description": "booking id",
+                        "name": "bookingID",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.RequestBookingId"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Booking svcp completed successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.BookingBasicRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/service/booking/complete/svcp": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "can only complete not completed booking by svcp ,not cancelled ,startime is pass\nif svcp not comfirmed booking it will auto comfirm first",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking svcp"
+                ],
+                "summary": "set complete svcp for booking by booking id",
+                "parameters": [
+                    {
+                        "description": "booking id",
+                        "name": "bookingID",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.RequestBookingId"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Booking completed successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.BookingBasicRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/service/booking/complete/user": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "can only complete not completed booking by user ,not cancelled ,startime is passed and paid.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking user"
+                ],
+                "summary": "set complete user for booking by booking id",
                 "parameters": [
                     {
                         "description": "booking id",
@@ -519,9 +749,9 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Booking"
+                    "Booking user"
                 ],
-                "summary": "User create a Booking",
+                "summary": "User create a Booking by svcp id ,service id and timeslot id",
                 "parameters": [
                     {
                         "description": "service chosen",
@@ -576,9 +806,9 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Booking"
+                    "Booking user"
                 ],
-                "summary": "user get a booking detail",
+                "summary": "user get a booking detail by booking id",
                 "parameters": [
                     {
                         "description": "booking id",
@@ -625,7 +855,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "can only reschedule not completed booking by user and not cancelled",
+                "description": "can only reschedule not completed booking by user, not cancelled and timeslot is not same",
                 "consumes": [
                     "application/json"
                 ],
@@ -633,9 +863,9 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Booking"
+                    "Booking user"
                 ],
-                "summary": "user reschedule booking",
+                "summary": "user reschedule booking by booking id and new timeslot id",
                 "parameters": [
                     {
                         "description": "booking id and new timeslot id",

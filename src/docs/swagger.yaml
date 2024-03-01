@@ -609,6 +609,51 @@ paths:
       summary: User registration
       tags:
       - Authentication
+  /service/booking/all/svcp:
+    post:
+      consumes:
+      - application/json
+      description: |-
+        json body not required if you dont want to filter result
+        startAfter is filter booking that has timeslot Start Before this time
+        reservationType is checking booking is "incoming" or "outgoing"
+        cancelStatus ,paymentStatus ,svcpConfirmed ,svcpCompleted ,userCompleted is filter booking with status 0 == false, 1 == true, 2 == dont care(or you can unuse this filed in json body)
+        if dont want to filter that field dont use that field in json body
+        filter is and-condition(&&)
+        example {}
+        example {"reservationType":"incoming","svcpCompleted": 1,"userCompleted": 0}
+      parameters:
+      - description: get all booking with filter(optional)
+        in: body
+        name: service
+        schema:
+          $ref: '#/definitions/models.RequestBookingAll'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: get all svcp booking successfully
+          schema:
+            items:
+              $ref: '#/definitions/models.BookingWithIdArrayRes'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
+      summary: get all booking of svcp with filter(optional)
+      tags:
+      - Booking svcp
   /service/booking/all/user:
     post:
       consumes:
@@ -651,9 +696,45 @@ paths:
             $ref: '#/definitions/models.BasicErrorRes'
       security:
       - ApiKeyAuth: []
-      summary: get all user booking with filter(optional)
+      summary: get all booking of with filter(optional)
       tags:
-      - Booking
+      - Booking user
+  /service/booking/cancel/svcp:
+    post:
+      consumes:
+      - application/json
+      description: can only cancel not completed by svcp booking and not cancelled
+      parameters:
+      - description: booking id
+        in: body
+        name: bookingID
+        required: true
+        schema:
+          $ref: '#/definitions/models.RequestCancelBooking'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Booking cancelled successfully
+          schema:
+            $ref: '#/definitions/models.BookingBasicRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
+      summary: svcp cancel booking
+      tags:
+      - Booking svcp
   /service/booking/cancel/user:
     post:
       consumes:
@@ -687,15 +768,53 @@ paths:
             $ref: '#/definitions/models.BasicErrorRes'
       security:
       - ApiKeyAuth: []
-      summary: user cancel booking
+      summary: user cancel booking by booking id
       tags:
-      - Booking
-  /service/booking/complete/user:
+      - Booking user
+  /service/booking/comfirm/svcp:
     post:
       consumes:
       - application/json
-      description: can only complete not completed booking by user ,not cancelled
-        ,startime is pass ,paid and svcp comfirmed
+      description: can only comfirm booking that is not comfirmed by svcp and not
+        cancelled
+      parameters:
+      - description: booking id
+        in: body
+        name: bookingID
+        required: true
+        schema:
+          $ref: '#/definitions/models.RequestBookingId'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Booking svcp completed successfully
+          schema:
+            $ref: '#/definitions/models.BookingBasicRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
+      summary: set comfirm svcp for booking by booking id
+      tags:
+      - Booking svcp
+  /service/booking/complete/svcp:
+    post:
+      consumes:
+      - application/json
+      description: |-
+        can only complete not completed booking by svcp ,not cancelled ,startime is pass
+        if svcp not comfirmed booking it will auto comfirm first
       parameters:
       - description: booking id
         in: body
@@ -724,9 +843,46 @@ paths:
             $ref: '#/definitions/models.BasicErrorRes'
       security:
       - ApiKeyAuth: []
-      summary: complete a user booking
+      summary: set complete svcp for booking by booking id
       tags:
-      - Booking
+      - Booking svcp
+  /service/booking/complete/user:
+    post:
+      consumes:
+      - application/json
+      description: can only complete not completed booking by user ,not cancelled
+        ,startime is passed and paid.
+      parameters:
+      - description: booking id
+        in: body
+        name: bookingID
+        required: true
+        schema:
+          $ref: '#/definitions/models.RequestBookingId'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Booking completed successfully
+          schema:
+            $ref: '#/definitions/models.BookingBasicRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
+      summary: set complete user for booking by booking id
+      tags:
+      - Booking user
   /service/booking/create:
     post:
       consumes:
@@ -760,9 +916,9 @@ paths:
             $ref: '#/definitions/models.BasicErrorRes'
       security:
       - ApiKeyAuth: []
-      summary: User create a Booking
+      summary: User create a Booking by svcp id ,service id and timeslot id
       tags:
-      - Booking
+      - Booking user
   /service/booking/detail/user:
     post:
       consumes:
@@ -796,14 +952,15 @@ paths:
             $ref: '#/definitions/models.BasicErrorRes'
       security:
       - ApiKeyAuth: []
-      summary: user get a booking detail
+      summary: user get a booking detail by booking id
       tags:
-      - Booking
+      - Booking user
   /service/booking/reschedule/user:
     post:
       consumes:
       - application/json
-      description: can only reschedule not completed booking by user and not cancelled
+      description: can only reschedule not completed booking by user, not cancelled
+        and timeslot is not same
       parameters:
       - description: booking id and new timeslot id
         in: body
@@ -832,9 +989,9 @@ paths:
             $ref: '#/definitions/models.BasicErrorRes'
       security:
       - ApiKeyAuth: []
-      summary: user reschedule booking
+      summary: user reschedule booking by booking id and new timeslot id
       tags:
-      - Booking
+      - Booking user
   /service/feedback/{id}:
     get:
       consumes:

@@ -11,9 +11,9 @@ import (
 
 // CreateBookingHandler godoc
 //
-// @Summary 	User create a Booking
+// @Summary 	User create a Booking by svcp id ,service id and timeslot id
 // @Description	User can create a booking for a service
-// @Tags 		Booking
+// @Tags 		Booking user
 //
 // @Accept		json
 // @Produce 	json
@@ -67,7 +67,7 @@ func CreateBookingHandler(c *gin.Context, db *models.MongoDB) {
 
 // UserGetAllBookingHandler godoc
 //
-// @Summary 	get all user booking with filter(optional)
+// @Summary 	get all booking of user with filter(optional)
 // @Description	json body not required if you dont want to filter result
 // @Description  startAfter is filter booking that has timeslot Start Before this time
 // @Description  reservationType is checking booking is "incoming" or "outgoing"
@@ -76,7 +76,7 @@ func CreateBookingHandler(c *gin.Context, db *models.MongoDB) {
 // @Description filter is and-condition(&&)
 // @Description example {}
 // @Description example {"reservationType":"incoming","svcpCompleted": 1,"userCompleted": 0}
-// @Tags 		Booking
+// @Tags 		Booking user
 //
 // @Accept		json
 // @Produce 	json
@@ -126,9 +126,9 @@ func UserGetAllBookingHandler(c *gin.Context, db *models.MongoDB) {
 
 // UserGetDetailBookingHandler godoc
 //
-// @Summary 	user get a booking detail
+// @Summary 	user get a booking detail by booking id
 // @Description	get a booking detail by booking id
-// @Tags 		Booking
+// @Tags 		Booking user
 //
 // @Accept		json
 // @Produce 	json
@@ -180,9 +180,9 @@ func UserGetDetailBookingHandler(c *gin.Context, db *models.MongoDB) {
 
 // UserCancelBookingHandler godoc
 //
-// @Summary 	user cancel booking
+// @Summary 	user cancel booking by booking id
 // @Description	can only cancel not completed by user booking and not cancelled
-// @Tags 		Booking
+// @Tags 		Booking user
 //
 // @Accept		json
 // @Produce 	json
@@ -266,9 +266,9 @@ func UserCancelBookingHandler(c *gin.Context, db *models.MongoDB) {
 
 // UserRescheduleBookingHandeler godoc
 //
-// @Summary 	user reschedule booking
-// @Description	can only reschedule not completed booking by user and not cancelled
-// @Tags 		Booking
+// @Summary 	user reschedule booking by booking id and new timeslot id
+// @Description	can only reschedule not completed booking by user, not cancelled and timeslot is not same
+// @Tags 		Booking user
 //
 // @Accept		json
 // @Produce 	json
@@ -340,9 +340,9 @@ func UserRescheduleBookingHandeler(c *gin.Context, db *models.MongoDB) {
 
 // UserCompleteBookingHandler godoc
 //
-// @Summary 	complete a user booking
+// @Summary 	set complete user for booking by booking id
 // @Description	can only complete not completed booking by user ,not cancelled ,startime is passed and paid.
-// @Tags 		Booking
+// @Tags 		Booking user
 //
 // @Accept		json
 // @Produce 	json
