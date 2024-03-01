@@ -27,7 +27,7 @@ type BookingWithId struct {
 	Feedback          Feedback  `json:"feedback" bson:"feedback"`
 }
 
-type BookingShowHistory struct {
+type BookingShowALL struct {
 	BookingID         string    `json:"bookingID" bson:"_id"`
 	UserID            string    `json:"userID" bson:"userID"`
 	SVCPID            string    `json:"SVCPID" bson:"SVCPID"`
@@ -41,6 +41,11 @@ type BookingShowHistory struct {
 	StartTime   time.Time `json:"startTime" bson:"startTime"`
 	EndTime     time.Time `json:"endTime" bson:"endTime"`
 
+	CancelStatus  bool `json:"cancelStatus" bson:"cancelStatus"`   //true if cancelled
+	PaymentStatus bool `json:"paymentStatus" bson:"paymentStatus"` //true if paid
+	SvcpConfirmed bool `json:"svcpConfirmed" bson:"svcpConfirmed"` //true if confirmed by svcp
+	SvcpCompleted bool `json:"svcpCompleted" bson:"svcpCompleted"` //true if completed by svcp
+	UserCompleted bool `json:"userCompleted" bson:"userCompleted"` //true if completed by user
 	// BookingStatus BookingStatus `json:"bookingStatus" bson:"bookingStatus"`
 }
 
@@ -64,6 +69,13 @@ type BookingFull struct {
 
 	// BookingStatus BookingStatus `json:"bookingStatus" bson:"bookingStatus"`
 
+	CancelStatus    bool      `json:"cancelStatus" bson:"cancelStatus"`       //true if cancelled
+	CancelTimestamp time.Time `json:"cancelTimestamp" bson:"cancelTimestamp"` //time of cancellation
+	CancelReason    string    `json:"cancelReason" bson:"cancelReason"`       //reason for cancellation
+	CancelBy        string    `json:"cancelBy" bson:"cancelBy"`               //who cancelled
+
+	RescheduleStatus bool `json:"rescheduleStatus" bson:"rescheduleStatus"` //true if rescheduled
+
 	PaymentStatus          bool      `json:"paymentStatus" bson:"paymentStatus"`
 	PaymentTimestamp       time.Time `json:"paymentTimestamp" bson:"paymentTimestamp"`
 	SvcpConfirmed          bool      `json:"svcpConfirmed" bson:"svcpConfirmed"`
@@ -76,7 +88,6 @@ type BookingFull struct {
 	Feedback Feedback `json:"feedback" bson:"feedback"`
 }
 type BookingFullNoID struct {
-	BookingID  string `json:"bookingID" bson:"_id"`
 	UserID     string `json:"userID" bson:"userID"`
 	SVCPID     string `json:"SVCPID" bson:"SVCPID"`
 	ServiceID  string `json:"serviceID" bson:"serviceID"`
@@ -94,6 +105,13 @@ type BookingFullNoID struct {
 	EndTime   time.Time `json:"endTime" bson:"endTime"`
 
 	// BookingStatus BookingStatus `json:"bookingStatus" bson:"bookingStatus"`
+
+	CancelStatus    bool      `json:"cancelStatus" bson:"cancelStatus"`       //true if cancelled
+	CancelTimestamp time.Time `json:"cancelTimestamp" bson:"cancelTimestamp"` //time of cancellation
+	CancelReason    string    `json:"cancelReason" bson:"cancelReason"`       //reason for cancellation
+	CancelBy        string    `json:"cancelBy" bson:"cancelBy"`               //who cancelled
+
+	RescheduleStatus bool `json:"rescheduleStatus" bson:"rescheduleStatus"` //true if rescheduled
 
 	PaymentStatus          bool      `json:"paymentStatus" bson:"paymentStatus"`
 	PaymentTimestamp       time.Time `json:"paymentTimestamp" bson:"paymentTimestamp"`
@@ -158,8 +176,8 @@ type BookingWithIdRes struct {
 }
 
 type BookingWithIdArrayRes struct {
-	Message string          `json:"message"`
-	Result  []BookingWithId `json:"result"`
+	Message string           `json:"message"`
+	Result  []BookingShowALL `json:"result"`
 }
 
 type RequestBookingRescheduled struct {
@@ -170,6 +188,11 @@ type RequestBookingRescheduled struct {
 //ReservationType = "incoming" or "outgoing"
 
 type RequestBookingAll struct {
-	TimeslotStartAfter time.Time `json:"timeslotStartBefore" `
-	ReservationType    string    `json:"reservationType"`
+	StartAfter      time.Time `json:"startAfter" `
+	ReservationType string    `json:"reservationType"`
+	CancelStatus    int       `json:"cancelStatus" bson:"cancelStatus"`
+	PaymentStatus   int       `json:"paymentStatus" bson:"paymentStatus"`
+	SvcpConfirmed   int       `json:"svcpConfirmed" bson:"svcpConfirmed"`
+	SvcpCompleted   int       `json:"svcpCompleted" bson:"svcpCompleted"`
+	UserCompleted   int       `json:"userCompleted" bson:"userCompleted"`
 }

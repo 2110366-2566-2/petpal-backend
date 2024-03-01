@@ -349,7 +349,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "body not required if you dont want to filter(get all)\noption body to filter booking by timeslotStartBefore,statusAllow,reservationType.\nwaring if you use fillter some booking with worng(not found,deleted etc) svcpid ,serviceid ,timeslotid will skip if you want to get all dont use filter\ntimeslotStartBefore is filter booking that has timeslot Start Before this time\nstatusAllow array filter by array of status  (string status)\nreservationType is booking is \"incoming\" or \"outgoing\"\nfilter is and condition",
+                "description": "json body not required if you dont want to filter result\nstartAfter is filter booking that has timeslot Start Before this time\nreservationType is checking booking is \"incoming\" or \"outgoing\"\ncancelStatus ,paymentStatus ,svcpConfirmed ,svcpCompleted ,userCompleted is filter booking with status 0 == false, 1 == true, 2 == dont care(or you can unuse this filed in json body)\nif dont want to filter that field dont use that field in json body\nfilter is and-condition(\u0026\u0026)\nexample {}\nexample {\"reservationType\":\"incoming\",\"svcpCompleted\": 1,\"userCompleted\": 0}",
                 "consumes": [
                     "application/json"
                 ],
@@ -362,7 +362,7 @@ const docTemplate = `{
                 "summary": "get all user booking with filter(optional)",
                 "parameters": [
                     {
-                        "description": "get all booking after this timeslot",
+                        "description": "get all booking with filter(optional)",
                         "name": "service",
                         "in": "body",
                         "schema": {
@@ -604,12 +604,6 @@ const docTemplate = `{
                             }
                         }
                     },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.BasicErrorRes"
-                        }
-                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -619,6 +613,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Create a feedback for a service",
                 "consumes": [
                     "application/json"
@@ -1682,22 +1681,86 @@ const docTemplate = `{
                 }
             }
         },
-        "models.Booking": {
+        "models.BookingBasicRes": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "result": {
+                    "$ref": "#/definitions/models.BookingFullNoID"
+                }
+            }
+        },
+        "models.BookingFullNoID": {
             "type": "object",
             "properties": {
                 "SVCPID": {
                     "type": "string"
                 },
-                "bookingStatus": {
-                    "$ref": "#/definitions/models.BookingStatus"
+                "SVCPName": {
+                    "type": "string"
+                },
+                "averageRating": {
+                    "type": "number"
                 },
                 "bookingTimestamp": {
+                    "type": "string"
+                },
+                "cancelBy": {
+                    "description": "who cancelled",
+                    "type": "string"
+                },
+                "cancelReason": {
+                    "description": "reason for cancellation",
+                    "type": "string"
+                },
+                "cancelStatus": {
+                    "description": "true if cancelled",
+                    "type": "boolean"
+                },
+                "cancelTimestamp": {
+                    "description": "time of cancellation",
+                    "type": "string"
+                },
+                "endTime": {
                     "type": "string"
                 },
                 "feedback": {
                     "$ref": "#/definitions/models.Feedback"
                 },
+                "paymentStatus": {
+                    "type": "boolean"
+                },
+                "paymentTimestamp": {
+                    "type": "string"
+                },
+                "rescheduleStatus": {
+                    "description": "true if rescheduled",
+                    "type": "boolean"
+                },
+                "serviceDescription": {
+                    "type": "string"
+                },
                 "serviceID": {
+                    "type": "string"
+                },
+                "serviceImg": {
+                    "type": "string"
+                },
+                "startTime": {
+                    "type": "string"
+                },
+                "svcpCompleted": {
+                    "type": "boolean"
+                },
+                "svcpCompletedTimestamp": {
+                    "type": "string"
+                },
+                "svcpConfirmed": {
+                    "type": "boolean"
+                },
+                "svcpConfirmedTimestamp": {
                     "type": "string"
                 },
                 "timeslotID": {
@@ -1706,19 +1769,14 @@ const docTemplate = `{
                 "totalBookingPrice": {
                     "type": "number"
                 },
-                "userID": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.BookingBasicRes": {
-            "type": "object",
-            "properties": {
-                "message": {
+                "userCompleted": {
+                    "type": "boolean"
+                },
+                "userCompletedTimestamp": {
                     "type": "string"
                 },
-                "result": {
-                    "$ref": "#/definitions/models.Booking"
+                "userID": {
+                    "type": "string"
                 }
             }
         },
@@ -1736,65 +1794,58 @@ const docTemplate = `{
                 }
             }
         },
-        "models.BookingStatus": {
-            "type": "string",
-            "enum": [
-                "pending payment",
-                "payment paid",
-                "service provided comfirmed",
-                "completed",
-                "cancelled by user",
-                "cancelled by service provider",
-                "expired from unpaid",
-                "expired from pending service provider confirmation"
-            ],
-            "x-enum-comments": {
-                "BookingCanceledSvcp": "svcp has cancelled",
-                "BookingCanceledUser": "user has cancelled",
-                "BookingComfirmed": "svcp has confirmed waiting for user to pay",
-                "BookingCompleted": "service has been provided",
-                "BookingExpiredComfirmed": "svcp has not confirmed in time",
-                "BookingExpiredPaid": "user has not paid in time",
-                "BookingPaid": "user has paid",
-                "BookingPending": "waiting for user to pay"
-            },
-            "x-enum-varnames": [
-                "BookingPending",
-                "BookingPaid",
-                "BookingComfirmed",
-                "BookingCompleted",
-                "BookingCanceledUser",
-                "BookingCanceledSvcp",
-                "BookingExpiredPaid",
-                "BookingExpiredComfirmed"
-            ]
-        },
-        "models.BookingWithId": {
+        "models.BookingShowALL": {
             "type": "object",
             "properties": {
                 "SVCPID": {
                     "type": "string"
                 },
-                "bookingID": {
+                "SVCPName": {
                     "type": "string"
                 },
-                "bookingStatus": {
-                    "$ref": "#/definitions/models.BookingStatus"
+                "bookingID": {
+                    "type": "string"
                 },
                 "bookingTimestamp": {
                     "type": "string"
                 },
-                "feedback": {
-                    "$ref": "#/definitions/models.Feedback"
+                "cancelStatus": {
+                    "description": "true if cancelled",
+                    "type": "boolean"
+                },
+                "endTime": {
+                    "type": "string"
+                },
+                "paymentStatus": {
+                    "description": "true if paid",
+                    "type": "boolean"
                 },
                 "serviceID": {
                     "type": "string"
+                },
+                "serviceName": {
+                    "type": "string"
+                },
+                "startTime": {
+                    "type": "string"
+                },
+                "svcpCompleted": {
+                    "description": "true if completed by svcp",
+                    "type": "boolean"
+                },
+                "svcpConfirmed": {
+                    "description": "true if confirmed by svcp",
+                    "type": "boolean"
                 },
                 "timeslotID": {
                     "type": "string"
                 },
                 "totalBookingPrice": {
                     "type": "number"
+                },
+                "userCompleted": {
+                    "description": "true if completed by user",
+                    "type": "boolean"
                 },
                 "userID": {
                     "type": "string"
@@ -1810,7 +1861,7 @@ const docTemplate = `{
                 "result": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.BookingWithId"
+                        "$ref": "#/definitions/models.BookingShowALL"
                     }
                 }
             }
@@ -1926,17 +1977,26 @@ const docTemplate = `{
         "models.RequestBookingAll": {
             "type": "object",
             "properties": {
+                "cancelStatus": {
+                    "type": "integer"
+                },
+                "paymentStatus": {
+                    "type": "integer"
+                },
                 "reservationType": {
                     "type": "string"
                 },
-                "statusAllow": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.BookingStatus"
-                    }
-                },
-                "timeslotStartBefore": {
+                "startAfter": {
                     "type": "string"
+                },
+                "svcpCompleted": {
+                    "type": "integer"
+                },
+                "svcpConfirmed": {
+                    "type": "integer"
+                },
+                "userCompleted": {
+                    "type": "integer"
                 }
             }
         },

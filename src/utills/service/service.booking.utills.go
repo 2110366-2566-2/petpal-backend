@@ -69,7 +69,6 @@ func InsertBooking(db *models.MongoDB, BookingCreate *models.BookingFullNoID) (*
 	if foundtimeslot.StartTime.Before(BookingCreate.BookingTimestamp) {
 		// return nil, errors.New("timeslot has already passed")
 	}
-
 	// Insert the booking into the collection
 	_, err = collection.InsertOne(context.Background(), BookingCreate)
 	if err != nil {
@@ -120,7 +119,7 @@ func GetBookingsByUser(db *models.MongoDB, userID string) ([]models.BookingWithI
 	return bookings, nil
 }
 
-func GetAllBookingsByUser(db *models.MongoDB, userID string) ([]models.BookingWithId, error) {
+func GetAllBookingsByUser(db *models.MongoDB, userID string) ([]models.BookingShowALL, error) {
 	// Get the booking collection
 	collection := db.Collection("booking")
 
@@ -131,7 +130,7 @@ func GetAllBookingsByUser(db *models.MongoDB, userID string) ([]models.BookingWi
 		return nil, err
 	}
 
-	var bookings []models.BookingWithId
+	var bookings []models.BookingShowALL
 	if err = cursor.All(context.Background(), &bookings); err != nil {
 		return nil, err
 	}
@@ -334,28 +333,43 @@ func BookingArrayGetTimeSlot(db *models.MongoDB, bookingArray []models.BookingWi
 	return timeslotArray
 }
 
-func AllBookFilter(db *models.MongoDB, bookingArray []models.BookingWithId, Bookfilter models.RequestBookingAll) []models.BookingWithId {
+func AllBookFilter(db *models.MongoDB, bookingArray []models.BookingShowALL, Bookfilter models.RequestBookingAll) []models.BookingShowALL {
 
-	var filteredBooking []models.BookingWithId
-	TimeslotdArray := BookingArrayGetTimeSlot(db, bookingArray)
+	var filteredBooking []models.BookingShowALL
+	//TimeslotdArray := BookingArrayGetTimeSlot(db, bookingArray)
 
-	for i, b := range bookingArray {
-		if !Bookfilter.TimeslotStartAfter.IsZero() {
-			if TimeslotdArray[i].StartTime.Before(Bookfilter.TimeslotStartAfter) {
+	for _, b := range bookingArray {
+		if !Bookfilter.StartAfter.IsZero() {
+			if b.StartTime.Before(Bookfilter.StartAfter) {
 				continue
 			}
 		}
-
 		if Bookfilter.ReservationType != "" {
 			if Bookfilter.ReservationType == "incoming" {
-				if !TimeslotdArray[i].StartTime.Before(time.Now()) {
+				if b.StartTime.Before(time.Now()) {
 					continue
 				}
 			} else if Bookfilter.ReservationType == "outgoing" {
-				if !TimeslotdArray[i].StartTime.After(time.Now()) {
+				if b.StartTime.After(time.Now()) {
 					continue
 				}
 			}
+		}
+
+		if Bookfilter.CancelStatus != 2 && (b.CancelStatus != (Bookfilter.CancelStatus == 1)) {
+			continue
+		}
+		if Bookfilter.PaymentStatus != 2 && (b.PaymentStatus != (Bookfilter.PaymentStatus == 1)) {
+			continue
+		}
+		if Bookfilter.SvcpConfirmed != 2 && (b.SvcpConfirmed != (Bookfilter.SvcpConfirmed == 1)) {
+			continue
+		}
+		if Bookfilter.SvcpCompleted != 2 && (b.SvcpCompleted != (Bookfilter.SvcpCompleted == 1)) {
+			continue
+		}
+		if Bookfilter.UserCompleted != 2 && (b.UserCompleted != (Bookfilter.UserCompleted == 1)) {
+			continue
 		}
 
 		filteredBooking = append(filteredBooking, b)

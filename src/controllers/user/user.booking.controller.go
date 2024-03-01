@@ -68,13 +68,14 @@ func CreateBookingHandler(c *gin.Context, db *models.MongoDB) {
 // UserGetAllBookingHandler godoc
 //
 // @Summary 	get all user booking with filter(optional)
-// @Description	body not required if you dont want to filter(get all)
-// @Description	option body to filter booking by timeslotStartBefore,statusAllow,reservationType.
-// @Description waring if you use fillter some booking with worng(not found,deleted etc) svcpid ,serviceid ,timeslotid will skip if you want to get all dont use filter
-// @Description  timeslotStartBefore is filter booking that has timeslot Start Before this time
-// @Description statusAllow array filter by array of status  (string status)
-// @Description  reservationType is booking is "incoming" or "outgoing"
-// @Description filter is and condition
+// @Description	json body not required if you dont want to filter result
+// @Description  startAfter is filter booking that has timeslot Start Before this time
+// @Description  reservationType is checking booking is "incoming" or "outgoing"
+// @Description  cancelStatus ,paymentStatus ,svcpConfirmed ,svcpCompleted ,userCompleted is filter booking with status 0 == false, 1 == true, 2 == dont care(or you can unuse this filed in json body)
+// @Description  if dont want to filter that field dont use that field in json body
+// @Description filter is and-condition(&&)
+// @Description example {}
+// @Description example {"reservationType":"incoming","svcpCompleted": 1,"userCompleted": 0}
 // @Tags 		Booking
 //
 // @Accept		json
@@ -82,7 +83,7 @@ func CreateBookingHandler(c *gin.Context, db *models.MongoDB) {
 //
 // @Security    ApiKeyAuth
 //
-// @Param       service      body    models.RequestBookingAll    false    "get all booking after this timeslot"
+// @Param       service      body    models.RequestBookingAll    false    "get all booking with filter(optional)"
 //
 // @Success 	200 {array} models.BookingWithIdArrayRes "get all user booking successfully"
 // @Failure 	400 {object} models.BasicErrorRes
@@ -92,7 +93,7 @@ func CreateBookingHandler(c *gin.Context, db *models.MongoDB) {
 // @Router 		/service/booking/all/user [get]
 func UserGetAllBookingHandler(c *gin.Context, db *models.MongoDB) {
 
-	request := models.RequestBookingAll{}
+	request := models.RequestBookingAll{CancelStatus: 2, PaymentStatus: 2, SvcpConfirmed: 2, SvcpCompleted: 2, UserCompleted: 2}
 
 	//401 not authorized
 	current_user, err := _authenticate(c, db)
@@ -109,14 +110,14 @@ func UserGetAllBookingHandler(c *gin.Context, db *models.MongoDB) {
 
 	bookingsList, err := utills.GetAllBookingsByUser(db, current_user.ID)
 
+	// print(bookingsList[0].BookingID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})
 		return
 	}
-
-	if !(request.TimeslotStartAfter.IsZero() && request.ReservationType == "") {
+	println(request.CancelStatus, request.PaymentStatus, request.SvcpConfirmed, request.SvcpCompleted, request.UserCompleted)
+	if !(request.StartAfter.IsZero() && request.ReservationType == "" && request.CancelStatus == 2 && request.PaymentStatus == 2 && request.SvcpConfirmed == 2 && request.SvcpCompleted == 2 && request.UserCompleted == 2) {
 		bookingsList = utills.AllBookFilter(db, bookingsList, request)
-
 	}
 
 	c.JSON(http.StatusOK, models.BookingWithIdArrayRes{Message: "get all user booking successfully", Result: bookingsList})

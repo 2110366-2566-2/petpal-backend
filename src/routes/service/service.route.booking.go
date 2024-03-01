@@ -19,7 +19,7 @@ func ServiceBookingRoutes(r *gin.RouterGroup) {
 			controllers.CreateBookingHandler(c, db)
 		})
 
-		bookingGroup.GET("/all/user", func(c *gin.Context) {
+		bookingGroup.POST("/all/user", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllers.UserGetAllBookingHandler(c, db)
 		})
