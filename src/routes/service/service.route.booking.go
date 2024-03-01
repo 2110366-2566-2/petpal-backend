@@ -63,5 +63,10 @@ func ServiceBookingRoutes(r *gin.RouterGroup) {
 			controllersSVCP.SVCPCancelBookingHandler(c, db)
 		})
 
+		bookingGroup.POST("/detail/svcp", func(c *gin.Context) {
+			db := c.MustGet("db").(*models.MongoDB)
+			controllersSVCP.SVCPGetDetailBookingHandler(c, db)
+		})
+
 	}
 }

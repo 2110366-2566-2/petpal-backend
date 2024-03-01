@@ -696,7 +696,7 @@ paths:
             $ref: '#/definitions/models.BasicErrorRes'
       security:
       - ApiKeyAuth: []
-      summary: get all booking of with filter(optional)
+      summary: get all booking of user with filter(optional)
       tags:
       - Booking user
   /service/booking/cancel/svcp:
@@ -919,6 +919,42 @@ paths:
       summary: User create a Booking by svcp id ,service id and timeslot id
       tags:
       - Booking user
+  /service/booking/detail/svcp:
+    post:
+      consumes:
+      - application/json
+      description: get a booking detail by booking id
+      parameters:
+      - description: booking id
+        in: body
+        name: bookingID
+        required: true
+        schema:
+          $ref: '#/definitions/models.RequestBookingId'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: get detail booking
+          schema:
+            $ref: '#/definitions/models.BookkingDetailRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
+      summary: svcp get a booking detail by booking id
+      tags:
+      - Booking svcp
   /service/booking/detail/user:
     post:
       consumes:
