@@ -221,7 +221,26 @@ func GetAllBookingsByUser(db *models.MongoDB, userID string) ([]models.BookingSh
 	return bookings, nil
 }
 
-func GetBookingsBySVCP(db *models.MongoDB, SVCPID string) ([]models.Booking, error) {
+// func GetBookingsBySVCP(db *models.MongoDB, SVCPID string) ([]models.BookingShowALL, error) {
+// 	// Get the booking collection
+// 	collection := db.Collection("booking")
+
+// 	// Find the booking by SVCPID
+// 	filter := bson.D{{Key: "SVCPID", Value: SVCPID}}
+// 	cursor, err := collection.Find(context.Background(), filter)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	bookings := []models.BookingShowALL{}
+// 	if err = cursor.All(context.Background(), &bookings); err != nil {
+// 		return nil, err
+// 	}
+
+// 	return bookings, nil
+// }
+
+func GetAllBookingsBySVCP(db *models.MongoDB, SVCPID string) ([]models.BookingShowALL, error) {
 	// Get the booking collection
 	collection := db.Collection("booking")
 
@@ -232,26 +251,7 @@ func GetBookingsBySVCP(db *models.MongoDB, SVCPID string) ([]models.Booking, err
 		return nil, err
 	}
 
-	var bookings []models.Booking
-	if err = cursor.All(context.Background(), &bookings); err != nil {
-		return nil, err
-	}
-
-	return bookings, nil
-}
-
-func GetAllBookingsBySVCP(db *models.MongoDB, SVCPID string) ([]models.Booking, error) {
-	// Get the booking collection
-	collection := db.Collection("booking")
-
-	// Find the booking by SVCPID
-	filter := bson.D{{Key: "SVCPID", Value: SVCPID}}
-	cursor, err := collection.Find(context.Background(), filter)
-	if err != nil {
-		return nil, err
-	}
-
-	var bookings []models.Booking
+	var bookings []models.BookingShowALL
 	if err = cursor.All(context.Background(), &bookings); err != nil {
 		return nil, err
 	}
@@ -510,6 +510,37 @@ func CompleteBooking(db *models.MongoDB, bookingID string, userType string) (*mo
 		booking.Status.UserCompleted = true
 		booking.Status.UserCompletedTimestamp = time.Now()
 	}
+	// Update the booking in the collection
+	_, err = collection.ReplaceOne(context.Background(), filter, booking)
+	if err != nil {
+		return nil, err
+	}
+
+	return &booking, nil
+}
+
+func SVCPConfirmBooking(db *models.MongoDB, bookingID string) (*models.Booking, error) {
+	// Get the booking collection
+	collection := db.Collection("booking")
+
+	// Find the booking by bookingID
+	var booking models.Booking = models.Booking{}
+
+	// Convert bookingID to ObjectID
+	objID, err := primitive.ObjectIDFromHex(bookingID)
+	if err != nil {
+		return nil, err
+	}
+
+	filter := bson.D{{Key: "_id", Value: objID}}
+	err = collection.FindOne(context.Background(), filter).Decode(&booking)
+	if err != nil {
+		return nil, err
+	}
+
+	// Update the booking status
+	booking.Status.SvcpConfirmed = true
+	booking.Status.SvcpConfirmedTimestamp = time.Now()
 	// Update the booking in the collection
 	_, err = collection.ReplaceOne(context.Background(), filter, booking)
 	if err != nil {

@@ -61,7 +61,7 @@ func CreateBookingHandler(c *gin.Context, db *models.MongoDB) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, models.BookingBasicRes{Message: "Booking created successfully", Result: *returnBooking})
+	c.JSON(http.StatusCreated, models.BookingBasicRes{Message: "Booking user created successfully", Result: *returnBooking})
 
 }
 
@@ -175,7 +175,7 @@ func UserGetDetailBookingHandler(c *gin.Context, db *models.MongoDB) {
 		return
 	}
 
-	c.JSON(http.StatusOK, models.BookkingDetailRes{Message: "get all user booking successfully", Result: *booking})
+	c.JSON(http.StatusOK, models.BookkingDetailRes{Message: "get detail user booking successfully", Result: *booking})
 }
 
 // UserCancelBookingHandler godoc
@@ -243,7 +243,7 @@ func UserCancelBookingHandler(c *gin.Context, db *models.MongoDB) {
 	if booking.Status.PaymentStatus {
 		// do something like return money to user
 	}
-	cancel := models.BookingCancel{CancelStatus: true, CancelTimestamp: time.Now(), CancelBy: current_user.ID, CancelReason: request.CancelReason}
+	cancel := models.BookingCancel{CancelStatus: true, CancelTimestamp: time.Now(), CancelBy: "user", CancelReason: request.CancelReason}
 
 	returnBooking, err := utills.CancelBooking(db, request.BookingID, cancel)
 
@@ -260,7 +260,7 @@ func UserCancelBookingHandler(c *gin.Context, db *models.MongoDB) {
 	// 	//do something like return money to user all sent notification to svcp?
 	// }
 
-	c.JSON(http.StatusOK, models.BookingBasicRes{Message: "Booking cancel successfully", Result: *returnBooking})
+	c.JSON(http.StatusOK, models.BookingBasicRes{Message: "Booking user cancel successfully", Result: *returnBooking})
 
 }
 
@@ -334,14 +334,14 @@ func UserRescheduleBookingHandeler(c *gin.Context, db *models.MongoDB) {
 		return
 	}
 
-	c.JSON(http.StatusOK, models.BookingBasicRes{Message: "Booking reschedule successfully", Result: *returnBooking})
+	c.JSON(http.StatusOK, models.BookingBasicRes{Message: "Booking user reschedule successfully", Result: *returnBooking})
 
 }
 
 // UserCompleteBookingHandler godoc
 //
 // @Summary 	complete a user booking
-// @Description	can only complete not completed booking by user ,not cancelled ,startime is pass ,paid and svcp comfirmed
+// @Description	can only complete not completed booking by user ,not cancelled ,startime is passed and paid.
 // @Tags 		Booking
 //
 // @Accept		json
@@ -405,8 +405,8 @@ func UserCompleteBookingHandler(c *gin.Context, db *models.MongoDB) {
 		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "This booking is not started yet"})
 		return
 	}
-	if !(booking.Status.SvcpConfirmed && booking.Status.PaymentStatus) {
-		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "This booking is not payment or svcp confirmed"})
+	if !(booking.Status.PaymentStatus) {
+		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "This booking is not payment yet"})
 		return
 	}
 
@@ -417,6 +417,6 @@ func UserCompleteBookingHandler(c *gin.Context, db *models.MongoDB) {
 		return
 	}
 
-	c.JSON(http.StatusOK, models.BookingBasicRes{Message: "Booking completed successfully", Result: *returnBooking})
+	c.JSON(http.StatusOK, models.BookingBasicRes{Message: "Booking user completed successfully", Result: *returnBooking})
 
 }
