@@ -14,7 +14,7 @@ import (
 	// "go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func InsertBooking(db *models.MongoDB, BookingCreate *models.BookingFullNoID) (*models.BookingFullNoID, error) {
+func InsertBooking(db *models.MongoDB, BookingCreate *models.Booking) (*models.Booking, error) {
 	// Get the booking collection
 	collection := db.Collection("booking")
 	collectionSVCP := db.Collection("svcp")
@@ -58,10 +58,12 @@ func InsertBooking(db *models.MongoDB, BookingCreate *models.BookingFullNoID) (*
 
 	BookingCreate.TotalBookingPrice = foundService.Price
 
-	BookingCreate.SVCPName = svcp.SVCPUsername
-	BookingCreate.AverageRating = foundService.AverageRating
-	BookingCreate.ServiceImg = foundService.ServiceImg
-	BookingCreate.ServiceDescription = foundService.ServiceDescription
+	// BookingCreate.SVCPName = svcp.SVCPUsername
+	// BookingCreate.AverageRating = foundService.AverageRating
+	// BookingCreate.ServiceImg = foundService.ServiceImg
+	// BookingCreate.ServiceDescription = foundService.ServiceDescription
+	// BookingCreate.SVCPName = svcp.SVCPUsername
+	BookingCreate.ServiceName = foundService.ServiceName
 	BookingCreate.StartTime = foundtimeslot.StartTime
 	BookingCreate.EndTime = foundtimeslot.EndTime
 
@@ -79,45 +81,45 @@ func InsertBooking(db *models.MongoDB, BookingCreate *models.BookingFullNoID) (*
 	return BookingCreate, nil
 }
 
-func GetBooking(db *models.MongoDB, bookingID string) (*models.BookingWithId, error) {
-	// Get the booking collection
-	collection := db.Collection("booking")
+// func GetBooking(db *models.MongoDB, bookingID string) (*models.BookingWithId, error) {
+// 	// Get the booking collection
+// 	collection := db.Collection("booking")
 
-	// Find the booking by bookingID
-	var booking models.BookingWithId = models.BookingWithId{}
+// 	// Find the booking by bookingID
+// 	var booking models.BookingWithId = models.BookingWithId{}
 
-	objID, err := primitive.ObjectIDFromHex(bookingID)
-	if err != nil {
-		return nil, err
-	}
+// 	objID, err := primitive.ObjectIDFromHex(bookingID)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	filter := bson.D{{Key: "_id", Value: objID}}
-	err = collection.FindOne(context.Background(), filter).Decode(&booking)
-	if err != nil {
-		return nil, err
-	}
+// 	filter := bson.D{{Key: "_id", Value: objID}}
+// 	err = collection.FindOne(context.Background(), filter).Decode(&booking)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	return &booking, nil
-}
+// 	return &booking, nil
+// }
 
-func GetBookingsByUser(db *models.MongoDB, userID string) ([]models.BookingWithId, error) {
-	// Get the booking collection
-	collection := db.Collection("booking")
+// func GetBookingsByUser(db *models.MongoDB, userID string) ([]models.BookingWithId, error) {
+// 	// Get the booking collection
+// 	collection := db.Collection("booking")
 
-	// Find the booking by userID
-	filter := bson.D{{Key: "userID", Value: userID}}
-	cursor, err := collection.Find(context.Background(), filter)
-	if err != nil {
-		return nil, err
-	}
+// 	// Find the booking by userID
+// 	filter := bson.D{{Key: "userID", Value: userID}}
+// 	cursor, err := collection.Find(context.Background(), filter)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	var bookings []models.BookingWithId
-	if err = cursor.All(context.Background(), &bookings); err != nil {
-		return nil, err
-	}
+// 	var bookings []models.BookingWithId
+// 	if err = cursor.All(context.Background(), &bookings); err != nil {
+// 		return nil, err
+// 	}
 
-	return bookings, nil
-}
+// 	return bookings, nil
+// }
 
 func GetAllBookingsByUser(db *models.MongoDB, userID string) ([]models.BookingShowALL, error) {
 	// Get the booking collection
@@ -320,18 +322,19 @@ func BookingGetTimeSlot(db *models.MongoDB, bookingID string) (*models.Timeslot,
 
 	return &foundtimeslot, nil
 }
-func BookingArrayGetTimeSlot(db *models.MongoDB, bookingArray []models.BookingWithId) []models.Timeslot {
-	var timeslotArray []models.Timeslot
-	for _, b := range bookingArray {
-		timeslot, err := BookingGetTimeSlot(db, b.BookingID)
-		if err != nil {
-			timeslotArray = append(timeslotArray, models.Timeslot{})
-			continue
-		}
-		timeslotArray = append(timeslotArray, *timeslot)
-	}
-	return timeslotArray
-}
+
+// func BookingArrayGetTimeSlot(db *models.MongoDB, bookingArray []models.BookingWithId) []models.Timeslot {
+// 	var timeslotArray []models.Timeslot
+// 	for _, b := range bookingArray {
+// 		timeslot, err := BookingGetTimeSlot(db, b.BookingID)
+// 		if err != nil {
+// 			timeslotArray = append(timeslotArray, models.Timeslot{})
+// 			continue
+// 		}
+// 		timeslotArray = append(timeslotArray, *timeslot)
+// 	}
+// 	return timeslotArray
+// }
 
 func AllBookFilter(db *models.MongoDB, bookingArray []models.BookingShowALL, Bookfilter models.RequestBookingAll) []models.BookingShowALL {
 
@@ -356,19 +359,19 @@ func AllBookFilter(db *models.MongoDB, bookingArray []models.BookingShowALL, Boo
 			}
 		}
 
-		if Bookfilter.CancelStatus != 2 && (b.CancelStatus != (Bookfilter.CancelStatus == 1)) {
+		if Bookfilter.CancelStatus != 2 && (b.Cancel.CancelStatus != (Bookfilter.CancelStatus == 1)) {
 			continue
 		}
-		if Bookfilter.PaymentStatus != 2 && (b.PaymentStatus != (Bookfilter.PaymentStatus == 1)) {
+		if Bookfilter.PaymentStatus != 2 && (b.Status.PaymentStatus != (Bookfilter.PaymentStatus == 1)) {
 			continue
 		}
-		if Bookfilter.SvcpConfirmed != 2 && (b.SvcpConfirmed != (Bookfilter.SvcpConfirmed == 1)) {
+		if Bookfilter.SvcpConfirmed != 2 && (b.Status.SvcpConfirmed != (Bookfilter.SvcpConfirmed == 1)) {
 			continue
 		}
-		if Bookfilter.SvcpCompleted != 2 && (b.SvcpCompleted != (Bookfilter.SvcpCompleted == 1)) {
+		if Bookfilter.SvcpCompleted != 2 && (b.Status.SvcpCompleted != (Bookfilter.SvcpCompleted == 1)) {
 			continue
 		}
-		if Bookfilter.UserCompleted != 2 && (b.UserCompleted != (Bookfilter.UserCompleted == 1)) {
+		if Bookfilter.UserCompleted != 2 && (b.Status.UserCompleted != (Bookfilter.UserCompleted == 1)) {
 			continue
 		}
 
@@ -377,4 +380,21 @@ func AllBookFilter(db *models.MongoDB, bookingArray []models.BookingShowALL, Boo
 	}
 
 	return filteredBooking
+}
+
+func FillSVCPDetail(db *models.MongoDB, bookingArray []models.BookingShowALL) []models.BookingShowALL {
+	collectionSVCP := db.Collection("svcp")
+	for i, b := range bookingArray {
+		var svcp models.SVCP = models.SVCP{}
+		filterSvcp := bson.D{{Key: "SVCPID", Value: b.SVCPID}}
+		err := collectionSVCP.FindOne(context.Background(), filterSvcp).Decode(&svcp)
+		if err != nil {
+			bookingArray[i].SVCPName = "svcp not found"
+		} else {
+			bookingArray[i].SVCPName = svcp.SVCPUsername
+		}
+
+	}
+
+	return bookingArray
 }

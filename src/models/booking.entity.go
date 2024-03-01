@@ -9,23 +9,50 @@ type Booking struct {
 	SVCPID     string `json:"SVCPID" bson:"SVCPID"`
 	ServiceID  string `json:"serviceID" bson:"serviceID"`
 	TimeslotID string `json:"timeslotID" bson:"timeslotID"`
-	// BookingStatus     BookingStatus `json:"bookingStatus" bson:"bookingStatus"`
+
 	BookingTimestamp  time.Time `json:"bookingTimestamp" bson:"bookingTimestamp"`
 	TotalBookingPrice float64   `json:"totalBookingPrice" bson:"totalBookingPrice"`
-	Feedback          Feedback  `json:"feedback" bson:"feedback"`
+
+	ServiceName string    `json:"serviceName" bson:"serviceName"`
+	StartTime   time.Time `json:"startTime" bson:"startTime"`
+	EndTime     time.Time `json:"endTime" bson:"endTime"`
+
+	Cancel BookingCancel `json:"cancel" bson:"cancel"`
+
+	Status BookingStatus `json:"status" bson:"status"`
+
+	Feedback Feedback `json:"feedback" bson:"feedback"`
+}
+type BookingCancel struct {
+	CancelStatus    bool      `json:"cancelStatus" bson:"cancelStatus"`       //true if cancelled
+	CancelTimestamp time.Time `json:"cancelTimestamp" bson:"cancelTimestamp"` //time of cancellation
+	CancelReason    string    `json:"cancelReason" bson:"cancelReason"`       //reason for cancellation
+	CancelBy        string    `json:"cancelBy" bson:"cancelBy"`               //who cancelled
+}
+type BookingStatus struct {
+	RescheduleStatus bool `json:"rescheduleStatus" bson:"rescheduleStatus"` //true if rescheduled
+
+	PaymentStatus          bool      `json:"paymentStatus" bson:"paymentStatus"`
+	PaymentTimestamp       time.Time `json:"paymentTimestamp" bson:"paymentTimestamp"`
+	SvcpConfirmed          bool      `json:"svcpConfirmed" bson:"svcpConfirmed"`
+	SvcpConfirmedTimestamp time.Time `json:"svcpConfirmedTimestamp" bson:"svcpConfirmedTimestamp"`
+	SvcpCompleted          bool      `json:"svcpCompleted" bson:"svcpCompleted"`
+	SvcpCompletedTimestamp time.Time `json:"svcpCompletedTimestamp" bson:"svcpCompletedTimestamp"`
+	UserCompleted          bool      `json:"userCompleted" bson:"userCompleted"`
+	UserCompletedTimestamp time.Time `json:"userCompletedTimestamp" bson:"userCompletedTimestamp"`
 }
 
-type BookingWithId struct {
-	BookingID  string `json:"bookingID" bson:"_id"`
-	UserID     string `json:"userID" bson:"userID"`
-	SVCPID     string `json:"SVCPID" bson:"SVCPID"`
-	ServiceID  string `json:"serviceID" bson:"serviceID"`
-	TimeslotID string `json:"timeslotID" bson:"timeslotID"`
-	// BookingStatus     BookingStatus `json:"bookingStatus" bson:"bookingStatus"`
-	BookingTimestamp  time.Time `json:"bookingTimestamp" bson:"bookingTimestamp"`
-	TotalBookingPrice float64   `json:"totalBookingPrice" bson:"totalBookingPrice"`
-	Feedback          Feedback  `json:"feedback" bson:"feedback"`
-}
+// type BookingWithId struct {
+// 	BookingID  string `json:"bookingID" bson:"_id"`
+// 	UserID     string `json:"userID" bson:"userID"`
+// 	SVCPID     string `json:"SVCPID" bson:"SVCPID"`
+// 	ServiceID  string `json:"serviceID" bson:"serviceID"`
+// 	TimeslotID string `json:"timeslotID" bson:"timeslotID"`
+// 	// BookingStatus     BookingStatus `json:"bookingStatus" bson:"bookingStatus"`
+// 	BookingTimestamp  time.Time `json:"bookingTimestamp" bson:"bookingTimestamp"`
+// 	TotalBookingPrice float64   `json:"totalBookingPrice" bson:"totalBookingPrice"`
+// 	Feedback          Feedback  `json:"feedback" bson:"feedback"`
+// }
 
 type BookingShowALL struct {
 	BookingID         string    `json:"bookingID" bson:"_id"`
@@ -41,11 +68,10 @@ type BookingShowALL struct {
 	StartTime   time.Time `json:"startTime" bson:"startTime"`
 	EndTime     time.Time `json:"endTime" bson:"endTime"`
 
-	CancelStatus  bool `json:"cancelStatus" bson:"cancelStatus"`   //true if cancelled
-	PaymentStatus bool `json:"paymentStatus" bson:"paymentStatus"` //true if paid
-	SvcpConfirmed bool `json:"svcpConfirmed" bson:"svcpConfirmed"` //true if confirmed by svcp
-	SvcpCompleted bool `json:"svcpCompleted" bson:"svcpCompleted"` //true if completed by svcp
-	UserCompleted bool `json:"userCompleted" bson:"userCompleted"` //true if completed by user
+	Cancel BookingCancel `json:"cancel" bson:"cancel"`
+
+	Status BookingStatus `json:"status" bson:"status"`
+
 	// BookingStatus BookingStatus `json:"bookingStatus" bson:"bookingStatus"`
 }
 
@@ -69,24 +95,13 @@ type BookingFull struct {
 
 	// BookingStatus BookingStatus `json:"bookingStatus" bson:"bookingStatus"`
 
-	CancelStatus    bool      `json:"cancelStatus" bson:"cancelStatus"`       //true if cancelled
-	CancelTimestamp time.Time `json:"cancelTimestamp" bson:"cancelTimestamp"` //time of cancellation
-	CancelReason    string    `json:"cancelReason" bson:"cancelReason"`       //reason for cancellation
-	CancelBy        string    `json:"cancelBy" bson:"cancelBy"`               //who cancelled
+	Cancel BookingCancel `json:"cancel" bson:"cancel"`
 
-	RescheduleStatus bool `json:"rescheduleStatus" bson:"rescheduleStatus"` //true if rescheduled
-
-	PaymentStatus          bool      `json:"paymentStatus" bson:"paymentStatus"`
-	PaymentTimestamp       time.Time `json:"paymentTimestamp" bson:"paymentTimestamp"`
-	SvcpConfirmed          bool      `json:"svcpConfirmed" bson:"svcpConfirmed"`
-	SvcpConfirmedTimestamp time.Time `json:"svcpConfirmedTimestamp" bson:"svcpConfirmedTimestamp"`
-	SvcpCompleted          bool      `json:"svcpCompleted" bson:"svcpCompleted"`
-	SvcpCompletedTimestamp time.Time `json:"svcpCompletedTimestamp" bson:"svcpCompletedTimestamp"`
-	UserCompleted          bool      `json:"userCompleted" bson:"userCompleted"`
-	UserCompletedTimestamp time.Time `json:"userCompletedTimestamp" bson:"userCompletedTimestamp"`
+	Status BookingStatus `json:"status" bson:"status"`
 
 	Feedback Feedback `json:"feedback" bson:"feedback"`
 }
+
 type BookingFullNoID struct {
 	UserID     string `json:"userID" bson:"userID"`
 	SVCPID     string `json:"SVCPID" bson:"SVCPID"`
@@ -104,23 +119,9 @@ type BookingFullNoID struct {
 	StartTime time.Time `json:"startTime" bson:"startTime"`
 	EndTime   time.Time `json:"endTime" bson:"endTime"`
 
-	// BookingStatus BookingStatus `json:"bookingStatus" bson:"bookingStatus"`
+	Cancel BookingCancel `json:"cancel" bson:"cancel"`
 
-	CancelStatus    bool      `json:"cancelStatus" bson:"cancelStatus"`       //true if cancelled
-	CancelTimestamp time.Time `json:"cancelTimestamp" bson:"cancelTimestamp"` //time of cancellation
-	CancelReason    string    `json:"cancelReason" bson:"cancelReason"`       //reason for cancellation
-	CancelBy        string    `json:"cancelBy" bson:"cancelBy"`               //who cancelled
-
-	RescheduleStatus bool `json:"rescheduleStatus" bson:"rescheduleStatus"` //true if rescheduled
-
-	PaymentStatus          bool      `json:"paymentStatus" bson:"paymentStatus"`
-	PaymentTimestamp       time.Time `json:"paymentTimestamp" bson:"paymentTimestamp"`
-	SvcpConfirmed          bool      `json:"svcpConfirmed" bson:"svcpConfirmed"`
-	SvcpConfirmedTimestamp time.Time `json:"svcpConfirmedTimestamp" bson:"svcpConfirmedTimestamp"`
-	SvcpCompleted          bool      `json:"svcpCompleted" bson:"svcpCompleted"`
-	SvcpCompletedTimestamp time.Time `json:"svcpCompletedTimestamp" bson:"svcpCompletedTimestamp"`
-	UserCompleted          bool      `json:"userCompleted" bson:"userCompleted"`
-	UserCompletedTimestamp time.Time `json:"userCompletedTimestamp" bson:"userCompletedTimestamp"`
+	Status BookingStatus `json:"status" bson:"status"`
 
 	Feedback Feedback `json:"feedback" bson:"feedback"`
 }
@@ -165,15 +166,19 @@ type RequestBookingId struct {
 	BookingID string `json:"bookingID"`
 }
 
+type BookingInsert struct {
+	Message string  `json:"message"`
+	Result  Booking `json:"result"`
+}
 type BookingBasicRes struct {
 	Message string          `json:"message"`
 	Result  BookingFullNoID `json:"result"`
 }
 
-type BookingWithIdRes struct {
-	Message string        `json:"message"`
-	Result  BookingWithId `json:"result"`
-}
+// type BookingWithIdRes struct {
+// 	Message string        `json:"message"`
+// 	Result  BookingWithId `json:"result"`
+// }
 
 type BookingWithIdArrayRes struct {
 	Message string           `json:"message"`
