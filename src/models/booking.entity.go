@@ -165,6 +165,10 @@ type BookingIndex struct {
 // 	BookingStatusNotdone = []BookingStatus{BookingPending, BookingPaid, BookingComfirmed}
 // )
 
+type RequestCancelBooking struct {
+	BookingID    string `json:"bookingID" bson:"_id"`
+	CancelReason string `json:"cancelReason" bson:"cancelReason"`
+}
 type RequestBookingId struct {
 	BookingID string `json:"bookingID"`
 }

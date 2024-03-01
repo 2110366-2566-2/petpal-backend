@@ -281,6 +281,13 @@ definitions:
       bookingID:
         type: string
     type: object
+  models.RequestCancelBooking:
+    properties:
+      bookingID:
+        type: string
+      cancelReason:
+        type: string
+    type: object
   models.SVCP:
     properties:
       SVCPAdditionalImg:
@@ -638,6 +645,42 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: get all user booking with filter(optional)
+      tags:
+      - Booking
+  /service/booking/cancel/user:
+    post:
+      consumes:
+      - application/json
+      description: can only cancel not completed booking and not cancelled
+      parameters:
+      - description: booking id
+        in: body
+        name: bookingID
+        required: true
+        schema:
+          $ref: '#/definitions/models.RequestCancelBooking'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Booking cancelled successfully
+          schema:
+            $ref: '#/definitions/models.BasicRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
+      summary: user cancel booking
       tags:
       - Booking
   /service/booking/create:

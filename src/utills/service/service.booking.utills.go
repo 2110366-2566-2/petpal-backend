@@ -131,6 +131,58 @@ func GetABookingDetail(db *models.MongoDB, bookingID string) (*models.BookingFul
 	return &booking, nil
 }
 
+func GetBooking(db *models.MongoDB, bookingID string) (*models.Booking, error) {
+	// Get the booking collection
+	collection := db.Collection("booking")
+
+	// Find the booking by bookingID
+	var booking models.Booking = models.Booking{}
+
+	objID, err := primitive.ObjectIDFromHex(bookingID)
+	if err != nil {
+		return nil, err
+	}
+
+	filter := bson.D{{Key: "_id", Value: objID}}
+	err = collection.FindOne(context.Background(), filter).Decode(&booking)
+	if err != nil {
+		return nil, err
+	}
+
+	return &booking, nil
+}
+func CancelBooking(db *models.MongoDB, bookingID string, Cancel models.BookingCancel) (*models.Booking, error) {
+
+	// Get the booking collection
+	collection := db.Collection("booking")
+
+	// Find the booking by bookingID
+	var booking models.Booking = models.Booking{}
+
+	// Convert bookingID to ObjectID
+	objID, err := primitive.ObjectIDFromHex(bookingID)
+	if err != nil {
+		return nil, err
+	}
+
+	filter := bson.D{{Key: "_id", Value: objID}}
+	err = collection.FindOne(context.Background(), filter).Decode(&booking)
+	if err != nil {
+		return nil, err
+	}
+
+	// Update the booking status
+	booking.Cancel = Cancel
+
+	// Update the booking in the collection
+	_, err = collection.ReplaceOne(context.Background(), filter, booking)
+	if err != nil {
+		return nil, err
+	}
+
+	return &booking, nil
+}
+
 // func GetBookingsAByUser(db *models.MongoDB, userID string) ([]models.BookingWithId, error) {
 // 	// Get the booking collection
 // 	collection := db.Collection("booking")

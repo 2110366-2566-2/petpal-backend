@@ -181,7 +181,7 @@ func UserGetDetailBookingHandler(c *gin.Context, db *models.MongoDB) {
 // UserCancelBookingHandler godoc
 //
 // @Summary 	user cancel booking
-// @Description	can only cancel booking with status pending, paid, comfirmed (all booking that not done yet)
+// @Description	can only cancel not completed booking and not cancelled
 // @Tags 		Booking
 //
 // @Accept		json
@@ -189,7 +189,7 @@ func UserGetDetailBookingHandler(c *gin.Context, db *models.MongoDB) {
 //
 // @Security    ApiKeyAuth
 //
-// @Param       bookingID      body    models.RequestBookingId    true    "booking id"
+// @Param       bookingID      body     models.RequestCancelBooking   true    "booking id"
 //
 // @Success 	200 {object} models.BasicRes "Booking cancelled successfully"
 // @Failure 	400 {object} models.BasicErrorRes
@@ -197,58 +197,70 @@ func UserGetDetailBookingHandler(c *gin.Context, db *models.MongoDB) {
 // @Failure 	500 {object} models.BasicErrorRes
 //
 // @Router 		/service/booking/cancel/user [post]
-// func UserCancelBookingHandler(c *gin.Context, db *models.MongoDB) {
-// 	// create booking
-// 	var request models.RequestBookingId = models.RequestBookingId{}
+func UserCancelBookingHandler(c *gin.Context, db *models.MongoDB) {
+	// create booking
+	request := models.RequestCancelBooking{}
 
-// 	//400 bad request
-// 	if err := c.ShouldBindJSON(&request); err != nil {
-// 		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: err.Error()})
-// 		return
-// 	}
+	//400 bad request
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: err.Error()})
+		return
+	}
 
-// 	//401 not authorized
-// 	current_user, err := _authenticate(c, db)
-// 	if err != nil {
-// 		c.JSON(http.StatusUnauthorized, models.BasicErrorRes{Error: err.Error()})
-// 		return
-// 	}
+	//401 not authorized
+	current_user, err := _authenticate(c, db)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, models.BasicErrorRes{Error: err.Error()})
+		return
+	}
 
-// 	// Check for required fields
-// 	if request.BookingID == "" {
-// 		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "Missing required fields"})
-// 		return
-// 	}
+	// Check for required fields
+	if request.BookingID == "" {
+		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "Missing required fields"})
+		return
+	}
 
-// 	//get booking for checking status
-// 	booking, err := utills.GetBooking(db, request.BookingID)
-// 	if err != nil {
-// 		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})
-// 		return
-// 	}
+	//get booking for checking status
+	booking, err := utills.GetBooking(db, request.BookingID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})
+		return
+	}
 
-// 	if booking.UserID != current_user.ID {
-// 		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "This booking is not belong to you"})
-// 		return
-// 	}
+	if booking.UserID != current_user.ID {
+		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "This booking is not belong to you"})
+		return
+	}
 
-// 	//check if booking status is pending, paid, comfirmed
+	if booking.Status.UserCompleted && booking.Status.SvcpCompleted {
+		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "This booking is already completed"})
+		return
+	}
+	if booking.Cancel.CancelStatus {
+		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "This booking is already cancelled"})
+		return
+	}
+	if booking.Status.PaymentStatus {
+		// do something like return money to user
+	}
+	cancel := models.BookingCancel{CancelStatus: true, CancelTimestamp: time.Now(), CancelBy: current_user.ID, CancelReason: request.CancelReason}
 
-// 	// if booking.BookingStatus == models.BookingPaid {
-// 	// 	//do something like return money to user
-// 	// }
-// 	// if booking.BookingStatus == models.BookingComfirmed {
-// 	// 	//do something like return money to user all sent notification to svcp?
-// 	// }
+	if _, err = utills.CancelBooking(db, request.BookingID, cancel); err != nil {
+		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})
+		return
+	}
+	//check if booking status is pending, paid, comfirmed
 
-// 	if err != nil {
-// 		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})
-// 		return
-// 	}
+	// if booking.BookingStatus == models.BookingPaid {
+	// 	//do something like return money to user
+	// }
+	// if booking.BookingStatus == models.BookingComfirmed {
+	// 	//do something like return money to user all sent notification to svcp?
+	// }
 
-// 	c.JSON(http.StatusOK, models.BasicRes{Message: "Booking cancelled successfully"})
+	c.JSON(http.StatusOK, models.BasicRes{Message: "Booking cancelled successfully"})
 
-// }
+}
 
 // UserRescheduleBookingHandeler godoc
 //
