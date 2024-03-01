@@ -8,9 +8,28 @@
         "SVCPID" : {"bsonType" : "string"},
         "serviceID" : {"bsonType" : "string"},
         "timeslotsID" : {"bsonType" : "string"},
-        "bookingStatus" : {"bsonType" : "string"},
+
+
+        "serviceName" : {"bsonType" : "string"},
+        "SVCPName" : {"bsonType" : "string"},
+        "startTime" : {"bsonType" : "date"},
+        "endTime" : {"bsonType" : "date"},
         "bookingTimestamp" : {"bsonType" : "date"},
         "totalBookingPrice" : {"bsonType" : "double"},
+
+        
+
+        "bookingStatus" : {"bsonType" : "string"},
+
+        "paymentStatus" : {"bsonType" : "bool"},
+        "paymentTimestamp" : {"bsonType" : "date"},
+        "svcpConfirmed" : {"bsonType" : "bool"},
+        "svcpConfirmedTimestamp" : {"bsonType" : "date"},
+        "svcpCompleted" : {"bsonType" : "bool"},
+        "svcpCompletedTimestamp" : {"bsonType" : "date"},
+        "userCompleted" : {"bsonType" : "bool"},
+        "userCompletedTimestamp" : {"bsonType" : "date"},
+
         "feedback" : {
             "bsonType" : "object",
             "properties" : {
