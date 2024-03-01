@@ -50,6 +50,13 @@ definitions:
       userID:
         type: string
     type: object
+  models.BookingBasicRes:
+    properties:
+      message:
+        type: string
+      result:
+        $ref: '#/definitions/models.Booking'
+    type: object
   models.BookingCancel:
     properties:
       cancelBy:
@@ -102,13 +109,6 @@ definitions:
         type: number
       userID:
         type: string
-    type: object
-  models.BookingInsert:
-    properties:
-      message:
-        type: string
-      result:
-        $ref: '#/definitions/models.Booking'
     type: object
   models.BookingRequest:
     properties:
@@ -279,6 +279,13 @@ definitions:
   models.RequestBookingId:
     properties:
       bookingID:
+        type: string
+    type: object
+  models.RequestBookingRescheduled:
+    properties:
+      bookingID:
+        type: string
+      timeslotID:
         type: string
     type: object
   models.RequestCancelBooking:
@@ -603,7 +610,7 @@ paths:
       tags:
       - Authentication
   /service/booking/all/user:
-    get:
+    post:
       consumes:
       - application/json
       description: |-
@@ -651,7 +658,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: can only cancel not completed booking and not cancelled
+      description: can only cancel not completed by user booking and not cancelled
       parameters:
       - description: booking id
         in: body
@@ -665,7 +672,7 @@ paths:
         "200":
           description: Booking cancelled successfully
           schema:
-            $ref: '#/definitions/models.BasicRes'
+            $ref: '#/definitions/models.BookingBasicRes'
         "400":
           description: Bad Request
           schema:
@@ -681,6 +688,43 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: user cancel booking
+      tags:
+      - Booking
+  /service/booking/complete/user:
+    post:
+      consumes:
+      - application/json
+      description: can only complete not completed booking by user ,not cancelled
+        ,startime is pass ,paid and svcp comfirmed
+      parameters:
+      - description: booking id
+        in: body
+        name: bookingID
+        required: true
+        schema:
+          $ref: '#/definitions/models.RequestBookingId'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Booking completed successfully
+          schema:
+            $ref: '#/definitions/models.BookingBasicRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
+      summary: complete a user booking
       tags:
       - Booking
   /service/booking/create:
@@ -701,7 +745,7 @@ paths:
         "201":
           description: Booking created successfully
           schema:
-            $ref: '#/definitions/models.BookingInsert'
+            $ref: '#/definitions/models.BookingBasicRes'
         "400":
           description: Bad Request
           schema:
@@ -716,7 +760,7 @@ paths:
             $ref: '#/definitions/models.BasicErrorRes'
       security:
       - ApiKeyAuth: []
-      summary: Create a Booking
+      summary: User create a Booking
       tags:
       - Booking
   /service/booking/detail/user:
@@ -753,6 +797,42 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: user get a booking detail
+      tags:
+      - Booking
+  /service/booking/reschedule/user:
+    post:
+      consumes:
+      - application/json
+      description: can only reschedule not completed booking by user and not cancelled
+      parameters:
+      - description: booking id and new timeslot id
+        in: body
+        name: booking
+        required: true
+        schema:
+          $ref: '#/definitions/models.RequestBookingRescheduled'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Booking rescheduled successfully
+          schema:
+            $ref: '#/definitions/models.BookingBasicRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
+      summary: user reschedule booking
       tags:
       - Booking
   /service/feedback/{id}:

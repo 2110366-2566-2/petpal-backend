@@ -343,7 +343,7 @@ const docTemplate = `{
             }
         },
         "/service/booking/all/user": {
-            "get": {
+            "post": {
                 "security": [
                     {
                         "ApiKeyAuth": []
@@ -408,7 +408,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "can only cancel not completed booking and not cancelled",
+                "description": "can only cancel not completed by user booking and not cancelled",
                 "consumes": [
                     "application/json"
                 ],
@@ -434,7 +434,64 @@ const docTemplate = `{
                     "200": {
                         "description": "Booking cancelled successfully",
                         "schema": {
-                            "$ref": "#/definitions/models.BasicRes"
+                            "$ref": "#/definitions/models.BookingBasicRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/service/booking/complete/user": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "can only complete not completed booking by user ,not cancelled ,startime is pass ,paid and svcp comfirmed",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking"
+                ],
+                "summary": "complete a user booking",
+                "parameters": [
+                    {
+                        "description": "booking id",
+                        "name": "bookingID",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.RequestBookingId"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Booking completed successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.BookingBasicRes"
                         }
                     },
                     "400": {
@@ -475,7 +532,7 @@ const docTemplate = `{
                 "tags": [
                     "Booking"
                 ],
-                "summary": "Create a Booking",
+                "summary": "User create a Booking",
                 "parameters": [
                     {
                         "description": "service chosen",
@@ -491,7 +548,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Booking created successfully",
                         "schema": {
-                            "$ref": "#/definitions/models.BookingInsert"
+                            "$ref": "#/definitions/models.BookingBasicRes"
                         }
                     },
                     "400": {
@@ -549,6 +606,63 @@ const docTemplate = `{
                         "description": "get detail booking",
                         "schema": {
                             "$ref": "#/definitions/models.BookkingDetailRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/service/booking/reschedule/user": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "can only reschedule not completed booking by user and not cancelled",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking"
+                ],
+                "summary": "user reschedule booking",
+                "parameters": [
+                    {
+                        "description": "booking id and new timeslot id",
+                        "name": "booking",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.RequestBookingRescheduled"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Booking rescheduled successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.BookingBasicRes"
                         }
                     },
                     "400": {
@@ -1722,6 +1836,17 @@ const docTemplate = `{
                 }
             }
         },
+        "models.BookingBasicRes": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "result": {
+                    "$ref": "#/definitions/models.Booking"
+                }
+            }
+        },
         "models.BookingCancel": {
             "type": "object",
             "properties": {
@@ -1797,17 +1922,6 @@ const docTemplate = `{
                 },
                 "userID": {
                     "type": "string"
-                }
-            }
-        },
-        "models.BookingInsert": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string"
-                },
-                "result": {
-                    "$ref": "#/definitions/models.Booking"
                 }
             }
         },
@@ -2068,6 +2182,17 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "bookingID": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.RequestBookingRescheduled": {
+            "type": "object",
+            "properties": {
+                "bookingID": {
+                    "type": "string"
+                },
+                "timeslotID": {
                     "type": "string"
                 }
             }

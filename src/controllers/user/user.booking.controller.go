@@ -11,7 +11,7 @@ import (
 
 // CreateBookingHandler godoc
 //
-// @Summary 	Create a Booking
+// @Summary 	User create a Booking
 // @Description	User can create a booking for a service
 // @Tags 		Booking
 //
@@ -90,7 +90,7 @@ func CreateBookingHandler(c *gin.Context, db *models.MongoDB) {
 // @Failure 	401 {object} models.BasicErrorRes
 // @Failure 	500 {object} models.BasicErrorRes
 //
-// @Router 		/service/booking/all/user [get]
+// @Router 		/service/booking/all/user [post]
 func UserGetAllBookingHandler(c *gin.Context, db *models.MongoDB) {
 
 	request := models.RequestBookingAll{CancelStatus: 2, PaymentStatus: 2, SvcpConfirmed: 2, SvcpCompleted: 2, UserCompleted: 2}
@@ -181,7 +181,7 @@ func UserGetDetailBookingHandler(c *gin.Context, db *models.MongoDB) {
 // UserCancelBookingHandler godoc
 //
 // @Summary 	user cancel booking
-// @Description	can only cancel not completed booking and not cancelled
+// @Description	can only cancel not completed by user booking and not cancelled
 // @Tags 		Booking
 //
 // @Accept		json
@@ -267,7 +267,7 @@ func UserCancelBookingHandler(c *gin.Context, db *models.MongoDB) {
 // UserRescheduleBookingHandeler godoc
 //
 // @Summary 	user reschedule booking
-// @Description	can only reschedule booking with status pending, paid, comfirmed (all booking that not done yet)
+// @Description	can only reschedule not completed booking by user and not cancelled
 // @Tags 		Booking
 //
 // @Accept		json
@@ -341,7 +341,7 @@ func UserRescheduleBookingHandeler(c *gin.Context, db *models.MongoDB) {
 // UserCompleteBookingHandler godoc
 //
 // @Summary 	complete a user booking
-// @Description	user complete a booking
+// @Description	can only complete not completed booking by user ,not cancelled ,startime is pass ,paid and svcp comfirmed
 // @Tags 		Booking
 //
 // @Accept		json
