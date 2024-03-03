@@ -5,8 +5,8 @@ import (
 	"petpal-backend/src/configs"
 	"petpal-backend/src/models"
 	"petpal-backend/src/routes"
-	user_route "petpal-backend/src/routes/user"
 	service_route "petpal-backend/src/routes/service"
+	user_route "petpal-backend/src/routes/user"
 	"petpal-backend/src/utills"
 
 	"github.com/gin-gonic/gin"
@@ -48,8 +48,9 @@ func main() {
 
 	// set cors
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*"},
-		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE"},
+		AllowOrigins: []string{"https://localhost:3000", "http://localhost:3000"},
+		// AllowAllOrigins:  true,
+		AllowMethods:     []string{"*"},
 		AllowHeaders:     []string{"*"},
 		AllowCredentials: true,
 	}))
