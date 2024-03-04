@@ -113,15 +113,10 @@ const docTemplate = `{
                 ],
                 "summary": "Get current entity",
                 "responses": {
-                    "202": {
+                    "200": {
                         "description": "Accepted",
                         "schema": {
-                            "type": "object",
-                            "properties": {
-                                "message": {
-                                    "type": "string"
-                                }
-                            }
+                            "$ref": "#/definitions/models.User"
                         }
                     },
                     "400": {
@@ -347,6 +342,782 @@ const docTemplate = `{
                 }
             }
         },
+        "/service/booking/all/svcp": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "json body not required if you dont want to filter result\nstartAfter is filter booking that has timeslot Start Before this time\nreservationType is checking booking is \"incoming\" or \"outgoing\"\ncancelStatus ,paymentStatus ,svcpConfirmed ,svcpCompleted ,userCompleted is filter booking with status 0 == false, 1 == true, 2 == dont care(or you can unuse this filed in json body)\nif dont want to filter that field dont use that field in json body\nfilter is and-condition(\u0026\u0026)\nexample {}\nexample {\"reservationType\":\"incoming\",\"svcpCompleted\": 1,\"userCompleted\": 0}",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking svcp"
+                ],
+                "summary": "get all booking of svcp with filter(optional)",
+                "parameters": [
+                    {
+                        "description": "get all booking with filter(optional)",
+                        "name": "service",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/models.RequestBookingAll"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "get all svcp booking successfully",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.BookingWithIdArrayRes"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/service/booking/all/user": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "json body not required if you dont want to filter result\nstartAfter is filter booking that has timeslot Start Before this time\nreservationType is checking booking is \"incoming\" or \"outgoing\"\ncancelStatus ,paymentStatus ,svcpConfirmed ,svcpCompleted ,userCompleted is filter booking with status 0 == false, 1 == true, 2 == dont care(or you can unuse this filed in json body)\nif dont want to filter that field dont use that field in json body\nfilter is and-condition(\u0026\u0026)\nexample {}\nexample {\"reservationType\":\"incoming\",\"svcpCompleted\": 1,\"userCompleted\": 0}",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking user"
+                ],
+                "summary": "get all booking of user with filter(optional)",
+                "parameters": [
+                    {
+                        "description": "get all booking with filter(optional)",
+                        "name": "service",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/models.RequestBookingAll"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "get all user booking successfully",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.BookingWithIdArrayRes"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/service/booking/cancel/svcp": {
+            "patch": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "can only cancel not completed by svcp booking and not cancelled",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking svcp"
+                ],
+                "summary": "svcp cancel booking",
+                "parameters": [
+                    {
+                        "description": "booking id",
+                        "name": "bookingID",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.RequestCancelBooking"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Booking cancelled successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.BookingBasicRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/service/booking/cancel/user": {
+            "patch": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "can only cancel not completed by user booking and not cancelled",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking user"
+                ],
+                "summary": "user cancel booking by booking id",
+                "parameters": [
+                    {
+                        "description": "booking id",
+                        "name": "bookingID",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.RequestCancelBooking"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Booking cancelled successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.BookingBasicRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/service/booking/complete/svcp": {
+            "patch": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "can only complete not completed booking by svcp ,not cancelled ,startime is pass\nif svcp not comfirmed booking it will auto comfirm first",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking svcp"
+                ],
+                "summary": "set complete svcp for booking by booking id",
+                "parameters": [
+                    {
+                        "description": "booking id",
+                        "name": "bookingID",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.RequestBookingId"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Booking completed successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.BookingBasicRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/service/booking/complete/user": {
+            "patch": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "can only complete not completed booking by user ,not cancelled and startime is passed.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking user"
+                ],
+                "summary": "set complete user for booking by booking id",
+                "parameters": [
+                    {
+                        "description": "booking id",
+                        "name": "bookingID",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.RequestBookingId"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Booking completed successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.BookingBasicRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/service/booking/confirm/svcp": {
+            "patch": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "can only comfirm booking that is not comfirmed by svcp and not cancelled",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking svcp"
+                ],
+                "summary": "set comfirm svcp for booking by booking id",
+                "parameters": [
+                    {
+                        "description": "booking id",
+                        "name": "bookingID",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.RequestBookingId"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Booking svcp completed successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.BookingBasicRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/service/booking/create": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "User can create a booking for a service",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking user"
+                ],
+                "summary": "User create a Booking by svcp id ,service id and timeslot id",
+                "parameters": [
+                    {
+                        "description": "service chosen",
+                        "name": "service",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.BookingRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Booking created successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.BookingBasicRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/service/booking/detail/svcp": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get a booking detail by booking id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking svcp"
+                ],
+                "summary": "svcp get a booking detail by booking id",
+                "parameters": [
+                    {
+                        "description": "booking id",
+                        "name": "bookingID",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.RequestBookingId"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "get detail booking",
+                        "schema": {
+                            "$ref": "#/definitions/models.BookkingDetailRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/service/booking/detail/user": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get a booking detail by booking id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking user"
+                ],
+                "summary": "user get a booking detail by booking id",
+                "parameters": [
+                    {
+                        "description": "booking id",
+                        "name": "bookingID",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.RequestBookingId"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "get detail booking",
+                        "schema": {
+                            "$ref": "#/definitions/models.BookkingDetailRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/service/booking/reschedule/user": {
+            "patch": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "can only reschedule not completed booking by user, not cancelled and timeslot is not same",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking user"
+                ],
+                "summary": "user reschedule booking by booking id and new timeslot id",
+                "parameters": [
+                    {
+                        "description": "booking id and new timeslot id",
+                        "name": "booking",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.RequestBookingRescheduled"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Booking rescheduled successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.BookingBasicRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/service/feedback/{id}": {
+            "get": {
+                "description": "Get feedbacks for a service",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Service"
+                ],
+                "summary": "Get feedbacks",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Service ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Feedback"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Create a feedback for a service",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Service"
+                ],
+                "summary": "Create a feedback",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Service ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Feedback rating and content(optional)",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controllers.CreateFeedbackRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Feedback"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/serviceproviders": {
             "get": {
                 "description": "Get all service providers (authentication not required) and sensitive information is censorred",
@@ -392,6 +1163,56 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Update service provider (authentication required and only the service provider can update their own profile)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ServiceProviders"
+                ],
+                "summary": "Update service provider",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Service Provider ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Service Provider Object (only the fields to be updated)",
+                        "name": "svcp",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/models.BasicErrorRes"
                         }
@@ -654,56 +1475,6 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.BasicErrorRes"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Update service provider (authentication required and only the service provider can update their own profile)",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ServiceProviders"
-                ],
-                "summary": "Update service provider",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Service Provider ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Service Provider Object (only the fields to be updated)",
-                        "name": "svcp",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "object"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.BasicRes"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/models.BasicErrorRes"
                         }
@@ -1321,6 +2092,17 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "controllers.CreateFeedbackRequest": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "rating": {
+                    "type": "number"
+                }
+            }
+        },
         "controllers.defaultBankAccountReq": {
             "type": "object",
             "properties": {
@@ -1345,6 +2127,255 @@ const docTemplate = `{
             "properties": {
                 "message": {
                     "type": "string"
+                }
+            }
+        },
+        "models.Booking": {
+            "type": "object",
+            "properties": {
+                "SVCPID": {
+                    "type": "string"
+                },
+                "bookingTimestamp": {
+                    "type": "string"
+                },
+                "cancel": {
+                    "$ref": "#/definitions/models.BookingCancel"
+                },
+                "endTime": {
+                    "type": "string"
+                },
+                "feedback": {
+                    "$ref": "#/definitions/models.Feedback"
+                },
+                "serviceID": {
+                    "type": "string"
+                },
+                "serviceName": {
+                    "type": "string"
+                },
+                "startTime": {
+                    "type": "string"
+                },
+                "status": {
+                    "$ref": "#/definitions/models.BookingStatus"
+                },
+                "timeslotID": {
+                    "type": "string"
+                },
+                "totalBookingPrice": {
+                    "type": "number"
+                },
+                "userID": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.BookingBasicRes": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "result": {
+                    "$ref": "#/definitions/models.Booking"
+                }
+            }
+        },
+        "models.BookingCancel": {
+            "type": "object",
+            "properties": {
+                "cancelBy": {
+                    "description": "who cancelled",
+                    "type": "string"
+                },
+                "cancelReason": {
+                    "description": "reason for cancellation",
+                    "type": "string"
+                },
+                "cancelStatus": {
+                    "description": "true if cancelled",
+                    "type": "boolean"
+                },
+                "cancelTimestamp": {
+                    "description": "time of cancellation",
+                    "type": "string"
+                }
+            }
+        },
+        "models.BookingFull": {
+            "type": "object",
+            "properties": {
+                "SVCPID": {
+                    "type": "string"
+                },
+                "SVCPName": {
+                    "type": "string"
+                },
+                "averageRating": {
+                    "type": "number"
+                },
+                "bookingID": {
+                    "type": "string"
+                },
+                "bookingTimestamp": {
+                    "type": "string"
+                },
+                "cancel": {
+                    "$ref": "#/definitions/models.BookingCancel"
+                },
+                "endTime": {
+                    "type": "string"
+                },
+                "feedback": {
+                    "$ref": "#/definitions/models.Feedback"
+                },
+                "serviceDescription": {
+                    "type": "string"
+                },
+                "serviceID": {
+                    "type": "string"
+                },
+                "serviceImg": {
+                    "type": "string"
+                },
+                "serviceName": {
+                    "description": "service name",
+                    "type": "string"
+                },
+                "startTime": {
+                    "type": "string"
+                },
+                "status": {
+                    "$ref": "#/definitions/models.BookingStatus"
+                },
+                "timeslotID": {
+                    "type": "string"
+                },
+                "totalBookingPrice": {
+                    "type": "number"
+                },
+                "userID": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.BookingRequest": {
+            "type": "object",
+            "properties": {
+                "SVCPID": {
+                    "type": "string"
+                },
+                "serviceID": {
+                    "type": "string"
+                },
+                "timeslotID": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.BookingShowALL": {
+            "type": "object",
+            "properties": {
+                "SVCPID": {
+                    "type": "string"
+                },
+                "SVCPName": {
+                    "type": "string"
+                },
+                "bookingID": {
+                    "type": "string"
+                },
+                "bookingTimestamp": {
+                    "type": "string"
+                },
+                "cancel": {
+                    "$ref": "#/definitions/models.BookingCancel"
+                },
+                "endTime": {
+                    "type": "string"
+                },
+                "feedback": {
+                    "$ref": "#/definitions/models.Feedback"
+                },
+                "serviceID": {
+                    "type": "string"
+                },
+                "serviceName": {
+                    "type": "string"
+                },
+                "startTime": {
+                    "type": "string"
+                },
+                "status": {
+                    "$ref": "#/definitions/models.BookingStatus"
+                },
+                "timeslotID": {
+                    "type": "string"
+                },
+                "totalBookingPrice": {
+                    "type": "number"
+                },
+                "userID": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.BookingStatus": {
+            "type": "object",
+            "properties": {
+                "paymentStatus": {
+                    "type": "boolean"
+                },
+                "paymentTimestamp": {
+                    "type": "string"
+                },
+                "rescheduleStatus": {
+                    "description": "true if rescheduled",
+                    "type": "boolean"
+                },
+                "svcpCompleted": {
+                    "type": "boolean"
+                },
+                "svcpCompletedTimestamp": {
+                    "type": "string"
+                },
+                "svcpConfirmed": {
+                    "type": "boolean"
+                },
+                "svcpConfirmedTimestamp": {
+                    "type": "string"
+                },
+                "userCompleted": {
+                    "type": "boolean"
+                },
+                "userCompletedTimestamp": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.BookingWithIdArrayRes": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "result": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.BookingShowALL"
+                    }
+                }
+            }
+        },
+        "models.BookkingDetailRes": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "result": {
+                    "$ref": "#/definitions/models.BookingFull"
                 }
             }
         },
@@ -1393,6 +2424,20 @@ const docTemplate = `{
                 }
             }
         },
+        "models.Feedback": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "feedbackID": {
+                    "type": "string"
+                },
+                "rating": {
+                    "type": "number"
+                }
+            }
+        },
         "models.LoginReq": {
             "type": "object",
             "properties": {
@@ -1438,6 +2483,62 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "vaccinations": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.RequestBookingAll": {
+            "type": "object",
+            "properties": {
+                "cancelStatus": {
+                    "type": "integer"
+                },
+                "paymentStatus": {
+                    "type": "integer"
+                },
+                "reservationType": {
+                    "type": "string"
+                },
+                "startAfter": {
+                    "type": "string"
+                },
+                "svcpCompleted": {
+                    "type": "integer"
+                },
+                "svcpConfirmed": {
+                    "type": "integer"
+                },
+                "userCompleted": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.RequestBookingId": {
+            "type": "object",
+            "properties": {
+                "bookingID": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.RequestBookingRescheduled": {
+            "type": "object",
+            "properties": {
+                "bookingID": {
+                    "type": "string"
+                },
+                "timeslotID": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.RequestCancelBooking": {
+            "type": "object",
+            "properties": {
+                "bookingID": {
+                    "type": "string"
+                },
+                "cancelReason": {
                     "type": "string"
                 }
             }
@@ -1504,13 +2605,22 @@ const docTemplate = `{
                 "averageRating": {
                     "type": "number"
                 },
+                "price": {
+                    "type": "number"
+                },
                 "requireCert": {
                     "type": "boolean"
                 },
                 "serviceDescription": {
                     "type": "string"
                 },
+                "serviceID": {
+                    "type": "string"
+                },
                 "serviceImg": {
+                    "type": "string"
+                },
+                "serviceName": {
                     "type": "string"
                 },
                 "serviceType": {
@@ -1531,6 +2641,12 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "startTime": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "timeslotID": {
                     "type": "string"
                 }
             }

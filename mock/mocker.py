@@ -78,7 +78,7 @@ def gen_object(id, properties_dict):
         elif t == 'array':
             arr = []
             for i in range(random.randint(1, 6)):
-                arr.append(gen_object(1, properties_dict[key]['items']['properties']))
+                arr.append(gen_object(i, properties_dict[key]['items']['properties']))
             ret[key] = arr
         elif t == 'object':
             ret[key] = gen_object(1, properties_dict[key]['properties'])

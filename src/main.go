@@ -5,11 +5,11 @@ import (
 	"petpal-backend/src/configs"
 	"petpal-backend/src/models"
 	"petpal-backend/src/routes"
-	chat_route "petpal-backend/src/routes/chat"
 	service_route "petpal-backend/src/routes/service"
 	user_route "petpal-backend/src/routes/user"
 	"petpal-backend/src/utills"
 	"petpal-backend/src/utills/chat"
+	"time"
 
 	"github.com/gin-gonic/gin"
 
@@ -51,11 +51,18 @@ func main() {
 	// Initial chat websocket hub and run it
 	h := chat.NewHub()
 	go h.Run()
+	location, err := time.LoadLocation("Asia/Bangkok")
+	if err != nil {
+		fmt.Println("Error loading location:", err)
+		return
+	}
+	time.Local = location
 
 	// set cors
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*"},
-		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE"},
+		AllowOrigins: []string{"https://localhost:3000", "http://localhost:3000"},
+		// AllowAllOrigins:  true,
+		AllowMethods:     []string{"*"},
 		AllowHeaders:     []string{"*"},
 		AllowCredentials: true,
 	}))
@@ -67,7 +74,6 @@ func main() {
 	routes.SVCPRoutes(r)
 	routes.AuthRoutes(r)
 	service_route.ServiceRoutes(r)
-	chat_route.ChatRoutes(r, h)
 
 	// Swagger
 	docs.SwaggerInfo.Title = "PetPal API"
