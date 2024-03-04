@@ -50,9 +50,11 @@ func (c *Client) writeMessage() error {
 		}
 		// if message content is empty or too long
 		/*
-			if message.MessageType == string(Text) && (len(message.Content) > 500 || len(message.Content) == 0) {
-				return errors.New("Cannot send empty messsage or too long message")
-			}*/
+			Move this message error check into frontend due to easier implementations
+
+				if message.MessageType == string(Text) && (len(message.Content) > 500 || len(message.Content) == 0) {
+					return errors.New("Cannot send empty messsage or too long message")
+				}*/
 	}
 }
 
@@ -79,8 +81,18 @@ func (c *Client) readMessage(h *Hub) error {
 			TimeStamp:   time.Now(),
 		}
 
-		// add a message to chat history
-		// Implement soon
+		/* Add a message to chat history
+		Implementing soon
+
+		Chat client-server concept using web-socket
+
+		1. Client authenticate the user from browser cookie and
+		2. Client find the unique room id
+		3. Send the roomid and clientid + clientUsername through the query paremeter to connect the socket server
+		4. Load the chat history
+		5. Close the socket connection when user logout or quit chat
+
+		*/
 		h.Broadcast <- msg
 	}
 }
