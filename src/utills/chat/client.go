@@ -79,6 +79,8 @@ func (c *Client) readMessage(h *Hub) error {
 			TimeStamp:   time.Now(),
 		}
 
+		// add a message to chat history
+		// Implement soon
 		h.Broadcast <- msg
 	}
 }

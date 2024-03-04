@@ -5,6 +5,7 @@ import (
 	"petpal-backend/src/configs"
 	"petpal-backend/src/models"
 	"petpal-backend/src/routes"
+	chat_route "petpal-backend/src/routes/chat"
 	service_route "petpal-backend/src/routes/service"
 	user_route "petpal-backend/src/routes/user"
 	"petpal-backend/src/utills"
@@ -74,6 +75,7 @@ func main() {
 	routes.SVCPRoutes(r)
 	routes.AuthRoutes(r)
 	service_route.ServiceRoutes(r)
+	chat_route.ChatRoutes(r, h)
 
 	// Swagger
 	docs.SwaggerInfo.Title = "PetPal API"

@@ -41,9 +41,10 @@ func JoinChatRoom(c *gin.Context, h *Hub) {
 		return
 	}
 	roomID := c.Param("roomId")
-	clientID := c.Query("userId")
+	clientID := c.Query("clientId")
 	username := c.Query("username")
 	userrole := c.Query("role")
+
 	// Check if the roomid is existed or not ?
 	if _, ok := h.Rooms[roomID]; !ok {
 		// if not create a room here
