@@ -199,7 +199,7 @@ func GetCurrentUserPetsHandler(c *gin.Context, db *models.MongoDB) {
 //
 // @Security    ApiKeyAuth
 //
-// @Param       pet      body    models.CraetePet       true        "Pet object to be added"
+// @Param       pet      body    models.CreatePet       true        "Pet object to be added"
 //
 // @Success     200      {object} models.BasicRes    "Success"
 // @Failure     400      {object} models.BasicErrorRes      "Bad request"

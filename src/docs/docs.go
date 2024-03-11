@@ -2487,6 +2487,41 @@ const docTemplate = `{
                 }
             }
         },
+        "models.CreatePet": {
+            "type": "object",
+            "properties": {
+                "age": {
+                    "type": "integer"
+                },
+                "behaviouralNotes": {
+                    "type": "string"
+                },
+                "certificate": {
+                    "type": "string"
+                },
+                "dietyPreferences": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "string"
+                },
+                "healthInformation": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "breed": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "vaccinations": {
+                    "type": "string"
+                }
+            }
+        },
         "models.RequestBookingAll": {
             "type": "object",
             "properties": {
