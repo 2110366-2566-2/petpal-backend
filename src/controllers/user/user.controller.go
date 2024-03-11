@@ -213,13 +213,13 @@ func AddUserPetHandler(c *gin.Context, db *models.MongoDB) {
 		return
 	}
 
-	var pet models.Pet
+	var pet models.CreatePet
 	if err := c.ShouldBindJSON(&pet); err != nil {
 		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: err.Error()})
 		return
 	}
 
-	err_str, err := user_utills.AddUserPet(db, &pet, currentUser.ID)
+	err_str, err := user_utills.AddUserPet(db, &pet, *currentUser)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err_str})
 		return
