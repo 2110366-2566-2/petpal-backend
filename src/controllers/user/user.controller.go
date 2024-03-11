@@ -219,7 +219,7 @@ func AddUserPetHandler(c *gin.Context, db *models.MongoDB) {
 		return
 	}
 
-	err_str, err := user_utills.AddUserPet(db, &pet, *currentUser)
+	err_str, err := user_utills.AddUserPet(db, &pet, currentUser)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err_str})
 		return

@@ -43,7 +43,7 @@ func CreateNewPet(pet *models.CreatePet, ownerUsername string) *models.Pet {
 	}
 }
 
-func AddUserPet(db *models.MongoDB, createPet *models.CreatePet, user models.User) (string, error) {
+func AddUserPet(db *models.MongoDB, createPet *models.CreatePet, user *models.User) (string, error) {
 	// get collection
 	user_collection := db.Collection("user")
 
@@ -57,6 +57,9 @@ func AddUserPet(db *models.MongoDB, createPet *models.CreatePet, user models.Use
 
 	filter := bson.D{{Key: "_id", Value: user_objectid}}
 	res, err := user_collection.UpdateOne(context.Background(), filter, bson.D{{Key: "$push", Value: bson.D{{Key: "pets", Value: pet}}}})
+	if res == nil {
+		return "User not found (id=" + user_id + ")", err
+	}
 	if res.MatchedCount == 0 {
 		return "User not found (id=" + user_id + ")", err
 	}
