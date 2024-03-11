@@ -25,35 +25,17 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Users"
+                    "Authentication"
                 ],
                 "summary": "Change user password",
                 "parameters": [
                     {
-                        "description": "User email",
-                        "name": "user_email",
+                        "description": "Change password request",
+                        "name": "ChangePasswordReq",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "New password",
-                        "name": "new_password",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "Login type",
-                        "name": "login_type",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/controllers.ChangePasswordReq"
                         }
                     }
                 ],
@@ -1656,8 +1638,8 @@ const docTemplate = `{
                 "operationId": "AddUserPetHandler",
                 "parameters": [
                     {
-                        "description": "CreatePet object to be added",
-                        "name": "CreatePet",
+                        "description": "Pet object to be added",
+                        "name": "pet",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -2092,6 +2074,20 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "controllers.ChangePasswordReq": {
+            "type": "object",
+            "properties": {
+                "loginType": {
+                    "type": "string"
+                },
+                "newPassword": {
+                    "type": "string"
+                },
+                "userEmail": {
+                    "type": "string"
+                }
+            }
+        },
         "controllers.CreateFeedbackRequest": {
             "type": "object",
             "properties": {
@@ -2379,6 +2375,41 @@ const docTemplate = `{
                 }
             }
         },
+        "models.CreatePet": {
+            "type": "object",
+            "properties": {
+                "age": {
+                    "type": "integer"
+                },
+                "behaviouralNotes": {
+                    "type": "string"
+                },
+                "breed": {
+                    "type": "string"
+                },
+                "certificate": {
+                    "type": "string"
+                },
+                "dietyPreferences": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "string"
+                },
+                "healthInformation": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "vaccinations": {
+                    "type": "string"
+                }
+            }
+        },
         "models.CreateSVCP": {
             "type": "object",
             "properties": {
@@ -2461,6 +2492,9 @@ const docTemplate = `{
                 "behaviouralNotes": {
                     "type": "string"
                 },
+                "breed": {
+                    "type": "string"
+                },
                 "certificate": {
                     "type": "string"
                 },
@@ -2477,41 +2511,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "ownerUsername": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
-                },
-                "vaccinations": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.CreatePet": {
-            "type": "object",
-            "properties": {
-                "age": {
-                    "type": "integer"
-                },
-                "behaviouralNotes": {
-                    "type": "string"
-                },
-                "certificate": {
-                    "type": "string"
-                },
-                "dietyPreferences": {
-                    "type": "string"
-                },
-                "gender": {
-                    "type": "string"
-                },
-                "healthInformation": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "breed": {
                     "type": "string"
                 },
                 "type": {

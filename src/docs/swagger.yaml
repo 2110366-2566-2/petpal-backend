@@ -1,4 +1,13 @@
 definitions:
+  controllers.ChangePasswordReq:
+    properties:
+      loginType:
+        type: string
+      newPassword:
+        type: string
+      userEmail:
+        type: string
+    type: object
   controllers.CreateFeedbackRequest:
     properties:
       content:
@@ -188,6 +197,29 @@ definitions:
       result:
         $ref: '#/definitions/models.BookingFull'
     type: object
+  models.CreatePet:
+    properties:
+      age:
+        type: integer
+      behaviouralNotes:
+        type: string
+      breed:
+        type: string
+      certificate:
+        type: string
+      dietyPreferences:
+        type: string
+      gender:
+        type: string
+      healthInformation:
+        type: string
+      name:
+        type: string
+      type:
+        type: string
+      vaccinations:
+        type: string
+    type: object
   models.CreateSVCP:
     properties:
       SVCPEmail:
@@ -241,6 +273,8 @@ definitions:
       age:
         type: integer
       behaviouralNotes:
+        type: string
+      breed:
         type: string
       certificate:
         type: string
@@ -406,24 +440,12 @@ paths:
       - application/json
       description: Change user password
       parameters:
-      - description: User email
+      - description: Change password request
         in: body
-        name: user_email
+        name: ChangePasswordReq
         required: true
         schema:
-          type: string
-      - description: New password
-        in: body
-        name: new_password
-        required: true
-        schema:
-          type: string
-      - description: Login type
-        in: body
-        name: login_type
-        required: true
-        schema:
-          type: string
+          $ref: '#/definitions/controllers.ChangePasswordReq'
       produces:
       - application/json
       responses:
@@ -450,7 +472,7 @@ paths:
             type: object
       summary: Change user password
       tags:
-      - Users
+      - Authentication
   /current-entity:
     get:
       consumes:
@@ -1499,7 +1521,7 @@ paths:
         name: pet
         required: true
         schema:
-          $ref: '#/definitions/models.Pet'
+          $ref: '#/definitions/models.CreatePet'
       produces:
       - application/json
       responses:
