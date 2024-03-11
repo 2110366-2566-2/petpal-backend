@@ -1656,12 +1656,12 @@ const docTemplate = `{
                 "operationId": "AddUserPetHandler",
                 "parameters": [
                     {
-                        "description": "Pet object to be added",
-                        "name": "pet",
+                        "description": "CreatePet object to be added",
+                        "name": "CreatePet",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Pet"
+                            "$ref": "#/definitions/models.CreatePet"
                         }
                     }
                 ],
