@@ -4,18 +4,6 @@ import "time"
 
 // Q for Services's User name, Service name, Service type
 // SortBy for sorting by price, rating
-
-// @Param q query string false "Search query "
-// @Param location query string false "Location"
-// @Param start_time query string false "start_time"
-// @Param end_time query string false "end_time"
-// @Param start_price_range query string false "Start price range"
-// @Param end_price_range query string false "End price range"
-// @Param min_rating query string false "Minimum rating"
-// @Param max_rating query string false "Maximum rating"
-// @Param page_number query string false "Page number"
-// @Param page_size query string false "Page size"
-// @Param sort_by query  false "Sort by (price, rating)"
 type SearchHistory struct {
 	Q               string    `json:"q" bson:"q"`
 	Location        string    `json:"location" bson:"location"`
