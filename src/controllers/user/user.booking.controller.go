@@ -54,7 +54,7 @@ func CreateBookingHandler(c *gin.Context, db *models.MongoDB) {
 
 	request.BookingTimestamp = time.Now()
 
-	returnBooking, err := utills.InsertBooking(db, &request)
+	returnBooking, err := utills.InsertBooking(db, &request, current_user)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})
@@ -331,7 +331,7 @@ func UserRescheduleBookingHandeler(c *gin.Context, db *models.MongoDB) {
 	}
 
 	//Change booking sheduled
-	returnBooking, err := utills.ChangeBookingScheduled(db, request.BookingID, request.TimeslotID)
+	returnBooking, err := utills.ChangeBookingScheduled(db, request.BookingID, request.TimeslotID, current_user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})
 		return
