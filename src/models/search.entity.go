@@ -3,7 +3,7 @@ package models
 import "time"
 
 // Q for Services's User name, Service name, Service type
-// SortBy for sorting by price, rating
+// SortBy for sorting by price, rating, name
 type SearchHistory struct {
 	Q               string    `json:"q" bson:"q"`
 	Location        string    `json:"location" bson:"location"`

@@ -1,22 +1,21 @@
 package auth
 
 import (
+	"errors"
 	"petpal-backend/src/models"
 	user_utills "petpal-backend/src/utills/user"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func nextUserId() int {
-	id := 5
-	return id
-}
-
 func NewUser(createUser models.CreateUser) (*models.User, error) {
-	newID := nextUserId()
+	objID := primitive.NewObjectID().Hex()
 	// You can add more validation rules as needed
 	newUser := &models.User{
 		Individual: models.Individual{
-			IndividualID: newID,
+			IndividualID: objID,
 		},
+		ID:                   objID,
 		Username:             createUser.Username,
 		Password:             createUser.Password,
 		Email:                createUser.Email,
@@ -35,6 +34,14 @@ func NewUser(createUser models.CreateUser) (*models.User, error) {
 
 // RegisterHandler handles user registration
 func RegisterUser(createUser models.CreateUser, db *models.MongoDB) (string, error) {
+	// search if email already exists
+	user, err := user_utills.GetUserByEmail(db, createUser.Email)
+	if user != nil {
+		return "", errors.New("User email alreay exist")
+	}
+	if err == nil {
+		return "", errors.New("User email alreay exist")
+	}
 
 	// Hash the password securely
 	hashedPassword, err := HashPassword(createUser.Password)

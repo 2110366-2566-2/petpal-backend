@@ -3,6 +3,7 @@ package controllers
 import (
 	"net/http"
 	"petpal-backend/src/models"
+	"petpal-backend/src/utills/auth"
 	service_utills "petpal-backend/src/utills/service"
 
 	"github.com/gin-gonic/gin"
@@ -73,15 +74,43 @@ func CreateServicesHandler(c *gin.Context, db *models.MongoDB) {
 //
 // @Router /service/searching [get]
 
-// func SearchServicesHandler(c *gin.Context, db *models.MongoDB, q, location, timeslot, start_price_range, end_price_range, min_rating, max_rating string) {
-// 	// Get services
-// 	services, err := service_utills.SearchServices(db, q, location, timeslot, start_price_range, end_price_range, min_rating, max_rating)
-// 	if err != nil {
-// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-// 		return
-// 	}
-// 	c.JSON(http.StatusOK, services)
-// }
+func SearchServicesHandler(c *gin.Context, db *models.MongoDB) {
+	// Get services
+	var id string
+	var is_user bool
+	var searchHistory *models.SearchHistory
+
+	if err := c.ShouldBindJSON(&searchHistory); err != nil {
+		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: err.Error()})
+		return
+	}
+	currentEntity, err := auth.GetCurrentEntityByGinContenxt(c, db)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "Failed to get token from Cookie plase login first, " + err.Error()})
+		return
+	}
+	switch currentEntity := currentEntity.(type) {
+	case *models.SVCP:
+		id = currentEntity.SVCPID
+		is_user = false
+		services, err := service_utills.SearchServices(db, searchHistory, id, is_user)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, services)
+
+	case *models.User:
+		id = currentEntity.ID
+		is_user = true
+		services, err := service_utills.SearchServices(db, searchHistory, id, is_user)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, services)
+	}
+}
 
 // DuplicateServicesHandler godoc
 //

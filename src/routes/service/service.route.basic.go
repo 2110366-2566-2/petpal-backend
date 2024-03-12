@@ -14,17 +14,10 @@ func ServiceBaseRoutes(r *gin.RouterGroup) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllers.CreateServicesHandler(c, db)
 		})
-		// baiscGroup.GET("/searching", func(c *gin.Context) {
-		// 	db := c.MustGet("db").(*models.MongoDB)
-		// 	q := c.Query("q")
-		// 	location := c.Query("location")
-		// 	timeslot := c.Query("timeslot")
-		// 	start_price_range := c.Query("start_price_range")
-		// 	end_price_range := c.Query("end_price_range")
-		// 	min_rating := c.Query("min_rating")
-		// 	max_rating := c.Query("max_rating")
-		// 	controllers.SearchServicesHandler(c, db, q, location, timeslot, start_price_range, end_price_range, min_rating, max_rating)
-		// })
+		baiscGroup.GET("/searching", func(c *gin.Context) {
+			db := c.MustGet("db").(*models.MongoDB)
+			controllers.SearchServicesHandler(c, db)
+		})
 		baiscGroup.POST("/duplicate/:id", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
 			id := c.Param("id")
