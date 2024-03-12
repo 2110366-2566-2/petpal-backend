@@ -489,13 +489,15 @@ func GetSearchHistoryHandler(c *gin.Context, db *models.MongoDB) {
 	if err != nil {
 		return
 	}
-	// history, err := user_utills.GetSearchHistory(currentUser.Email, db)
-	// if err != nil {
-	// 	c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})
-	// 	return
-	// }
-	c.JSON(http.StatusOK, gin.H{"history": currentUser.SearchHistory})
 
+	search_history, err := user_utills.GetSearchHistory(db, currentUser.ID)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"user": currentUser, "history": search_history})
 }
 
 func _authenticate(c *gin.Context, db *models.MongoDB) (*models.User, error) {
