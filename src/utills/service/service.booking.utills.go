@@ -330,6 +330,8 @@ func ChangeBookingScheduled(db *models.MongoDB, bookingID string, newTimeslotID 
 	booking.TimeslotID = newTimeslotID
 	booking.Status.SvcpConfirmed = false
 	booking.Status.RescheduleStatus = true
+	booking.StartTime = foundtimeslot.StartTime
+	booking.EndTime = foundtimeslot.EndTime
 
 	// Update the booking in the collection
 	_, err = collection.ReplaceOne(context.Background(), filter, booking)
