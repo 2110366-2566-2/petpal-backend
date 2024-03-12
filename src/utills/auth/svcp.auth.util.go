@@ -20,7 +20,7 @@ func NewSVCP(createSVCP models.CreateSVCP) (*models.SVCP, error) {
 			IndividualID: newID,
 		},
 		SVCPID:                "Defult",
-		SVCPImg:               "Defult",
+		SVCPImg:               []byte("Default"),
 		SVCPUsername:          createSVCP.SVCPUsername,
 		SVCPPassword:          createSVCP.SVCPPassword,
 		SVCPEmail:             createSVCP.SVCPEmail,
@@ -30,7 +30,7 @@ func NewSVCP(createSVCP models.CreateSVCP) (*models.SVCP, error) {
 		DefaultAccountNumber:  "Defult",
 		License:               "Defult",
 		Location:              "Defult",
-		SVCPAdditionalImg:     "Defult",
+		SVCPAdditionalImg:     []byte("Default"),
 		SVCPServiceType:       createSVCP.SVCPServiceType,
 	}
 
