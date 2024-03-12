@@ -27,18 +27,39 @@ func GetUserPet(db *models.MongoDB, id string) (*[]models.Pet, error) {
 	return &user.Pets, nil
 }
 
-func AddUserPet(db *models.MongoDB, pet *models.Pet, user_id string) (string, error) {
+func CreateNewPet(pet *models.CreatePet, ownerUsername string) *models.Pet {
+	return &models.Pet{
+		OwnerUsername:     ownerUsername,
+		Name:              pet.Name,
+		Gender:            pet.Gender,
+		Age:               pet.Age,
+		Pet_type:          pet.Pet_type,
+		HealthInformation: pet.HealthInformation,
+		Certificate:       pet.Certificate,
+		BehaviouralNotes:  pet.BehaviouralNotes,
+		Vaccinations:      pet.Vaccinations,
+		DietyPreferences:  pet.DietyPreferences,
+		Breed:             pet.Breed,
+	}
+}
+
+func AddUserPet(db *models.MongoDB, createPet *models.CreatePet, user *models.User) (string, error) {
 	// get collection
 	user_collection := db.Collection("user")
 
 	// find user by email
+	user_id := user.ID
 	user_objectid, err := primitive.ObjectIDFromHex(user_id)
 	if err != nil {
 		return "Invalid user id", err
 	}
+	pet := CreateNewPet(createPet, user.Username)
 
 	filter := bson.D{{Key: "_id", Value: user_objectid}}
 	res, err := user_collection.UpdateOne(context.Background(), filter, bson.D{{Key: "$push", Value: bson.D{{Key: "pets", Value: pet}}}})
+	if res == nil {
+		return "User not found (id=" + user_id + ")", err
+	}
 	if res.MatchedCount == 0 {
 		return "User not found (id=" + user_id + ")", err
 	}

@@ -27,7 +27,7 @@ func NewUser(createUser models.CreateUser) (*models.User, error) {
 		ProfilePicture:       "Deflut",
 		DefaultAccountNumber: "Deflut",
 		DefaultBank:          "Deflut",
-		Pets:                 nil,
+		Pets:                 []models.Pet{},
 	}
 
 	return newUser, nil
