@@ -1,6 +1,8 @@
 package chat
 
-import "time"
+import (
+	"time"
+)
 
 type ChatRoom struct {
 	ID      string             `json:"roomid"`
@@ -28,10 +30,10 @@ func (h *Hub) Run() {
 		case client := <-h.Register:
 			if _, roomExist := h.Rooms[client.RoomID]; roomExist {
 				room := h.Rooms[client.RoomID]
-
 				if _, clientExist := room.Clients[client.ID]; !clientExist {
 					room.Clients[client.ID] = client
 				}
+				//fmt.Printf("room : %+v\n", room.Clients[client.ID])
 			}
 		case client := <-h.Unregister:
 			if _, roomExist := h.Rooms[client.RoomID]; roomExist {

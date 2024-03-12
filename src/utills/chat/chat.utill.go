@@ -61,6 +61,7 @@ func JoinChatRoom(c *gin.Context, h *Hub) {
 		Role:       userrole,
 		Message:    make(chan *Message, 10),
 	}
+	//fmt.Printf("%+v\n", client)
 	msg := &Message{
 		Content:     "A new user has joined the room",
 		RoomID:      roomID,
