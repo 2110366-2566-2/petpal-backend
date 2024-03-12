@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"petpal-backend/src/models"
+	svcp_utils "petpal-backend/src/utills/serviceprovider"
+	user_utils "petpal-backend/src/utills/user"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -14,7 +16,7 @@ import (
 	// "go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func InsertBooking(db *models.MongoDB, BookingCreate *models.Booking) (*models.Booking, error) {
+func InsertBooking(db *models.MongoDB, BookingCreate *models.Booking, user *models.User) (*models.Booking, error) {
 	// Get the booking collection
 	collection := db.Collection("booking")
 	collectionSVCP := db.Collection("svcp")
@@ -73,6 +75,12 @@ func InsertBooking(db *models.MongoDB, BookingCreate *models.Booking) (*models.B
 	}
 	// Insert the booking into the collection
 	_, err = collection.InsertOne(context.Background(), BookingCreate)
+	if err != nil {
+		return nil, err
+	}
+
+	// Send email to notify SVCP
+	err = NotifyCreateBooking(BookingCreate, user, &svcp)
 	if err != nil {
 		return nil, err
 	}
@@ -180,6 +188,31 @@ func CancelBooking(db *models.MongoDB, bookingID string, Cancel models.BookingCa
 		return nil, err
 	}
 
+	// Notification
+	svcp, err := svcp_utils.GetSVCPByID(db, booking.SVCPID)
+	if err != nil {
+		return nil, err
+	}
+
+	user, err := user_utils.GetUserByID(db, booking.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	if booking.Cancel.CancelBy == "user" {
+		// Send email to notify SVCP
+		err = NotifyCancelBookingToSVCP(&booking, user, svcp)
+		if err != nil {
+			return nil, err
+		}
+	} else if booking.Cancel.CancelBy == "svcp" {
+		// Send email to notify user
+		err = NotifyCancelBookingToUser(&booking, user, svcp)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return &booking, nil
 }
 
@@ -259,7 +292,7 @@ func GetAllBookingsBySVCP(db *models.MongoDB, SVCPID string) ([]models.BookingSh
 	return bookings, nil
 }
 
-func ChangeBookingScheduled(db *models.MongoDB, bookingID string, newTimeslotID string) (*models.Booking, error) {
+func ChangeBookingScheduled(db *models.MongoDB, bookingID string, newTimeslotID string, user *models.User) (*models.Booking, error) {
 
 	// Get the booking collection
 	collection := db.Collection("booking")
@@ -330,9 +363,17 @@ func ChangeBookingScheduled(db *models.MongoDB, bookingID string, newTimeslotID 
 	booking.TimeslotID = newTimeslotID
 	booking.Status.SvcpConfirmed = false
 	booking.Status.RescheduleStatus = true
+	booking.StartTime = foundtimeslot.StartTime
+	booking.EndTime = foundtimeslot.EndTime
 
 	// Update the booking in the collection
 	_, err = collection.ReplaceOne(context.Background(), filter, booking)
+	if err != nil {
+		return nil, err
+	}
+
+	// Notify SVCP
+	err = NotifyRescheduleBooking(&booking, user, &svcp)
 	if err != nil {
 		return nil, err
 	}
@@ -516,10 +557,35 @@ func CompleteBooking(db *models.MongoDB, bookingID string, userType string) (*mo
 		return nil, err
 	}
 
+	// Notification
+	svcp, err := svcp_utils.GetSVCPByID(db, booking.SVCPID)
+	if err != nil {
+		return nil, err
+	}
+
+	user, err := user_utils.GetUserByID(db, booking.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	if userType == "svcp" {
+		// Send email to notify user
+		err = NotifyCompleteBookingToUser(&booking, user, svcp)
+		if err != nil {
+			return nil, err
+		}
+	} else if userType == "user" {
+		// Send email to notify SVCP
+		err = NotifyCompleteBookingToSVCP(&booking, user, svcp)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return &booking, nil
 }
 
-func SVCPConfirmBooking(db *models.MongoDB, bookingID string) (*models.Booking, error) {
+func SVCPConfirmBooking(db *models.MongoDB, bookingID string, svcp *models.SVCP) (*models.Booking, error) {
 	// Get the booking collection
 	collection := db.Collection("booking")
 
@@ -543,6 +609,18 @@ func SVCPConfirmBooking(db *models.MongoDB, bookingID string) (*models.Booking, 
 	booking.Status.SvcpConfirmedTimestamp = time.Now()
 	// Update the booking in the collection
 	_, err = collection.ReplaceOne(context.Background(), filter, booking)
+	if err != nil {
+		return nil, err
+	}
+
+	// Notification
+	user, err := user_utils.GetUserByID(db, booking.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Send email to notify user
+	err = NotifyConfirmBookingToUser(&booking, user, svcp)
 	if err != nil {
 		return nil, err
 	}
