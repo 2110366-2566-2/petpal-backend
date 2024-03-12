@@ -19,15 +19,19 @@
         
         "cancel" : {
             "bsonType" : "object",
+            "properties" : {
             "cancelStatus" : {"bsonType" : "bool"},
             "cancelTimestamp" : {"bsonType" : "date"},
             "cancelReason" : {"bsonType" : "string"},
-            "cancelBy" : {"bsonType" : "string"} }
+            "cancelBy" : {"bsonType" : "string"} 
+            }
+        }
         ,
 
         "status" : {
             "bsonType" : "object",
 
+            "properties" : {
             "rescheduleStatus" : {"bsonType" : "bool"},
 
             "paymentStatus" : {"bsonType" : "bool"},
@@ -40,7 +44,9 @@
             "svcpCompletedTimestamp" : {"bsonType" : "date"},
 
             "userCompleted" : {"bsonType" : "bool"},
-            "userCompletedTimestamp" : {"bsonType" : "date"} },
+            "userCompletedTimestamp" : {"bsonType" : "date"} 
+        }
+    },
 
         "feedback" : {
             "bsonType" : "object",

@@ -104,7 +104,9 @@ definitions:
       serviceID:
         type: string
       serviceImg:
-        type: string
+        items:
+          type: integer
+        type: array
       serviceName:
         description: service name
         type: string
@@ -343,13 +345,17 @@ definitions:
   models.SVCP:
     properties:
       SVCPAdditionalImg:
-        type: string
+        items:
+          type: integer
+        type: array
       SVCPEmail:
         type: string
       SVCPID:
         type: string
       SVCPImg:
-        type: string
+        items:
+          type: integer
+        type: array
       SVCPPassword:
         type: string
       SVCPResponsiblePerson:
@@ -390,7 +396,9 @@ definitions:
       serviceID:
         type: string
       serviceImg:
-        type: string
+        items:
+          type: integer
+        type: array
       serviceName:
         type: string
       serviceType:
@@ -438,7 +446,9 @@ definitions:
       phoneNumber:
         type: string
       profilePicture:
-        type: string
+        items:
+          type: integer
+        type: array
       username:
         type: string
     type: object

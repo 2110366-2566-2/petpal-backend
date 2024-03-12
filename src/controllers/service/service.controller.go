@@ -58,7 +58,7 @@ func CreateFeedbackHandler(c *gin.Context, db *models.MongoDB, service_id string
 
 type CreateFeedbackRequest struct {
 	Content string  `json:"content" bson:"content"`
-	Rating  float32 `json:"rating" bson:"rating"`
+	Rating  float64 `json:"rating" bson:"rating"`
 }
 
 // GetFeedbackHandler godoc

@@ -11,11 +11,11 @@ type CreateService struct {
 
 // User represents a user entity
 type Service struct {
-	ServiceID          string     `json:"serviceID" bson:"_id,omitempty"`
+	ServiceID          string     `json:"serviceID" bson:"serviceID,omitempty"`
 	ServiceName        string     `json:"serviceName" bson:"serviceName"`
 	ServiceType        string     `json:"serviceType" bson:"serviceType"`
 	ServiceDescription string     `json:"serviceDescription" bson:"serviceDescription"`
-	ServiceImg         string     `json:"serviceImg" bson:"serviceImg"`
+	ServiceImg         []byte     `json:"serviceImg" bson:"serviceImg"`
 	AverageRating      float64    `json:"averageRating" bson:"averageRating"`
 	RequireCert        bool       `json:"requireCert" bson:"requireCert"`
 	Timeslots          []Timeslot `json:"timeslots" bson:"timeslots"`

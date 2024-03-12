@@ -12,8 +12,8 @@ type CreateSVCP struct {
 }
 type SVCP struct {
 	Individual
-	SVCPID                string    `json:"SVCPID" bson:"_id,omitempty"`
-	SVCPImg               string    `json:"SVCPImg" bson:"SVCPImg"`
+	SVCPID                string    `json:"SVCPID" bson:"SVCPID,omitempty"`
+	SVCPImg               []byte    `json:"SVCPImg" bson:"SVCPImg"`
 	SVCPUsername          string    `json:"SVCPUsername" bson:"SVCPUsername"`
 	SVCPPassword          string    `json:"SVCPPassword" bson:"SVCPPassword"`
 	SVCPEmail             string    `json:"SVCPEmail" bson:"SVCPEmail"`
@@ -24,7 +24,7 @@ type SVCP struct {
 	License               string    `json:"license" bson:"license"`
 	Location              string    `json:"location" bson:"location"`
 	Description           string    `json:"description" bson:"description"`
-	SVCPAdditionalImg     string    `json:"SVCPAdditionalImg" bson:"SVCPAdditionalImg"`
+	SVCPAdditionalImg     []byte    `json:"SVCPAdditionalImg" bson:"SVCPAdditionalImg"`
 	SVCPServiceType       string    `json:"SVCPServiceType" bson:"SVCPServiceType"`
 	Services              []Service `json:"services" bson:"services"`
 }

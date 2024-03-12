@@ -2370,7 +2370,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "serviceImg": {
-                    "type": "string"
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "serviceName": {
                     "description": "service name",
@@ -2735,7 +2738,10 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "SVCPAdditionalImg": {
-                    "type": "string"
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "SVCPEmail": {
                     "type": "string"
@@ -2744,7 +2750,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "SVCPImg": {
-                    "type": "string"
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "SVCPPassword": {
                     "type": "string"
@@ -2806,7 +2815,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "serviceImg": {
-                    "type": "string"
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "serviceName": {
                     "type": "string"
@@ -2879,7 +2891,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "profilePicture": {
-                    "type": "string"
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "username": {
                     "type": "string"

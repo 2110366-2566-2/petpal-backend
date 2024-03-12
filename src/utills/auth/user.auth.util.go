@@ -23,7 +23,7 @@ func NewUser(createUser models.CreateUser) (*models.User, error) {
 		Address:              createUser.Address,
 		DateOfBirth:          createUser.DateOfBirth,
 		PhoneNumber:          createUser.PhoneNumber,
-		ProfilePicture:       "Deflut",
+		ProfilePicture:       []byte("Default"),
 		DefaultAccountNumber: "Deflut",
 		DefaultBank:          "Deflut",
 		Pets:                 []models.Pet{},
