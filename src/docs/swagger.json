@@ -2222,7 +2222,10 @@
                     "type": "string"
                 },
                 "serviceImg": {
-                    "type": "string"
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "serviceName": {
                     "description": "service name",
@@ -2570,7 +2573,10 @@
             "type": "object",
             "properties": {
                 "SVCPAdditionalImg": {
-                    "type": "string"
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "SVCPEmail": {
                     "type": "string"
@@ -2579,7 +2585,10 @@
                     "type": "string"
                 },
                 "SVCPImg": {
-                    "type": "string"
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "SVCPPassword": {
                     "type": "string"
@@ -2641,7 +2650,10 @@
                     "type": "string"
                 },
                 "serviceImg": {
-                    "type": "string"
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "serviceName": {
                     "type": "string"
@@ -2714,7 +2726,10 @@
                     "type": "string"
                 },
                 "profilePicture": {
-                    "type": "string"
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "username": {
                     "type": "string"
