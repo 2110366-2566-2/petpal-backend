@@ -17,3 +17,18 @@ type SearchHistory struct {
 	PageSize        int       `json:"page_size" bson:"page_size"`
 	SortBy          string    `json:"sort_by" bson:"sort_by"`
 }
+
+// create example json response for search history
+// {
+// 	"q": "string",
+// 	"location": "string",
+// 	"start_time": "2021-08-01T00:00:00Z",
+// 	"end_time": "2021-08-01T00:00:00Z",
+// 	"start_price_range": 0,
+// 	"end_price_range": 0,
+// 	"min_rating": 0,
+// 	"max_rating": 0,
+// 	"page_number": 0,
+// 	"page_size": 0,
+// 	"sort_by": "string"
+// }

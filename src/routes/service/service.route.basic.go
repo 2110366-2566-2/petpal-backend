@@ -14,7 +14,7 @@ func ServiceBaseRoutes(r *gin.RouterGroup) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllers.CreateServicesHandler(c, db)
 		})
-		baiscGroup.GET("/searching", func(c *gin.Context) {
+		baiscGroup.POST("/searching", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllers.SearchServicesHandler(c, db)
 		})

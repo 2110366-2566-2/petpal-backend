@@ -57,22 +57,12 @@ func CreateServicesHandler(c *gin.Context, db *models.MongoDB) {
 // @Accept json
 // @Produce json
 //
-// @Param q query string false "Search query "
-// @Param location query string false "Location"
-// @Param start_time query string false "start_time"
-// @Param end_time query string false "end_time"
-// @Param start_price_range query string false "Start price range"
-// @Param end_price_range query string false "End price range"
-// @Param min_rating query string false "Minimum rating"
-// @Param max_rating query string false "Maximum rating"
-// @Param page_number query string false "Page number"
-// @Param page_size query string false "Page size"
-// @Param sort_by query  false "Sort by (price, rating)"
+// @Param body body models.SearchHistory true "Search history"
 //
 // @Success 200 {object} []models.Service
 // @Failure 500 {object} models.BasicErrorRes
 //
-// @Router /service/searching [get]
+// @Router /service/searching [post]
 
 func SearchServicesHandler(c *gin.Context, db *models.MongoDB) {
 	// Get services
