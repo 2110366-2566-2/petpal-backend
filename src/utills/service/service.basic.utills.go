@@ -18,7 +18,7 @@ func CreateNewServices(createServices *models.CreateService) *models.Service {
 		ServiceType:        createServices.ServiceType,
 		ServiceDescription: createServices.ServiceDescription,
 		Price:              createServices.Price,
-		ServiceImg:         "",
+		ServiceImg:         []byte{},
 		AverageRating:      0,
 		RequireCert:        false,
 		Timeslots:          []models.Timeslot{},
@@ -32,7 +32,7 @@ func AddNewServices(db *models.MongoDB, createServices *models.CreateService, sv
 	// find user by email
 	service := CreateNewServices(createServices)
 	svcpID := svcp.SVCPID
-	filter := bson.D{{Key: "_id", Value: svcpID}}
+	filter := bson.D{{Key: "SVCPID", Value: svcpID}}
 	res, err := svcp_collection.UpdateOne(context.Background(), filter, bson.D{{Key: "$push", Value: bson.D{{Key: "services", Value: service}}}})
 	if res == nil {
 		return nil, err
@@ -79,7 +79,7 @@ func DuplicateService(db *models.MongoDB, serviceId string, svcpID string) (*mod
 
 	// find service by find svcp --> services
 	service := models.Service{}
-	filter := bson.D{{Key: "services", Value: bson.D{{Key: "_id", Value: serviceId}}}}
+	filter := bson.D{{Key: "services", Value: bson.D{{Key: "serviceID", Value: serviceId}}}}
 	err := svcp_collection.FindOne(context.Background(), filter).Decode(&service)
 
 	if err != nil {
@@ -87,7 +87,7 @@ func DuplicateService(db *models.MongoDB, serviceId string, svcpID string) (*mod
 	}
 
 	service.ServiceID = primitive.NewObjectID().Hex()
-	filter = bson.D{{Key: "_id", Value: svcpID}}
+	filter = bson.D{{Key: "SVCPID", Value: svcpID}}
 	res, err := svcp_collection.UpdateOne(context.Background(), filter, bson.D{{Key: "$push", Value: bson.D{{Key: "services", Value: service}}}})
 	if res == nil {
 		return nil, err
@@ -109,8 +109,8 @@ func DeleteService(db *models.MongoDB, serviceID string, svcpID string) error {
 	svcp_collection := db.Collection("svcp")
 
 	// find user by email
-	filter := bson.D{{Key: "_id", Value: svcpID}}
-	update := bson.D{{Key: "$pull", Value: bson.D{{Key: "services", Value: bson.D{{Key: "_id", Value: serviceID}}}}}}
+	filter := bson.D{{Key: "SVCPID", Value: svcpID}}
+	update := bson.D{{Key: "$pull", Value: bson.D{{Key: "services", Value: bson.D{{Key: "serviceID", Value: serviceID}}}}}}
 	res, err := svcp_collection.UpdateOne(context.Background(), filter, update)
 
 	if res.MatchedCount == 0 {
@@ -127,7 +127,7 @@ func UpdateService(db *models.MongoDB, serviceID string, svcpID string, updateSe
 	svcp_collection := db.Collection("svcp")
 
 	// find user by email
-	filter := bson.D{{Key: "_id", Value: svcpID}, {Key: "services.service_id", Value: serviceID}}
+	filter := bson.D{{Key: "SVCPID", Value: svcpID}, {Key: "services.serviceID", Value: serviceID}}
 	update := bson.D{{Key: "$set", Value: bson.D{{Key: "services.$", Value: updateService}}}}
 	res, err := svcp_collection.UpdateOne(context.Background(), filter, update)
 
