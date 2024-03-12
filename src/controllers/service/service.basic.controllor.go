@@ -1,5 +1,14 @@
 package controllers
 
+import (
+	"net/http"
+	"petpal-backend/src/models"
+	service_utills "petpal-backend/src/utills/service"
+
+	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
+)
+
 // CreateServicesHandler godoc
 //
 // @Summary Create a service
@@ -10,38 +19,33 @@ package controllers
 // @Accept json
 // @Produce json
 //
-// @Param body body CreateService true "Service data"
+// @Param body body models.CreateService true "Service data"
 //
 // @Success 200 {object} models.Service
 // @Failure 400 {object} models.BasicErrorRes
 // @Failure 500 {object} models.BasicErrorRes
 //
 // @Router /service/create [post]
-type CreateService struct {
-	Content string  `json:"content" bson:"content"`
-	Rating  float32 `json:"rating" bson:"rating"`
+func CreateServicesHandler(c *gin.Context, db *models.MongoDB) {
+	// Parse request body to get user data
+	var createService *models.CreateService
+	if err := c.ShouldBindJSON(&createService); err != nil {
+		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: err.Error()})
+		return
+	}
+	// Get current user
+	svcp, err := _authenticateSVCP(c, db)
+	if err != nil {
+		return
+	}
+	// Create a new service
+	service, err := service_utills.AddNewServices(db, createService, svcp)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, service)
 }
-
-// func CreateServicesHandler(c *gin.Context, db *models.MongoDB) {
-// 	// Parse request body to get user data
-// 	var createService CreateService
-// 	if err := c.ShouldBindJSON(&createService); err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-// 		return
-// 	}
-// 	// Get current user
-// 	user, err := _authenticate(c, db)
-// 	if err != nil {
-// 		return
-// 	}
-// 	// Create a new service
-// 	service, err := service_utills.CreateService(db, createService, user.ID)
-// 	if err != nil {
-// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-// 		return
-// 	}
-// 	c.JSON(http.StatusOK, service)
-// }
 
 // SearchServicesHandler godoc
 //
@@ -95,15 +99,19 @@ type CreateService struct {
 // @Failure 500 {object} models.BasicErrorRes
 //
 // @Router /service/duplicate/{id} [post]
-// func DuplicateServicesHandler(c *gin.Context, db *models.MongoDB, id string) {
-// 	// Get services
-// 	service, err := service_utills.DuplicateService(db, id)
-// 	if err != nil {
-// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-// 		return
-// 	}
-// 	c.JSON(http.StatusOK, service)
-// }
+func DuplicateServicesHandler(c *gin.Context, db *models.MongoDB, id string) {
+	// Get services
+	svcp, err := _authenticateSVCP(c, db)
+	if err != nil {
+		return
+	}
+	service, err := service_utills.DuplicateService(db, id, svcp.SVCPID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, service)
+}
 
 // DeleteServicesHandler godoc
 //
@@ -121,15 +129,18 @@ type CreateService struct {
 // @Failure 500 {object} models.BasicErrorRes
 //
 // @Router /service/{id} [delete]
-// func DeleteServicesHandler(c *gin.Context, db *models.MongoDB, id string) {
-
-// 	err := service_utills.DeleteService(db, id)
-// 	if err != nil {
-// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-// 		return
-// 	}
-// 	c.JSON(http.StatusOK, gin.H{"message": "Service deleted successfully"})
-// }
+func DeleteServicesHandler(c *gin.Context, db *models.MongoDB, id string) {
+	svcp, err := _authenticateSVCP(c, db)
+	if err != nil {
+		return
+	}
+	err = service_utills.DeleteService(db, id, svcp.SVCPID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, models.BasicRes{Message: "Service deleted successfully"})
+}
 
 // UpdateServicesHandler godoc
 //
@@ -150,29 +161,22 @@ type CreateService struct {
 //
 // @Router /service/{id} [patch]
 
-// type UpdateService struct {
-// 	Content string  `json:"content" bson:"content"`
-// 	Rating  float32 `json:"rating" bson:"rating"`
-// }
+func UpdateServicesHandler(c *gin.Context, db *models.MongoDB, serviceID string) {
+	current_svcp, err := _authenticateSVCP(c, db)
+	if err != nil {
+		c.JSON(http.StatusForbidden, models.BasicErrorRes{Error: "Failed to authenticate service provider " + err.Error()})
+		return
+	}
+	var updateService *bson.M
+	if err := c.ShouldBindJSON(updateService); err != nil {
+		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "Invalid request" + err.Error()})
+		return
+	}
 
-// func UpdateServicesHandler(c *gin.Context, db *models.MongoDB, id string) {
-// 	// Parse request body to get user data
-// 	var updateService UpdateService
-// 	if err := c.ShouldBindJSON(&updateService); err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-// 		return
-// 	}
-// 	// Get current user
-// 	user, err := _authenticate(c, db)
-// 	if err != nil {
-// 		return
-// 	}
-// 	// Update a service
-// 	service, err := service_utills.UpdateService(db, updateService, id, user.ID)
-// 	if err != nil {
-// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-// 		return
-// 	}
-// 	c.JSON(http.StatusOK, service)
-
-// }
+	err = service_utills.UpdateService(db, serviceID, current_svcp.SVCPID, updateService)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: "Failed to update service provider"})
+		return
+	}
+	c.JSON(http.StatusOK, models.BasicRes{Message: "Service provider updated successfully"})
+}

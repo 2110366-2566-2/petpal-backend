@@ -12,7 +12,7 @@ type CreateSVCP struct {
 }
 type SVCP struct {
 	Individual
-	SVCPID                string    `json:"SVCPID" bson:"SVCPID"`
+	SVCPID                string    `json:"SVCPID" bson:"_id,omitempty"`
 	SVCPImg               string    `json:"SVCPImg" bson:"SVCPImg"`
 	SVCPUsername          string    `json:"SVCPUsername" bson:"SVCPUsername"`
 	SVCPPassword          string    `json:"SVCPPassword" bson:"SVCPPassword"`
