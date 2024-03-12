@@ -9,7 +9,7 @@ import (
 )
 
 func SVCPRoutes(r *gin.Engine) {
-	SVCPGroup := r.Group("/serviceprovider")
+	SVCPGroup := r.Group("/serviceproviders")
 	{
 		SVCPGroup.GET("/", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)

@@ -1,64 +1,61 @@
 package controllers
 
 import (
-	"encoding/json"
 	"net/http"
 	"petpal-backend/src/models"
 	"petpal-backend/src/utills/auth"
-	utills "petpal-backend/src/utills/user"
+	utills "petpal-backend/src/utills/auth"
 
 	"github.com/gin-gonic/gin"
 	// Import the user package containing UserRepository and UserService
 )
 
-// ChangePassword godoc
+// ChangePasswordHandler godoc
 //
 // @Summary     Change user password
 // @Description Change user password
-// @Tags        Users
+// @Tags        Authentication
 //
 // @Accept      json
 // @Produce     json
 //
-// @Param       user_email     body    string    true        "User email"
-// @Param       new_password   body    string    true        "New password"
-// @Param       login_type     body    string    true        "Login type"
+// @Param       ChangePasswordReq        body    ChangePasswordReq    true    "Change password request"
 //
 // @Success     200      {object} object{message=string}    "Success"
 // @Failure     400      {object} object{error=string}      "Bad request"
 // @Failure     500      {object} object{error=string}      "Internal server error"
 //
 // @Router      /change-password [post]
-func ChangePassword(w http.ResponseWriter, r *http.Request, db *models.MongoDB) {
-	type ChangePasswordReq struct {
-		UserEmail   string
-		NewPassword string
-		LoginType   string
-	}
+func ChangePasswordHandler(c *gin.Context, db *models.MongoDB) {
+
 	var changePasswordReq ChangePasswordReq
-	err := json.NewDecoder(r.Body).Decode(&changePasswordReq)
+	err := c.BindJSON(&changePasswordReq)
 	if err != nil {
-		http.Error(w, "Failed to parse request body", http.StatusBadRequest)
+		http.Error(c.Writer, err.Error(), http.StatusBadRequest)
 		return
 	}
 	hashedPassword, err := auth.HashPassword(changePasswordReq.NewPassword)
 	if err != nil {
-		http.Error(w, "Failed to hash password", http.StatusBadRequest)
+		http.Error(c.Writer, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	email := changePasswordReq.UserEmail
+	login_type := changePasswordReq.LoginType
 
 	// Call the user service to set change password
-	err_str, err := utills.ChangePassword(email, hashedPassword, db)
+	err_str, err := utills.ChangePassword(email, hashedPassword, login_type, db)
 	if err != nil {
-		// show error message
-		http.Error(w, err_str, http.StatusInternalServerError)
+		http.Error(c.Writer, err_str, http.StatusInternalServerError)
 		return
 	}
 
 	// Respond with a success message
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode("set new password successfully")
+	c.JSON(http.StatusOK, gin.H{"message": "Password changed successfully"})
+}
+type ChangePasswordReq struct {
+	UserEmail   string
+	NewPassword string
+	LoginType   string
 }
 
 // GetCurrentEntityHandler godoc
