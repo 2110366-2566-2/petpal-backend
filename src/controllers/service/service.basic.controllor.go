@@ -1,13 +1,5 @@
 package controllers
 
-import (
-	"net/http"
-	"petpal-backend/src/models"
-	service_utills "petpal-backend/src/utills/service"
-
-	"github.com/gin-gonic/gin"
-)
-
 // CreateServicesHandler godoc
 //
 // @Summary Create a service
@@ -30,26 +22,26 @@ type CreateService struct {
 	Rating  float32 `json:"rating" bson:"rating"`
 }
 
-func CreateServicesHandler(c *gin.Context, db *models.MongoDB) {
-	// Parse request body to get user data
-	var createService CreateService
-	if err := c.ShouldBindJSON(&createService); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	// Get current user
-	user, err := _authenticate(c, db)
-	if err != nil {
-		return
-	}
-	// Create a new service
-	service, err := service_utills.CreateService(db, createService, user.ID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	c.JSON(http.StatusOK, service)
-}
+// func CreateServicesHandler(c *gin.Context, db *models.MongoDB) {
+// 	// Parse request body to get user data
+// 	var createService CreateService
+// 	if err := c.ShouldBindJSON(&createService); err != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+// 		return
+// 	}
+// 	// Get current user
+// 	user, err := _authenticate(c, db)
+// 	if err != nil {
+// 		return
+// 	}
+// 	// Create a new service
+// 	service, err := service_utills.CreateService(db, createService, user.ID)
+// 	if err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
+// 	c.JSON(http.StatusOK, service)
+// }
 
 // SearchServicesHandler godoc
 //
@@ -62,26 +54,30 @@ func CreateServicesHandler(c *gin.Context, db *models.MongoDB) {
 //
 // @Param q query string false "Search query "
 // @Param location query string false "Location"
-// @Param timeslot query string false "Timeslot"
+// @Param start_time query string false "start_time"
+// @Param end_time query string false "end_time"
 // @Param start_price_range query string false "Start price range"
 // @Param end_price_range query string false "End price range"
 // @Param min_rating query string false "Minimum rating"
 // @Param max_rating query string false "Maximum rating"
+// @Param page_number query string false "Page number"
+// @Param page_size query string false "Page size"
+// @Param sort_by query  false "Sort by (price, rating)"
 //
 // @Success 200 {object} []models.Service
 // @Failure 500 {object} models.BasicErrorRes
 //
 // @Router /service/searching [get]
 
-func SearchServicesHandler(c *gin.Context, db *models.MongoDB, q, location, timeslot, start_price_range, end_price_range, min_rating, max_rating string) {
-	// Get services
-	services, err := service_utills.SearchServices(db, q, location, timeslot, start_price_range, end_price_range, min_rating, max_rating)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	c.JSON(http.StatusOK, services)
-}
+// func SearchServicesHandler(c *gin.Context, db *models.MongoDB, q, location, timeslot, start_price_range, end_price_range, min_rating, max_rating string) {
+// 	// Get services
+// 	services, err := service_utills.SearchServices(db, q, location, timeslot, start_price_range, end_price_range, min_rating, max_rating)
+// 	if err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
+// 	c.JSON(http.StatusOK, services)
+// }
 
 // DuplicateServicesHandler godoc
 //
@@ -99,15 +95,15 @@ func SearchServicesHandler(c *gin.Context, db *models.MongoDB, q, location, time
 // @Failure 500 {object} models.BasicErrorRes
 //
 // @Router /service/duplicate/{id} [post]
-func DuplicateServicesHandler(c *gin.Context, db *models.MongoDB, id string) {
-	// Get services
-	service, err := service_utills.DuplicateService(db, id)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	c.JSON(http.StatusOK, service)
-}
+// func DuplicateServicesHandler(c *gin.Context, db *models.MongoDB, id string) {
+// 	// Get services
+// 	service, err := service_utills.DuplicateService(db, id)
+// 	if err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
+// 	c.JSON(http.StatusOK, service)
+// }
 
 // DeleteServicesHandler godoc
 //
@@ -125,15 +121,15 @@ func DuplicateServicesHandler(c *gin.Context, db *models.MongoDB, id string) {
 // @Failure 500 {object} models.BasicErrorRes
 //
 // @Router /service/{id} [delete]
-func DeleteServicesHandler(c *gin.Context, db *models.MongoDB, id string) {
+// func DeleteServicesHandler(c *gin.Context, db *models.MongoDB, id string) {
 
-	err := service_utills.DeleteService(db, id)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"message": "Service deleted successfully"})
-}
+// 	err := service_utills.DeleteService(db, id)
+// 	if err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
+// 	c.JSON(http.StatusOK, gin.H{"message": "Service deleted successfully"})
+// }
 
 // UpdateServicesHandler godoc
 //
@@ -154,29 +150,29 @@ func DeleteServicesHandler(c *gin.Context, db *models.MongoDB, id string) {
 //
 // @Router /service/{id} [patch]
 
-type UpdateService struct {
-	Content string  `json:"content" bson:"content"`
-	Rating  float32 `json:"rating" bson:"rating"`
-}
+// type UpdateService struct {
+// 	Content string  `json:"content" bson:"content"`
+// 	Rating  float32 `json:"rating" bson:"rating"`
+// }
 
-func UpdateServicesHandler(c *gin.Context, db *models.MongoDB, id string) {
-	// Parse request body to get user data
-	var updateService UpdateService
-	if err := c.ShouldBindJSON(&updateService); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	// Get current user
-	user, err := _authenticate(c, db)
-	if err != nil {
-		return
-	}
-	// Update a service
-	service, err := service_utills.UpdateService(db, updateService, id, user.ID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	c.JSON(http.StatusOK, service)
+// func UpdateServicesHandler(c *gin.Context, db *models.MongoDB, id string) {
+// 	// Parse request body to get user data
+// 	var updateService UpdateService
+// 	if err := c.ShouldBindJSON(&updateService); err != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+// 		return
+// 	}
+// 	// Get current user
+// 	user, err := _authenticate(c, db)
+// 	if err != nil {
+// 		return
+// 	}
+// 	// Update a service
+// 	service, err := service_utills.UpdateService(db, updateService, id, user.ID)
+// 	if err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
+// 	c.JSON(http.StatusOK, service)
 
-}
+// }
