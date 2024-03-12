@@ -90,7 +90,7 @@ type BookingFull struct {
 	SVCPName           string  `json:"SVCPName" bson:"SVCPName"`
 	ServiceName        string  `json:"serviceName" bson:"serviceName"` //service name
 	AverageRating      float64 `json:"averageRating" bson:"averageRating"`
-	ServiceImg         string  `json:"serviceImg" bson:"serviceImg"`
+	ServiceImg         []byte  `json:"serviceImg" bson:"serviceImg"`
 	ServiceDescription string  `json:"serviceDescription" bson:"serviceDescription"`
 
 	StartTime time.Time `json:"startTime" bson:"startTime"`
@@ -116,7 +116,7 @@ type BookingFullNoID struct {
 
 	SVCPName           string  `json:"SVCPName" bson:"SVCPName"`
 	AverageRating      float64 `json:"averageRating" bson:"averageRating"`
-	ServiceImg         string  `json:"serviceImg" bson:"serviceImg"`
+	ServiceImg         []byte  `json:"serviceImg" bson:"serviceImg"`
 	ServiceDescription string  `json:"serviceDescription" bson:"serviceDescription"`
 
 	StartTime time.Time `json:"startTime" bson:"startTime"`
