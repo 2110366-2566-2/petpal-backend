@@ -125,8 +125,7 @@ func NotifyCancelBookingToSVCP(booking *models.Booking, user *models.User, svcp 
 // Complete booking
 func NotifyCompleteBookingToUser(booking *models.Booking, user *models.User, svcp *models.SVCP) error {
 	emailSubject := "Petpal service booking marked as completed"
-	emailContent := fmt.Sprintf(`
-<h4>สวัสดีครับ</h4>
+	emailContent := fmt.Sprintf(`<h4>สวัสดีครับ</h4>
 <p>ผู้ให้บริการ %s<br>
 ได้ยืนยันการจองบริการ %s<br>
 เวลา %s ถึงเวลา %s<br>
