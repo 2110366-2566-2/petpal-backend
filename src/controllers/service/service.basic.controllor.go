@@ -216,13 +216,13 @@ func UpdateServicesHandler(c *gin.Context, db *models.MongoDB, serviceID string)
 		c.JSON(http.StatusForbidden, models.BasicErrorRes{Error: "Failed to authenticate service provider " + err.Error()})
 		return
 	}
-	var updateService *bson.M
-	if err := c.ShouldBindJSON(updateService); err != nil {
+	var updateService bson.M
+	if err := c.ShouldBindJSON(&updateService); err != nil { // Pass the address of updateService
 		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "Invalid request" + err.Error()})
 		return
 	}
 
-	err = service_utills.UpdateService(db, serviceID, current_svcp.SVCPID, updateService)
+	err = service_utills.UpdateService(db, serviceID, current_svcp.SVCPID, &updateService) // Pass the address of updateService
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: "Failed to update service provider"})
 		return
