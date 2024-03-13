@@ -6,6 +6,7 @@ import "time"
 // SortBy for sorting by price, rating, name
 type SearchHistory struct {
 	Q               string    `json:"q" bson:"q"`
+	ServicesType    string    `json:"services_type" bson:"services_type"`
 	Location        string    `json:"location" bson:"location"`
 	StartTime       time.Time `json:"start_time" bson:"start_time"`
 	EndTime         time.Time `json:"end_time" bson:"end_time"`

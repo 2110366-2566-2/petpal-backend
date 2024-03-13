@@ -38,6 +38,7 @@ func SearchServices(db *models.MongoDB, searchHistory *models.SearchHistory, id 
 					bson.D{{Key: "services.serviceName", Value: bson.D{{Key: "$regex", Value: searchHistory.Q}, {Key: "$options", Value: "i"}}}},
 					bson.D{{Key: "services.serviceDescription", Value: bson.D{{Key: "$regex", Value: searchHistory.Q}, {Key: "$options", Value: "i"}}}},
 				}}},
+				bson.D{{Key: "services.serviceType", Value: bson.D{{Key: "$regex", Value: searchHistory.ServicesType}, {Key: "$options", Value: "i"}}}},
 				bson.D{{Key: "location", Value: bson.D{{Key: "$regex", Value: searchHistory.Location}, {Key: "$options", Value: "i"}}}},
 				bson.D{{Key: "services.price", Value: bson.D{{Key: "$gte", Value: searchHistory.StartPriceRange}, {Key: "$lte", Value: searchHistory.EndPriceRange}}}},
 				bson.D{{Key: "services.averageRating", Value: bson.D{{Key: "$gte", Value: searchHistory.MinRating}, {Key: "$lte", Value: searchHistory.MaxRating}}}},
