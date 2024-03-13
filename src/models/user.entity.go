@@ -34,8 +34,8 @@ type User struct {
 }
 
 type UserSearchHistory struct {
-	User          User           `json:"user" bson:"user"`
-	SearchHistory []SearchFilter `json:"search_history" bson:"search_history"`
+	User          User            `json:"user" bson:"user"`
+	SearchHistory []SearchHistory `json:"search_history" bson:"search_history"`
 }
 
 func (u *User) editPet(petName string, petDetails Pet) Pet {
