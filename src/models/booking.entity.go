@@ -130,7 +130,6 @@ type BookingFullNoID struct {
 }
 
 type BookingRequest struct {
-	SVCPID     string `json:"SVCPID" bson:"SVCPID"`
 	ServiceID  string `json:"serviceID" bson:"serviceID"`
 	TimeslotID string `json:"timeslotID" bson:"timeslotID"`
 }
