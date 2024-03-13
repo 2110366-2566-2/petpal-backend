@@ -22,7 +22,13 @@ func InsertBooking(db *models.MongoDB, BookingCreate *models.Booking, user *mode
 	collectionSVCP := db.Collection("svcp")
 
 	var svcp models.SVCP = models.SVCP{}
-	filter := bson.D{{Key: "SVCPID", Value: BookingCreate.SVCPID}}
+	filter := bson.M{
+		"services": bson.M{
+			"$elemMatch": bson.M{
+				"serviceID": BookingCreate.ServiceID,
+			},
+		},
+	}
 	err := collectionSVCP.FindOne(context.Background(), filter).Decode(&svcp)
 	if err != nil {
 		return nil, err
@@ -68,6 +74,7 @@ func InsertBooking(db *models.MongoDB, BookingCreate *models.Booking, user *mode
 	BookingCreate.ServiceName = foundService.ServiceName
 	BookingCreate.StartTime = foundtimeslot.StartTime
 	BookingCreate.EndTime = foundtimeslot.EndTime
+	BookingCreate.SVCPID = svcp.SVCPID
 
 	// Check if the timeslot has already passed
 	if foundtimeslot.StartTime.Before(BookingCreate.BookingTimestamp) {
