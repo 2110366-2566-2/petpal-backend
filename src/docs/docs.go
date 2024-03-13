@@ -2681,6 +2681,23 @@ const docTemplate = `{
                 },
                 "serviceType": {
                     "type": "string"
+                },
+                "timeslots": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.CreateTimeslot"
+                    }
+                }
+            }
+        },
+        "models.CreateTimeslot": {
+            "type": "object",
+            "properties": {
+                "endTime": {
+                    "type": "string"
+                },
+                "startTime": {
+                    "type": "string"
                 }
             }
         },
@@ -2923,6 +2940,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "q": {
+                    "type": "string"
+                },
+                "services_type": {
                     "type": "string"
                 },
                 "sort_by": {

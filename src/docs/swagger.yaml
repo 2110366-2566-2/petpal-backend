@@ -244,6 +244,17 @@ definitions:
         type: string
       serviceType:
         type: string
+      timeslots:
+        items:
+          $ref: '#/definitions/models.CreateTimeslot'
+        type: array
+    type: object
+  models.CreateTimeslot:
+    properties:
+      endTime:
+        type: string
+      startTime:
+        type: string
     type: object
   models.CreateUser:
     properties:
@@ -402,6 +413,8 @@ definitions:
       page_size:
         type: integer
       q:
+        type: string
+      services_type:
         type: string
       sort_by:
         description: price, rating, name
