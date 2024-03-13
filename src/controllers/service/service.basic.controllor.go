@@ -63,7 +63,6 @@ func CreateServicesHandler(c *gin.Context, db *models.MongoDB) {
 // @Failure 500 {object} models.BasicErrorRes
 //
 // @Router /service/searching [post]
-
 func SearchServicesHandler(c *gin.Context, db *models.MongoDB) {
 	// Get services
 	var id string
@@ -172,14 +171,13 @@ func DeleteServicesHandler(c *gin.Context, db *models.MongoDB, id string) {
 // @Produce json
 //
 // @Param id path string true "Service ID"
-// @Param body body UpdateService true "Service data"
+// @Param body body models.Service true "Service data"
 //
 // @Success 200 {object} models.Service
 // @Failure 400 {object} models.BasicErrorRes
 // @Failure 500 {object} models.BasicErrorRes
 //
 // @Router /service/{id} [patch]
-
 func UpdateServicesHandler(c *gin.Context, db *models.MongoDB, serviceID string) {
 	current_svcp, err := _authenticateSVCP(c, db)
 	if err != nil {

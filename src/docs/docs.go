@@ -1194,6 +1194,49 @@ const docTemplate = `{
                 }
             }
         },
+        "/service/searching": {
+            "post": {
+                "description": "Search services based on query, location, timeslot, price range, rating",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Service"
+                ],
+                "summary": "Search services",
+                "parameters": [
+                    {
+                        "description": "Search history",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.SearchHistory"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Service"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/service/{id}": {
             "delete": {
                 "security": [
@@ -1226,6 +1269,62 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.Service"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Update a service",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Service"
+                ],
+                "summary": "Update a service",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Service ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Service data",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Service"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Service"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
                         }
                     },
                     "500": {
@@ -2793,6 +2892,48 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/models.Service"
                     }
+                }
+            }
+        },
+        "models.SearchHistory": {
+            "type": "object",
+            "properties": {
+                "descending": {
+                    "type": "boolean"
+                },
+                "end_price_range": {
+                    "type": "number"
+                },
+                "end_time": {
+                    "type": "string"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "max_rating": {
+                    "type": "number"
+                },
+                "min_rating": {
+                    "type": "number"
+                },
+                "page_number": {
+                    "type": "integer"
+                },
+                "page_size": {
+                    "type": "integer"
+                },
+                "q": {
+                    "type": "string"
+                },
+                "sort_by": {
+                    "description": "price, rating, name",
+                    "type": "string"
+                },
+                "start_price_range": {
+                    "type": "number"
+                },
+                "start_time": {
+                    "type": "string"
                 }
             }
         },

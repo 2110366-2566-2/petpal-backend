@@ -383,6 +383,34 @@ definitions:
           $ref: '#/definitions/models.Service'
         type: array
     type: object
+  models.SearchHistory:
+    properties:
+      descending:
+        type: boolean
+      end_price_range:
+        type: number
+      end_time:
+        type: string
+      location:
+        type: string
+      max_rating:
+        type: number
+      min_rating:
+        type: number
+      page_number:
+        type: integer
+      page_size:
+        type: integer
+      q:
+        type: string
+      sort_by:
+        description: price, rating, name
+        type: string
+      start_price_range:
+        type: number
+      start_time:
+        type: string
+    type: object
   models.Service:
     properties:
       averageRating:
@@ -677,6 +705,42 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Delete a service
+      tags:
+      - Service
+    patch:
+      consumes:
+      - application/json
+      description: Update a service
+      parameters:
+      - description: Service ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Service data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.Service'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Service'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
+      summary: Update a service
       tags:
       - Service
   /service/booking/all/svcp:
@@ -1250,6 +1314,35 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Create a feedback
+      tags:
+      - Service
+  /service/searching:
+    post:
+      consumes:
+      - application/json
+      description: Search services based on query, location, timeslot, price range,
+        rating
+      parameters:
+      - description: Search history
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.SearchHistory'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Service'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      summary: Search services
       tags:
       - Service
   /serviceproviders:
