@@ -62,7 +62,7 @@ func UpdateFeedbackToService(db *models.MongoDB, service_id string, user_id stri
 
 func GetFeedbacksByServiceID(db *models.MongoDB, service_id string) ([]models.Feedback, error) {
 	// get feedback from service
-	booking_collection := db.Client.Database("petpal").Collection("booking")
+	booking_collection := db.Collection("booking")
 	temp, err := booking_collection.Aggregate(context.Background(), bson.A{
 		bson.M{"$unwind": "$feedback"},
 		bson.M{"$match": bson.M{"serviceID": service_id}},

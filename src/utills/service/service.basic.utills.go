@@ -122,7 +122,7 @@ func GetServiceByID(db *models.MongoDB, serviceID string) (*models.Service, erro
 	// find service by find svcp --> services
 	pipeline := mongo.Pipeline{
 		{{Key: "$unwind", Value: "$services"}},
-		{{Key: "$match", Value: bson.M{"ervices.ServiceID": serviceID}}},
+		{{Key: "$match", Value: bson.M{"services.serviceID": serviceID}}},
 		{{Key: "$project", Value: bson.D{
 			{Key: "services", Value: 1},
 		}}},
@@ -144,6 +144,10 @@ func GetServiceByID(db *models.MongoDB, serviceID string) (*models.Service, erro
 	}
 	if err != nil {
 		return nil, err
+	}
+
+	if len(results) == 0 {
+		return nil, errors.New("no document found with the given serviceID " + serviceID)
 	}
 
 	return &results[0].Services, nil
