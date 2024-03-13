@@ -1209,12 +1209,12 @@ const docTemplate = `{
                 "summary": "Search services",
                 "parameters": [
                     {
-                        "description": "Search history",
+                        "description": "Search filter",
                         "name": "body",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.SearchHistory"
+                            "$ref": "#/definitions/models.SearchFilter"
                         }
                     }
                 ],
@@ -3158,7 +3158,7 @@ const docTemplate = `{
                 "search_history": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.SearchFilter"
+                        "$ref": "#/definitions/models.SearchHistory"
                     }
                 },
                 "user": {

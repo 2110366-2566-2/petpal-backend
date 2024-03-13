@@ -504,7 +504,7 @@ definitions:
     properties:
       search_history:
         items:
-          $ref: '#/definitions/models.SearchFilter'
+          $ref: '#/definitions/models.SearchHistory'
         type: array
       user:
         $ref: '#/definitions/models.User'
@@ -1376,12 +1376,12 @@ paths:
       description: Search services based on query, location, timeslot, price range,
         rating
       parameters:
-      - description: Search history
+      - description: Search filter
         in: body
         name: body
         required: true
         schema:
-          $ref: '#/definitions/models.SearchHistory'
+          $ref: '#/definitions/models.SearchFilter'
       produces:
       - application/json
       responses:
