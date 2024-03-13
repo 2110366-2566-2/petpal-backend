@@ -413,7 +413,7 @@ definitions:
     type: object
   models.SearchHistory:
     properties:
-      search_date:
+      date:
         type: string
       search_filters:
         $ref: '#/definitions/models.SearchFilter'
@@ -486,6 +486,15 @@ definitions:
         type: array
       username:
         type: string
+    type: object
+  models.UserSearchHistory:
+    properties:
+      search_history:
+        items:
+          $ref: '#/definitions/models.SearchHistory'
+        type: array
+      user:
+        $ref: '#/definitions/models.User'
     type: object
 info:
   contact: {}
@@ -1725,12 +1734,7 @@ paths:
         "200":
           description: Success
           schema:
-            properties:
-              history:
-                items:
-                  $ref: '#/definitions/models.SearchHistory'
-                type: array
-            type: object
+            $ref: '#/definitions/models.UserSearchHistory'
         "400":
           description: Bad request
           schema:

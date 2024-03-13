@@ -478,7 +478,7 @@ func UploadImageHandler(c *gin.Context, db *models.MongoDB) {
 //
 // @Security    ApiKeyAuth
 //
-// @Success     200      {object} object{history=[]models.SearchHistory}    "Success"
+// @Success     200      {object} models.UserSearchHistory  "Success"
 // @Failure     400      {object} models.BasicErrorRes      "Bad request"
 // @Failure     401      {object} models.BasicErrorRes      "Unauthorized"
 // @Failure     500      {object} models.BasicErrorRes      "Internal server error"
@@ -497,7 +497,7 @@ func GetSearchHistoryHandler(c *gin.Context, db *models.MongoDB) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"user": currentUser, "history": search_history})
+	c.JSON(http.StatusOK, models.UserSearchHistory{User: *currentUser, SearchHistory: search_history})
 }
 
 func _authenticate(c *gin.Context, db *models.MongoDB) (*models.User, error) {

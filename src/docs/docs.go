@@ -1872,15 +1872,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "type": "object",
-                            "properties": {
-                                "history": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/definitions/models.SearchHistory"
-                                    }
-                                }
-                            }
+                            "$ref": "#/definitions/models.UserSearchHistory"
                         }
                     },
                     "400": {
@@ -2991,7 +2983,7 @@ const docTemplate = `{
         "models.SearchHistory": {
             "type": "object",
             "properties": {
-                "search_date": {
+                "date": {
                     "type": "string"
                 },
                 "search_filters": {
@@ -3101,6 +3093,20 @@ const docTemplate = `{
                 },
                 "username": {
                     "type": "string"
+                }
+            }
+        },
+        "models.UserSearchHistory": {
+            "type": "object",
+            "properties": {
+                "search_history": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.SearchHistory"
+                    }
+                },
+                "user": {
+                    "$ref": "#/definitions/models.User"
                 }
             }
         }
