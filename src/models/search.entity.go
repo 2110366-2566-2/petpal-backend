@@ -16,7 +16,7 @@ type SearchHistory struct {
 	PageNumber      int       `json:"page_number" bson:"page_number"`
 	PageSize        int       `json:"page_size" bson:"page_size"`
 	SortBy          string    `json:"sort_by" bson:"sort_by"` // price, rating, name
-	Descending      bool      `json:"descending_" bson:"descending_"`
+	Descending      bool      `json:"descending" bson:"descending"`
 }
 
 type SearchResult struct {
