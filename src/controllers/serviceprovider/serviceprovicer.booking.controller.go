@@ -180,7 +180,7 @@ func SVCPConfirmBookingHandler(c *gin.Context, db *models.MongoDB) {
 		return
 	}
 
-	returnBooking, err := utills.SVCPConfirmBooking(db, request.BookingID)
+	returnBooking, err := utills.SVCPConfirmBooking(db, request.BookingID, current_svcp)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})
 		return
@@ -252,7 +252,7 @@ func SVCPCompleteBookingHandler(c *gin.Context, db *models.MongoDB) {
 	}
 
 	if !booking.Status.SvcpConfirmed {
-		_, err := utills.SVCPConfirmBooking(db, request.BookingID)
+		_, err := utills.SVCPConfirmBooking(db, request.BookingID, current_svcp)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})
 			return

@@ -31,10 +31,10 @@ func UpdateFeedbackToService(db *models.MongoDB, service_id string, user_id stri
 		return err
 	}
 	rating := rating_result[0]["averageRating"].(float64)
-	
+
 	// update service rating
 	svcp_collection := db.Client.Database("petpal").Collection("svcp")
-	temp , err := svcp_collection.Aggregate(context.Background(), bson.A{
+	temp, err := svcp_collection.Aggregate(context.Background(), bson.A{
 		bson.M{"$unwind": "$services"},
 		bson.M{"$match": bson.M{"services.serviceID": service_id}},
 	})
@@ -47,7 +47,7 @@ func UpdateFeedbackToService(db *models.MongoDB, service_id string, user_id stri
 	if err = temp.All(context.Background(), &matches); err != nil {
 		return err
 	}
-	
+
 	// update service rating
 	svcp_id := matches[0]["SVCPID"]
 	filter = bson.M{"SVCPID": svcp_id}

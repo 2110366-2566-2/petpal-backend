@@ -58,9 +58,8 @@ func CreateFeedbackHandler(c *gin.Context, db *models.MongoDB, service_id string
 
 type CreateFeedbackRequest struct {
 	Content string  `json:"content" bson:"content"`
-	Rating  float32 `json:"rating" bson:"rating"`
+	Rating  float64 `json:"rating" bson:"rating"`
 }
-
 
 // GetFeedbackHandler godoc
 //
@@ -104,6 +103,27 @@ func _authenticate(c *gin.Context, db *models.MongoDB) (*models.User, error) {
 		// Handle svcp
 	}
 	err = errors.New("need token of type User but wrong type")
+	c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: err.Error()})
+	return nil, err
+}
+
+func _authenticateSVCP(c *gin.Context, db *models.MongoDB) (*models.SVCP, error) {
+	entity, err := auth.GetCurrentEntityByGinContenxt(c, db)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "Failed to get token from Cookie plase login first, " + err.Error()})
+		return nil, err
+	}
+	switch entity := entity.(type) {
+	case *models.SVCP:
+		return entity, nil
+		// Handle user
+	case *models.User:
+		err = errors.New("need token of type SVCP but recives token User type")
+		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: err.Error()})
+		return nil, nil
+		// Handle svcp
+	}
+	err = errors.New("need token of type SVCP but wrong type")
 	c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: err.Error()})
 	return nil, err
 }

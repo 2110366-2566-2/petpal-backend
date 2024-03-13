@@ -1,37 +1,34 @@
 package auth
 
 import (
-	"fmt"
+	"errors"
 	"petpal-backend/src/models"
 	svcp_utills "petpal-backend/src/utills/serviceprovider"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func nextSVCPId() int {
-	id := 5
-	return id
-}
-
 func NewSVCP(createSVCP models.CreateSVCP) (*models.SVCP, error) {
-	newID := nextUserId()
-	fmt.Println(createSVCP)
+	objID := primitive.NewObjectID().Hex()
 	// You can add more validation rules as needed
 	newSVCP := &models.SVCP{
 		Individual: models.Individual{
-			IndividualID: newID,
+			IndividualID: objID,
 		},
-		SVCPID:                "Defult",
-		SVCPImg:               []byte("Default"),
+		SVCPID:                objID,
+		SVCPImg:               []byte{},
 		SVCPUsername:          createSVCP.SVCPUsername,
 		SVCPPassword:          createSVCP.SVCPPassword,
 		SVCPEmail:             createSVCP.SVCPEmail,
 		IsVerified:            false,
-		SVCPResponsiblePerson: "Defult",
-		DefaultBank:           "Defult",
-		DefaultAccountNumber:  "Defult",
-		License:               "Defult",
-		Location:              "Defult",
-		SVCPAdditionalImg:     []byte("Default"),
+		SVCPResponsiblePerson: "",
+		DefaultBank:           "",
+		DefaultAccountNumber:  "",
+		License:               "",
+		Location:              "",
+		SVCPAdditionalImg:     []byte{},
 		SVCPServiceType:       createSVCP.SVCPServiceType,
+		Services:              []models.Service{},
 	}
 
 	return newSVCP, nil
@@ -39,6 +36,15 @@ func NewSVCP(createSVCP models.CreateSVCP) (*models.SVCP, error) {
 
 // RegisterHandler handles user registration
 func RegisterSVCP(createSVCP models.CreateSVCP, db *models.MongoDB) (string, error) {
+
+	// search if email already exists
+	svcp, err := svcp_utills.GetSVCPByEmail(db, createSVCP.SVCPEmail)
+	if svcp != nil {
+		return "", errors.New("SVCP email alreay exist")
+	}
+	if err == nil {
+		return "", errors.New("SVCP email alreay exist")
+	}
 
 	// Hash the password securely
 	hashedPassword, err := HashPassword(createSVCP.SVCPPassword)

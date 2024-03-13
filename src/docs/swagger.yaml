@@ -104,7 +104,9 @@ definitions:
       serviceID:
         type: string
       serviceImg:
-        type: string
+        items:
+          type: integer
+        type: array
       serviceName:
         description: service name
         type: string
@@ -232,6 +234,17 @@ definitions:
         description: Define the 10 fields here
         type: string
     type: object
+  models.CreateService:
+    properties:
+      price:
+        type: number
+      serviceDescription:
+        type: string
+      serviceName:
+        type: string
+      serviceType:
+        type: string
+    type: object
   models.CreateUser:
     properties:
       address:
@@ -332,13 +345,17 @@ definitions:
   models.SVCP:
     properties:
       SVCPAdditionalImg:
-        type: string
+        items:
+          type: integer
+        type: array
       SVCPEmail:
         type: string
       SVCPID:
         type: string
       SVCPImg:
-        type: string
+        items:
+          type: integer
+        type: array
       SVCPPassword:
         type: string
       SVCPResponsiblePerson:
@@ -354,7 +371,7 @@ definitions:
       description:
         type: string
       individualID:
-        type: integer
+        type: string
       isVerified:
         type: boolean
       license:
@@ -365,6 +382,34 @@ definitions:
         items:
           $ref: '#/definitions/models.Service'
         type: array
+    type: object
+  models.SearchHistory:
+    properties:
+      descending:
+        type: boolean
+      end_price_range:
+        type: number
+      end_time:
+        type: string
+      location:
+        type: string
+      max_rating:
+        type: number
+      min_rating:
+        type: number
+      page_number:
+        type: integer
+      page_size:
+        type: integer
+      q:
+        type: string
+      sort_by:
+        description: price, rating, name
+        type: string
+      start_price_range:
+        type: number
+      start_time:
+        type: string
     type: object
   models.Service:
     properties:
@@ -379,7 +424,9 @@ definitions:
       serviceID:
         type: string
       serviceImg:
-        type: string
+        items:
+          type: integer
+        type: array
       serviceName:
         type: string
       serviceType:
@@ -417,7 +464,7 @@ definitions:
       id:
         type: string
       individualID:
-        type: integer
+        type: string
       password:
         type: string
       pets:
@@ -427,7 +474,9 @@ definitions:
       phoneNumber:
         type: string
       profilePicture:
-        type: string
+        items:
+          type: integer
+        type: array
       username:
         type: string
     type: object
@@ -631,6 +680,69 @@ paths:
       summary: User registration
       tags:
       - Authentication
+  /service/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a service
+      parameters:
+      - description: Service ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Service'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete a service
+      tags:
+      - Service
+    patch:
+      consumes:
+      - application/json
+      description: Update a service
+      parameters:
+      - description: Service ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Service data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.Service'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Service'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
+      summary: Update a service
+      tags:
+      - Service
   /service/booking/all/svcp:
     post:
       consumes:
@@ -1082,6 +1194,65 @@ paths:
       summary: user reschedule booking by booking id and new timeslot id
       tags:
       - Booking user
+  /service/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new service
+      parameters:
+      - description: Service data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateService'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Service'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a service
+      tags:
+      - Service
+  /service/duplicate/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Duplicate a service
+      parameters:
+      - description: Service ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Service'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
+      summary: Duplicate a service
+      tags:
+      - Service
   /service/feedback/{id}:
     get:
       consumes:
@@ -1143,6 +1314,35 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Create a feedback
+      tags:
+      - Service
+  /service/searching:
+    post:
+      consumes:
+      - application/json
+      description: Search services based on query, location, timeslot, price range,
+        rating
+      parameters:
+      - description: Search history
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.SearchHistory'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Service'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      summary: Search services
       tags:
       - Service
   /serviceproviders:

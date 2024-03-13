@@ -1003,6 +1003,100 @@ const docTemplate = `{
                 }
             }
         },
+        "/service/create": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Create a new service",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Service"
+                ],
+                "summary": "Create a service",
+                "parameters": [
+                    {
+                        "description": "Service data",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CreateService"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Service"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/service/duplicate/{id}": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Duplicate a service",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Service"
+                ],
+                "summary": "Duplicate a service",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Service ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Service"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/service/feedback/{id}": {
             "get": {
                 "description": "Get feedbacks for a service",
@@ -1083,6 +1177,148 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.Feedback"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/service/searching": {
+            "post": {
+                "description": "Search services based on query, location, timeslot, price range, rating",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Service"
+                ],
+                "summary": "Search services",
+                "parameters": [
+                    {
+                        "description": "Search history",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.SearchHistory"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Service"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/service/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Delete a service",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Service"
+                ],
+                "summary": "Delete a service",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Service ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Service"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Update a service",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Service"
+                ],
+                "summary": "Update a service",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Service ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Service data",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Service"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Service"
                         }
                     },
                     "400": {
@@ -2233,7 +2469,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "serviceImg": {
-                    "type": "string"
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "serviceName": {
                     "description": "service name",
@@ -2428,6 +2667,23 @@ const docTemplate = `{
                 }
             }
         },
+        "models.CreateService": {
+            "type": "object",
+            "properties": {
+                "price": {
+                    "type": "number"
+                },
+                "serviceDescription": {
+                    "type": "string"
+                },
+                "serviceName": {
+                    "type": "string"
+                },
+                "serviceType": {
+                    "type": "string"
+                }
+            }
+        },
         "models.CreateUser": {
             "type": "object",
             "properties": {
@@ -2581,7 +2837,10 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "SVCPAdditionalImg": {
-                    "type": "string"
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "SVCPEmail": {
                     "type": "string"
@@ -2590,7 +2849,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "SVCPImg": {
-                    "type": "string"
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "SVCPPassword": {
                     "type": "string"
@@ -2614,7 +2876,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "individualID": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "isVerified": {
                     "type": "boolean"
@@ -2630,6 +2892,48 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/models.Service"
                     }
+                }
+            }
+        },
+        "models.SearchHistory": {
+            "type": "object",
+            "properties": {
+                "descending": {
+                    "type": "boolean"
+                },
+                "end_price_range": {
+                    "type": "number"
+                },
+                "end_time": {
+                    "type": "string"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "max_rating": {
+                    "type": "number"
+                },
+                "min_rating": {
+                    "type": "number"
+                },
+                "page_number": {
+                    "type": "integer"
+                },
+                "page_size": {
+                    "type": "integer"
+                },
+                "q": {
+                    "type": "string"
+                },
+                "sort_by": {
+                    "description": "price, rating, name",
+                    "type": "string"
+                },
+                "start_price_range": {
+                    "type": "number"
+                },
+                "start_time": {
+                    "type": "string"
                 }
             }
         },
@@ -2652,7 +2956,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "serviceImg": {
-                    "type": "string"
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "serviceName": {
                     "type": "string"
@@ -2710,7 +3017,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "individualID": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "password": {
                     "type": "string"
@@ -2725,7 +3032,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "profilePicture": {
-                    "type": "string"
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "username": {
                     "type": "string"

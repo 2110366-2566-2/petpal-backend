@@ -1,9 +1,17 @@
 // user.go
 package models
 
+// Create Service
+type CreateService struct {
+	ServiceName        string  `json:"serviceName" bson:"serviceName"`
+	ServiceType        string  `json:"serviceType" bson:"serviceType"`
+	ServiceDescription string  `json:"serviceDescription" bson:"serviceDescription"`
+	Price              float64 `json:"price" bson:"price"`
+}
+
 // User represents a user entity
 type Service struct {
-	ServiceID          string     `json:"serviceID" bson:"serviceID"`
+	ServiceID          string     `json:"serviceID" bson:"serviceID,omitempty"`
 	ServiceName        string     `json:"serviceName" bson:"serviceName"`
 	ServiceType        string     `json:"serviceType" bson:"serviceType"`
 	ServiceDescription string     `json:"serviceDescription" bson:"serviceDescription"`
