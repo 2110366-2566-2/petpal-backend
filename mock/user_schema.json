@@ -75,25 +75,35 @@
           "search_filters": {
             "bsonType": "object",
             "properties": {
-              "serviceName": {
+              "q": {
                 "bsonType": "string",
-                "pattern": "serviceName\\d"
+                "pattern": "service(Name|Type|Description)\\d"
               },
-              "serviceType": {
+              "location": {
                 "bsonType": "string",
-                "pattern": "serviceType\\d"
+                "pattern": "location\\d"
               },
-              "serviceDescription": {
+              "start_time": { "bsonType": "date" },
+              "end_time": { "bsonType": "date" },
+              "start_price_range": { "bsonType": "double" },
+              "end_price_range": { "bsonType": "double" },
+              "min_rating": {
+                "bsonType": "double",
+                "minimum": 0,
+                "maximum": 5
+              },
+              "max_rating": {
+                "bsonType": "double",
+                "minimum": 0,
+                "maximum": 5
+              },
+              "page_number": { "bsonType": "int", "maximum": 5 },
+              "page_size": { "bsonType": "int", "maximum": 20 },
+              "sort_by": {
                 "bsonType": "string",
-                "pattern": "serviceDescription\\d"
+                "pattern": "(price|rating|distance)"
               },
-              "timeslot": { "bsonType": "date" },
-              "averageRating": {
-                "bsonType": "object",
-                "properties": {
-                  "$gt": { "bsonType": "double" }
-                }
-              }
+              "descending": { "bsonType": "bool" }
             }
           }
         }
