@@ -20,7 +20,7 @@ type SearchFilter struct {
 }
 
 type SearchHistory struct {
-	SearchDate   time.Time    `json:"search_date" bson:"search_date"`
+	Date         time.Time    `json:"date" bson:"date"`
 	SearchFilter SearchFilter `json:"search_filters" bson:"search_filters"`
 }
 
