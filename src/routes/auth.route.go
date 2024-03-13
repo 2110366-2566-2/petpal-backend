@@ -28,4 +28,8 @@ func AuthRoutes(r *gin.Engine) {
 	authGroup.POST("/logout", func(c *gin.Context) {
 		controllers.LogoutHandler(c)
 	})
+	authGroup.POST("/change-password", func(c *gin.Context) {
+		db := c.MustGet("db").(*models.MongoDB)
+		controllers.ChangePasswordHandler(c, db)
+	})
 }

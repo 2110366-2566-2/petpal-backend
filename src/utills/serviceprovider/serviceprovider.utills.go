@@ -212,29 +212,3 @@ func SetDefaultBankAccount(email string, defaultAccountNumber string, defaultBan
 
 	return "", nil
 }
-
-func ChangePassword(email string, newPassword string, db *models.MongoDB) (string, error) {
-	// get collection
-	svcp_collection := db.Collection("user")
-
-	// find user by id
-	var svcp models.User = models.User{}
-	filter := bson.D{{Key: "email", Value: email}}
-	err := svcp_collection.FindOne(context.Background(), filter).Decode(&svcp)
-	if err != nil {
-		return "SVCP not found (email=" + email + ")", err
-	}
-
-	// update user with new default bank account
-	update := bson.D{
-		{Key: "$set", Value: bson.D{
-			{Key: "password", Value: newPassword},
-		}},
-	}
-	_, err = svcp_collection.UpdateOne(context.Background(), filter, update)
-	if err != nil {
-		return "Failed to update service provider password", err
-	}
-
-	return "", nil
-}
