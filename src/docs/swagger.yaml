@@ -720,6 +720,30 @@ paths:
       summary: Delete a service
       tags:
       - Service
+    get:
+      consumes:
+      - application/json
+      description: Get a service
+      parameters:
+      - description: Service ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Service'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      summary: Get a service
+      tags:
+      - Service
     patch:
       consumes:
       - application/json
