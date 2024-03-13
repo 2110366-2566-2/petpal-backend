@@ -65,6 +65,49 @@
           "dietyPreferences": { "bsonType": "string" }
         }
       }
+    },
+    "search_history": {
+      "bsonType": "array",
+      "items": {
+        "bsonType": "object",
+        "properties": {
+          "date": { "bsonType": "date" },
+          "search_filters": {
+            "bsonType": "object",
+            "properties": {
+              "q": {
+                "bsonType": "string",
+                "pattern": "service(Name|Type|Description)\\d"
+              },
+              "location": {
+                "bsonType": "string",
+                "pattern": "location\\d"
+              },
+              "start_time": { "bsonType": "date" },
+              "end_time": { "bsonType": "date" },
+              "start_price_range": { "bsonType": "double" },
+              "end_price_range": { "bsonType": "double" },
+              "min_rating": {
+                "bsonType": "double",
+                "minimum": 0,
+                "maximum": 5
+              },
+              "max_rating": {
+                "bsonType": "double",
+                "minimum": 0,
+                "maximum": 5
+              },
+              "page_number": { "bsonType": "int", "maximum": 5 },
+              "page_size": { "bsonType": "int", "maximum": 20 },
+              "sort_by": {
+                "bsonType": "string",
+                "pattern": "(price|rating|distance)"
+              },
+              "descending": { "bsonType": "bool" }
+            }
+          }
+        }
+      }
     }
   }
 }

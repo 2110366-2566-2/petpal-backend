@@ -37,4 +37,9 @@ func UserBaseRoutes(r *gin.RouterGroup) {
 		db := c.MustGet("db").(*models.MongoDB)
 		controllers.UploadImageHandler(c, db)
 	})
+
+	userGroup.GET("/get-search-history", func(c *gin.Context) {
+		db := c.MustGet("db").(*models.MongoDB)
+		controllers.GetSearchHistoryHandler(c, db)
+	})
 }

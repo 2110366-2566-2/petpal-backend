@@ -4,7 +4,7 @@ import "time"
 
 // Q for Services's User name, Service name, Service type
 // SortBy for sorting by price, rating, name
-type SearchHistory struct {
+type SearchFilter struct {
 	Q               string    `json:"q" bson:"q"`
 	ServicesType    string    `json:"services_type" bson:"services_type"`
 	Location        string    `json:"location" bson:"location"`
@@ -18,6 +18,11 @@ type SearchHistory struct {
 	PageSize        int       `json:"page_size" bson:"page_size"`
 	SortBy          string    `json:"sort_by" bson:"sort_by"` // price, rating, name
 	Descending      bool      `json:"descending" bson:"descending"`
+}
+
+type SearchHistory struct {
+	Date         time.Time    `json:"date" bson:"date"`
+	SearchFilter SearchFilter `json:"search_filters" bson:"search_filters"`
 }
 
 type SearchResult struct {

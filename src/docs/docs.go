@@ -1209,12 +1209,12 @@ const docTemplate = `{
                 "summary": "Search services",
                 "parameters": [
                     {
-                        "description": "Search history",
+                        "description": "Search filter",
                         "name": "body",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.SearchHistory"
+                            "$ref": "#/definitions/models.SearchFilter"
                         }
                     }
                 ],
@@ -1866,6 +1866,49 @@ const docTemplate = `{
                         "description": "Success",
                         "schema": {
                             "$ref": "#/definitions/models.BasicRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/get-search-history": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Gets the search history of the current user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get search history",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/models.UserSearchHistory"
                         }
                     },
                     "400": {
@@ -2948,7 +2991,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.SearchHistory": {
+        "models.SearchFilter": {
             "type": "object",
             "properties": {
                 "descending": {
@@ -2990,6 +3033,17 @@ const docTemplate = `{
                 },
                 "start_time": {
                     "type": "string"
+                }
+            }
+        },
+        "models.SearchHistory": {
+            "type": "object",
+            "properties": {
+                "date": {
+                    "type": "string"
+                },
+                "search_filters": {
+                    "$ref": "#/definitions/models.SearchFilter"
                 }
             }
         },
@@ -3095,6 +3149,20 @@ const docTemplate = `{
                 },
                 "username": {
                     "type": "string"
+                }
+            }
+        },
+        "models.UserSearchHistory": {
+            "type": "object",
+            "properties": {
+                "search_history": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.SearchHistory"
+                    }
+                },
+                "user": {
+                    "$ref": "#/definitions/models.User"
                 }
             }
         }

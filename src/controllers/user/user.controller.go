@@ -468,6 +468,38 @@ func UploadImageHandler(c *gin.Context, db *models.MongoDB) {
 	}
 }
 
+// GetSearchHistoryHandler godoc
+//
+// @Summary     Get search history
+// @Description Gets the search history of the current user
+// @Tags        User
+//
+// @Produce     json
+//
+// @Security    ApiKeyAuth
+//
+// @Success     200      {object} models.UserSearchHistory  "Success"
+// @Failure     400      {object} models.BasicErrorRes      "Bad request"
+// @Failure     401      {object} models.BasicErrorRes      "Unauthorized"
+// @Failure     500      {object} models.BasicErrorRes      "Internal server error"
+//
+// @Router      /user/get-search-history [get]
+func GetSearchHistoryHandler(c *gin.Context, db *models.MongoDB) {
+	currentUser, err := _authenticate(c, db)
+	if err != nil {
+		return
+	}
+
+	search_history, err := user_utills.GetSearchHistory(db, currentUser.ID)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, models.UserSearchHistory{User: *currentUser, SearchHistory: search_history})
+}
+
 func _authenticate(c *gin.Context, db *models.MongoDB) (*models.User, error) {
 	entity, err := auth.GetCurrentEntityByGinContenxt(c, db)
 	if err != nil {

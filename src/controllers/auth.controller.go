@@ -52,6 +52,7 @@ func ChangePasswordHandler(c *gin.Context, db *models.MongoDB) {
 	// Respond with a success message
 	c.JSON(http.StatusOK, gin.H{"message": "Password changed successfully"})
 }
+
 type ChangePasswordReq struct {
 	UserEmail   string
 	NewPassword string

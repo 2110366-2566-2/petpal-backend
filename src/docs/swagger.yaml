@@ -394,7 +394,7 @@ definitions:
           $ref: '#/definitions/models.Service'
         type: array
     type: object
-  models.SearchHistory:
+  models.SearchFilter:
     properties:
       descending:
         type: boolean
@@ -423,6 +423,13 @@ definitions:
         type: number
       start_time:
         type: string
+    type: object
+  models.SearchHistory:
+    properties:
+      date:
+        type: string
+      search_filters:
+        $ref: '#/definitions/models.SearchFilter'
     type: object
   models.Service:
     properties:
@@ -492,6 +499,15 @@ definitions:
         type: array
       username:
         type: string
+    type: object
+  models.UserSearchHistory:
+    properties:
+      search_history:
+        items:
+          $ref: '#/definitions/models.SearchHistory'
+        type: array
+      user:
+        $ref: '#/definitions/models.User'
     type: object
 info:
   contact: {}
@@ -1360,12 +1376,12 @@ paths:
       description: Search services based on query, location, timeslot, price range,
         rating
       parameters:
-      - description: Search history
+      - description: Search filter
         in: body
         name: body
         required: true
         schema:
-          $ref: '#/definitions/models.SearchHistory'
+          $ref: '#/definitions/models.SearchFilter'
       produces:
       - application/json
       responses:
@@ -1744,6 +1760,33 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Delete bank account
+      tags:
+      - User
+  /user/get-search-history:
+    get:
+      description: Gets the search history of the current user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/models.UserSearchHistory'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
+      summary: Get search history
       tags:
       - User
   /user/pets:

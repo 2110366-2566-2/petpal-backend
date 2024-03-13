@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"petpal-backend/src/models"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -29,7 +30,9 @@ func InsertUser(db *models.MongoDB, user *models.User) (*models.User, error) {
 
 func GetUsers(db *models.MongoDB, filter bson.D, page int64, per int64) ([]models.User, error) {
 	collection := db.Collection("user")
-	opts := options.Find().SetSkip(page * per).SetLimit(per)
+	opts := options.Find().SetSkip(page * per).SetLimit(per).SetProjection(bson.D{
+		{Key: "search_history", Value: 0},
+	})
 
 	// Find all documents in the collection
 	cursor, err := collection.Find(context.Background(), filter, opts)
@@ -58,7 +61,8 @@ func GetUserByID(db *models.MongoDB, id string) (*models.User, error) {
 	}
 	var user models.User = models.User{}
 	filter := bson.D{{Key: "_id", Value: objectID}}
-	err = collection.FindOne(context.Background(), filter).Decode(&user)
+	opts := options.FindOne().SetProjection(bson.D{{Key: "search_history", Value: 0}})
+	err = collection.FindOne(context.Background(), filter, opts).Decode(&user)
 	if err != nil {
 		return nil, err
 	}
@@ -73,11 +77,60 @@ func GetUserByEmail(db *models.MongoDB, email string) (*models.User, error) {
 	// note: IndividualID is not present in the database yet, so this always returns an error not found
 	var user models.User = models.User{}
 	filter := bson.D{{Key: "email", Value: email}}
-	err := collection.FindOne(context.Background(), filter).Decode(&user)
+	opts := options.FindOne().SetProjection(bson.D{{Key: "search_history", Value: 0}})
+	err := collection.FindOne(context.Background(), filter, opts).Decode(&user)
 	if err != nil {
 		return nil, err
 	}
 	return &user, nil
+}
+
+func GetSearchHistory(db *models.MongoDB, id string) ([]models.SearchHistory, error) {
+	// get collection
+	collection := db.Collection("user")
+
+	// find user by email
+	objectId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+
+	var search_history models.UserSearchHistory = models.UserSearchHistory{}
+	filter := bson.D{{Key: "_id", Value: objectId}}
+	opts := options.FindOne().SetProjection(bson.D{{Key: "search_history", Value: 1}})
+	err = collection.FindOne(context.Background(), filter, opts).Decode(&search_history)
+
+	return search_history.SearchHistory, nil
+}
+
+func AddSearchHistory(db *models.MongoDB, id string, search_filters models.SearchFilter) error {
+	// get collection
+	collection := db.Collection("user")
+
+	// find user by id
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+	filter := bson.D{{Key: "_id", Value: objectID}}
+
+	search_history := models.SearchHistory{
+		Date:         time.Now(),
+		SearchFilter: search_filters,
+	}
+
+	// update user
+	update := bson.D{
+		{Key: "$push", Value: bson.D{
+			{Key: "search_history", Value: search_history},
+		}},
+	}
+	_, err = collection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func UpdateUser(db *models.MongoDB, user *bson.M, id string) (string, error) {

@@ -5,6 +5,7 @@ import (
 	"petpal-backend/src/models"
 	"petpal-backend/src/utills/auth"
 	service_utills "petpal-backend/src/utills/service"
+	user_utills "petpal-backend/src/utills/user"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
@@ -57,7 +58,7 @@ func CreateServicesHandler(c *gin.Context, db *models.MongoDB) {
 // @Accept json
 // @Produce json
 //
-// @Param body body models.SearchHistory true "Search history"
+// @Param body body models.SearchFilter true "Search filter"
 //
 // @Success 200 {object} []models.Service
 // @Failure 500 {object} models.BasicErrorRes
@@ -67,9 +68,9 @@ func SearchServicesHandler(c *gin.Context, db *models.MongoDB) {
 	// Get services
 	var id string
 	var is_user bool
-	var searchHistory *models.SearchHistory
+	var searchFilter *models.SearchFilter
 
-	if err := c.ShouldBindJSON(&searchHistory); err != nil {
+	if err := c.ShouldBindJSON(&searchFilter); err != nil {
 		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: err.Error()})
 		return
 	}
@@ -82,7 +83,7 @@ func SearchServicesHandler(c *gin.Context, db *models.MongoDB) {
 	case *models.SVCP:
 		id = currentEntity.SVCPID
 		is_user = false
-		services, err := service_utills.SearchServices(db, searchHistory, id, is_user)
+		services, err := service_utills.SearchServices(db, searchFilter, id, is_user)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
@@ -92,7 +93,14 @@ func SearchServicesHandler(c *gin.Context, db *models.MongoDB) {
 	case *models.User:
 		id = currentEntity.ID
 		is_user = true
-		services, err := service_utills.SearchServices(db, searchHistory, id, is_user)
+		services, err := service_utills.SearchServices(db, searchFilter, id, is_user)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Add search history to user
+		err = user_utills.AddSearchHistory(db, id, *searchFilter)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
