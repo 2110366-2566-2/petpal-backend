@@ -22,7 +22,7 @@
             "desciption": "chat type only text for now"
           },
           "timestamp": { "bsonType": "date" },
-          "message": { "bsonType": "string", "pattern": "([a-z]{1,5} ){1,5}" },
+          "content": { "bsonType": "string", "pattern": "([a-z]{1,5} ){1,5}" },
           "sender": { "bsonType": "int", "minimum": 0, "maximum": 1 }
         }
       }
