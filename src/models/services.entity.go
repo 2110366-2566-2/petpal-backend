@@ -7,6 +7,7 @@ type CreateService struct {
 	ServiceType        string  `json:"serviceType" bson:"serviceType"`
 	ServiceDescription string  `json:"serviceDescription" bson:"serviceDescription"`
 	Price              float64 `json:"price" bson:"price"`
+	Timeslots          []CreateTimeslot
 }
 
 // User represents a user entity

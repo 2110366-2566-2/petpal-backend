@@ -12,6 +12,18 @@ import (
 )
 
 func CreateNewServices(createServices *models.CreateService) *models.Service {
+
+	newTimeslots := []models.Timeslot{}
+	for i := 0; i < len(createServices.Timeslots); i++ {
+		newTimeslot := models.Timeslot{
+			TimeslotID: primitive.NewObjectID().Hex(),
+			StartTime:  createServices.Timeslots[i].StartTime,
+			EndTime:    createServices.Timeslots[i].EndTime,
+			Status:     "available",
+		}
+		newTimeslots[i] = newTimeslot
+	}
+
 	return &models.Service{
 		ServiceID:          primitive.NewObjectID().Hex(),
 		ServiceName:        createServices.ServiceName,
@@ -21,7 +33,7 @@ func CreateNewServices(createServices *models.CreateService) *models.Service {
 		ServiceImg:         []byte{},
 		AverageRating:      0,
 		RequireCert:        false,
-		Timeslots:          []models.Timeslot{},
+		Timeslots:          newTimeslots,
 	}
 }
 
