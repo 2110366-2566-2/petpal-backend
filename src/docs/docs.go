@@ -2991,7 +2991,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.SearchHistory": {
+        "models.SearchFilter": {
             "type": "object",
             "properties": {
                 "descending": {
@@ -3033,6 +3033,17 @@ const docTemplate = `{
                 },
                 "start_time": {
                     "type": "string"
+                }
+            }
+        },
+        "models.SearchHistory": {
+            "type": "object",
+            "properties": {
+                "date": {
+                    "type": "string"
+                },
+                "search_filters": {
+                    "$ref": "#/definitions/models.SearchFilter"
                 }
             }
         },
@@ -3147,7 +3158,7 @@ const docTemplate = `{
                 "search_history": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.SearchHistory"
+                        "$ref": "#/definitions/models.SearchFilter"
                     }
                 },
                 "user": {
