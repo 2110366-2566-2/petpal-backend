@@ -15,7 +15,7 @@ type Chat struct {
 type Message struct {
 	MessageType string    `json:"messageType" bson:"messageType"`
 	Timestamp   time.Time `json:"timestamp" bson:"timestamp"`
-	Content     string    `json:"message" bson:"message"`
+	Content     string    `json:"content" bson:"content"`
 	Sender      int       `json:"sender" bson:"sender"`
 }
 
