@@ -20,4 +20,6 @@ func ChatRoutes(r *gin.Engine, h *chat.Hub) {
 	chatGroup.GET("/getClients/:roomId", func(c *gin.Context) {
 		chat.GetClients(c, h)
 	})
+
+	ChatHistoryRoutes(chatGroup)
 }
