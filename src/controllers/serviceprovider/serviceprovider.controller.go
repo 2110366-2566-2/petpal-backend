@@ -55,7 +55,7 @@ func GetSVCPsHandler(c *gin.Context, db *models.MongoDB) {
 	// get all svcps, no filters for now
 	svcps, err := svcp_utills.GetSVCPs(db, bson.D{}, page-1, per)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: "Failed to get service providers"})
+		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: "Failed to get service providers" + err.Error()})
 		return
 	}
 
@@ -110,7 +110,7 @@ func GetSVCPByIDHandler(c *gin.Context, db *models.MongoDB, id string) {
 // @Param 		id		path	string 	true	"Service Provider ID"
 // @Param 		svcp	body 	object 	true	"Service Provider Object (only the fields to be updated)"
 //
-// @Success 200 {object} models.BasicRes 
+// @Success 200 {object} models.BasicRes
 // @Failure 400 {object} models.BasicErrorRes
 //
 // @Router /serviceproviders [put]
@@ -361,6 +361,7 @@ func SetDefaultBankAccountHandler(c *gin.Context, db *models.MongoDB) {
 
 	c.JSON(http.StatusOK, models.BasicRes{Message: "Default bank account set successfully"})
 }
+
 type defaultBankAccountReq struct {
 	DefaultAccountNumber string `json:"defaultAccountNumber"`
 	DefaultBank          string `json:"defaultBank"`

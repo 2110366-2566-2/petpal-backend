@@ -23,6 +23,11 @@ func ServiceBaseRoutes(r *gin.RouterGroup) {
 			id := c.Param("id")
 			controllers.DuplicateServicesHandler(c, db, id)
 		})
+		baiscGroup.GET("/:id", func(c *gin.Context) {
+			db := c.MustGet("db").(*models.MongoDB)
+			id := c.Param("id")
+			controllers.GetServicesHandler(c, db, id)
+		})
 		baiscGroup.DELETE("/:id", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
 			id := c.Param("id")

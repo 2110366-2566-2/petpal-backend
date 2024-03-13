@@ -1238,6 +1238,42 @@ const docTemplate = `{
             }
         },
         "/service/{id}": {
+            "get": {
+                "description": "Get a service",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Service"
+                ],
+                "summary": "Get a service",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Service ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Service"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            },
             "delete": {
                 "security": [
                     {
@@ -2724,6 +2760,23 @@ const docTemplate = `{
                 },
                 "serviceType": {
                     "type": "string"
+                },
+                "timeslots": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.CreateTimeslot"
+                    }
+                }
+            }
+        },
+        "models.CreateTimeslot": {
+            "type": "object",
+            "properties": {
+                "endTime": {
+                    "type": "string"
+                },
+                "startTime": {
+                    "type": "string"
                 }
             }
         },
@@ -2938,7 +2991,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.SearchFilter": {
+        "models.SearchHistory": {
             "type": "object",
             "properties": {
                 "descending": {
@@ -2968,6 +3021,9 @@ const docTemplate = `{
                 "q": {
                     "type": "string"
                 },
+                "services_type": {
+                    "type": "string"
+                },
                 "sort_by": {
                     "description": "price, rating, name",
                     "type": "string"
@@ -2977,17 +3033,6 @@ const docTemplate = `{
                 },
                 "start_time": {
                     "type": "string"
-                }
-            }
-        },
-        "models.SearchHistory": {
-            "type": "object",
-            "properties": {
-                "date": {
-                    "type": "string"
-                },
-                "search_filters": {
-                    "$ref": "#/definitions/models.SearchFilter"
                 }
             }
         },

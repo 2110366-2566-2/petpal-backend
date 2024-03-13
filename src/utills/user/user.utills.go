@@ -85,7 +85,7 @@ func GetUserByEmail(db *models.MongoDB, email string) (*models.User, error) {
 	return &user, nil
 }
 
-func GetSearchHistory(db *models.MongoDB, id string) ([]models.SearchHistory, error) {
+func GetSearchHistory(db *models.MongoDB, id string) ([]models.SearchFilter, error) {
 	// get collection
 	collection := db.Collection("user")
 
