@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"petpal-backend/src/models"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -100,6 +101,36 @@ func GetSearchHistory(db *models.MongoDB, id string) ([]models.SearchHistory, er
 	err = collection.FindOne(context.Background(), filter, opts).Decode(&search_history)
 
 	return search_history.SearchHistory, nil
+}
+
+func AddSearchHistory(db *models.MongoDB, id string, search_filters models.SearchFilter) error {
+	// get collection
+	collection := db.Collection("user")
+
+	// find user by id
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+	filter := bson.D{{Key: "_id", Value: objectID}}
+
+	search_history := models.SearchHistory{
+		Date:         time.Now(),
+		SearchFilter: search_filters,
+	}
+
+	// update user
+	update := bson.D{
+		{Key: "$push", Value: bson.D{
+			{Key: "search_history", Value: search_history},
+		}},
+	}
+	_, err = collection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func UpdateUser(db *models.MongoDB, user *bson.M, id string) (string, error) {

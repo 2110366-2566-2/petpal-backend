@@ -5,6 +5,7 @@ import (
 	"petpal-backend/src/models"
 	"petpal-backend/src/utills/auth"
 	service_utills "petpal-backend/src/utills/service"
+	user_utills "petpal-backend/src/utills/user"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
@@ -93,6 +94,13 @@ func SearchServicesHandler(c *gin.Context, db *models.MongoDB) {
 		id = currentEntity.ID
 		is_user = true
 		services, err := service_utills.SearchServices(db, searchHistory, id, is_user)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Add search history to user
+		err = user_utills.AddSearchHistory(db, id, *searchHistory)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
