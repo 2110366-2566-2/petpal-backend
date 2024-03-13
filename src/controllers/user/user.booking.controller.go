@@ -47,7 +47,7 @@ func CreateBookingHandler(c *gin.Context, db *models.MongoDB) {
 	request.UserID = current_user.ID
 
 	// Check for required fields
-	if request.ServiceID == "" || request.TimeslotID == "" || request.SVCPID == "" {
+	if request.ServiceID == "" || request.TimeslotID == "" {
 		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "Missing required fields"})
 		return
 	}
