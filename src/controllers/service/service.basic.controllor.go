@@ -160,6 +160,30 @@ func DeleteServicesHandler(c *gin.Context, db *models.MongoDB, id string) {
 	c.JSON(http.StatusOK, models.BasicRes{Message: "Service deleted successfully"})
 }
 
+// GetServicesHandler godoc
+//
+// @Summary Get a service
+// @Description Get a service
+// @Tags Service
+//
+// @Accept json
+// @Produce json
+//
+// @Param id path string true "Service ID"
+//
+// @Success 200 {object} models.Service
+// @Failure 500 {object} models.BasicErrorRes
+//
+// @Router /service/{id} [get]
+func GetServicesHandler(c *gin.Context, db *models.MongoDB, id string) {
+	service, err := service_utills.GetServiceByID(db, id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, service)
+}
+
 // UpdateServicesHandler godoc
 //
 // @Summary Update a service

@@ -7,6 +7,7 @@ import (
 	"petpal-backend/src/models"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -21,7 +22,7 @@ func CreateNewServices(createServices *models.CreateService) *models.Service {
 			EndTime:    createServices.Timeslots[i].EndTime,
 			Status:     "available",
 		}
-		newTimeslots[i] = newTimeslot
+		newTimeslots = append(newTimeslots, newTimeslot)
 	}
 
 	return &models.Service{
@@ -112,6 +113,40 @@ func DuplicateService(db *models.MongoDB, serviceId string, svcpID string) (*mod
 	}
 
 	return &service, nil
+}
+
+func GetServiceByID(db *models.MongoDB, serviceID string) (*models.Service, error) {
+	// get collection
+	svcp_collection := db.Collection("svcp")
+
+	// find service by find svcp --> services
+	pipeline := mongo.Pipeline{
+		{{Key: "$unwind", Value: "$services"}},
+		{{Key: "$match", Value: bson.M{"ervices.ServiceID": serviceID}}},
+		{{Key: "$project", Value: bson.D{
+			{Key: "services", Value: 1},
+		}}},
+	}
+	// Run the aggregation
+	cursor, err := svcp_collection.Aggregate(context.Background(), pipeline)
+	if err != nil {
+		return nil, err
+	}
+
+	type respondServoce struct {
+		Services models.Service `bson:"services"`
+	}
+
+	// Decode the documents
+	var results []respondServoce
+	if err = cursor.All(context.Background(), &results); err != nil {
+		return nil, err
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return &results[0].Services, nil
 }
 
 // deletes a pet from a user's pet list by index
