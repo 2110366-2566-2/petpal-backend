@@ -1,0 +1,31 @@
+{
+  "type": "object",
+  "bsonType": "object",
+  "title": "chat",
+  "description": "stores chat history",
+  "properties": {
+    "chatId": { "bsonType": "string" },
+    "user0Id": { "bsonType": "string" },
+    "user1Id": { "bsonType": "string" },
+    "user0type": { "bsonType": "string", "pattern": "(user|svcp)" },
+    "user1type": { "bsonType": "string", "pattern": "(user|svcp)" },
+    "dateCreated": { "bsonType": "date" },
+    "messages": {
+      "bsonType": "array",
+      "items": {
+        "type": "object",
+        "bsonType": "object",
+        "properties": {
+          "messageType": {
+            "bsonType": "string",
+            "pattern": "(text)",
+            "desciption": "chat type only text for now"
+          },
+          "timestamp": { "bsonType": "date" },
+          "message": { "bsonType": "string", "pattern": "([a-z]{1,5} ){1,5}" },
+          "sender": { "bsonType": "int", "minimum": 0, "maximum": 1 }
+        }
+      }
+    }
+  }
+}
