@@ -32,10 +32,41 @@ func (u *Service) createTimeslot(timeslotDetails Timeslot) Timeslot {
 }
 
 func (u *Service) editService(serviceDetails Service) Service {
-	// Mock Function
 	u = &serviceDetails
 	return *u
 }
+func (u *Service) UpdateField(key string, value any) Service {
+	// UpdateField
+	// get the field and update it
+	// return the updated service
+	if key == "serviceName" {
+		u.ServiceName = value.(string)
+	}
+	if key == "serviceType" {
+		u.ServiceType = value.(string)
+	}
+	if key == "serviceDescription" {
+		u.ServiceDescription = value.(string)
+	}
+	if key == "serviceImg" {
+		u.ServiceImg = value.([]byte)
+	}
+	if key == "averageRating" {
+		u.AverageRating = value.(float64)
+	}
+	if key == "requireCert" {
+		u.RequireCert = value.(bool)
+	}
+	if key == "timeslots" {
+		u.Timeslots = value.([]Timeslot)
+	}
+	if key == "price" {
+		u.Price = value.(float64)
+	}
+	return *u
+
+}
+
 func (u *Service) calculateAvgRating(newRating int) int {
 	return 0
 }
