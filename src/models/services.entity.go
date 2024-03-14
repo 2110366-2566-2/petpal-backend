@@ -48,17 +48,11 @@ func (u *Service) UpdateField(key string, value any) Service {
 	if key == "serviceDescription" {
 		u.ServiceDescription = value.(string)
 	}
-	if key == "serviceImg" {
-		u.ServiceImg = value.([]byte)
-	}
 	if key == "averageRating" {
 		u.AverageRating = value.(float64)
 	}
 	if key == "requireCert" {
 		u.RequireCert = value.(bool)
-	}
-	if key == "timeslots" {
-		u.Timeslots = value.([]Timeslot)
 	}
 	if key == "price" {
 		u.Price = value.(float64)
