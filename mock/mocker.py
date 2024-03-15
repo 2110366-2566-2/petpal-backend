@@ -9,8 +9,7 @@ from pymongo.server_api import ServerApi
 
 # Config this part
 CLEAR_PREV = True  # clear the collection before inserting new records
-N = 5  # number of records to generate
-COLLECTION_NAMES = ['user', 'svcp', 'booking']  # collection name
+N = 5  # number of records to generate (for user and svcp)
 
 # Connect to MongoDB
 USERNAME = 'inwza'
@@ -24,6 +23,7 @@ random.seed(SEED)
 
 client = MongoClient(url, server_api=ServerApi('1'))
 
+# ping database
 try:
     client.admin.command('ping')
     print("Connected successfully!")
