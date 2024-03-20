@@ -65,6 +65,7 @@ func JoinChatRoom(c *gin.Context, h *Hub) {
 	msg := &Message{
 		Content:     "A new user has joined the room",
 		RoomID:      roomID,
+		UserID:      clientID,
 		Username:    username,
 		Role:        userrole,
 		MessageType: string(Text),
