@@ -57,6 +57,9 @@ func (u *Service) UpdateField(key string, value any) Service {
 	if key == "price" {
 		u.Price = value.(float64)
 	}
+	if key == "timeslots" {
+		u.Timeslots = value.([]Timeslot)
+	}
 	return *u
 
 }
