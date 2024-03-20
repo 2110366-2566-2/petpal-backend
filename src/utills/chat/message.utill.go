@@ -7,7 +7,6 @@ func MessageHandle(m *Message) *Message {
 	case string(Emoji):
 		return m
 	case string(Image):
-		// Handle image messages
 		return m
 	case string(Video):
 		return m

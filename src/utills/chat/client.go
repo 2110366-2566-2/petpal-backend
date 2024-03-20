@@ -20,6 +20,7 @@ type Client struct {
 type Message struct {
 	Content     string    `json:"content"`
 	RoomID      string    `json:"roomId"`
+	UserID      string    `json:"userId"`
 	Username    string    `json:"username"`
 	Role        string    `json:"role"`
 	MessageType string    `json:messageType`
@@ -75,6 +76,7 @@ func (c *Client) readMessage(h *Hub) error {
 		msg := &Message{
 			Content:     string(m),
 			RoomID:      c.RoomID,
+			UserID:      c.ID,
 			Username:    c.Username,
 			Role:        c.Role,
 			MessageType: string(Text),
