@@ -123,8 +123,6 @@ definitions:
     type: object
   models.BookingRequest:
     properties:
-      SVCPID:
-        type: string
       serviceID:
         type: string
       timeslotID:
@@ -198,6 +196,26 @@ definitions:
         type: string
       result:
         $ref: '#/definitions/models.BookingFull'
+    type: object
+  models.Chat:
+    properties:
+      dateCreated:
+        type: string
+      messages:
+        description: This is usually only part of the chat, not all
+        items:
+          $ref: '#/definitions/models.Message'
+        type: array
+      roomID:
+        type: string
+      user0ID:
+        type: string
+      user0Type:
+        type: string
+      user1ID:
+        type: string
+      user1Type:
+        type: string
     type: object
   models.CreatePet:
     properties:
@@ -290,6 +308,17 @@ definitions:
       logintype:
         type: string
       password:
+        type: string
+    type: object
+  models.Message:
+    properties:
+      content:
+        type: string
+      messageType:
+        type: string
+      sender:
+        type: integer
+      timestamp:
         type: string
     type: object
   models.Pet:
@@ -551,6 +580,83 @@ paths:
       summary: Change user password
       tags:
       - Authentication
+  /chat/history:
+    post:
+      consumes:
+      - application/json
+      description: Create chat history of a room by roomId , user0Id , user1Id
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Chat'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      summary: Create chat history
+      tags:
+      - Chat
+  /chat/history/:roomId:
+    get:
+      consumes:
+      - application/json
+      description: Get chat history of a room by roomId
+      parameters:
+      - description: Page number(default 1)
+        in: query
+        name: page
+        type: integer
+      - description: Number of items per page(default 10)
+        in: query
+        name: per
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Chat'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      summary: Get chat history
+      tags:
+      - Chat
+    put:
+      consumes:
+      - application/json
+      description: Update chat history of a room by roomId
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Chat'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      summary: Update chat history
+      tags:
+      - Chat
   /current-entity:
     get:
       consumes:

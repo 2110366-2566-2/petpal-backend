@@ -14,5 +14,13 @@ func ChatHistoryRoutes(r *gin.RouterGroup) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllers.GetChatHistoryHandler(c, db)
 		})
+		chatHistoryGroup.POST("/history", func(c *gin.Context) {
+			db := c.MustGet("db").(*models.MongoDB)
+			controllers.CreateChatHistoryHandler(c, db)
+		})
+		chatHistoryGroup.PUT("/history/:roomId", func(c *gin.Context) {
+			db := c.MustGet("db").(*models.MongoDB)
+			controllers.UpdateChatHistoryHandler(c, db)
+		})
 	}
 }

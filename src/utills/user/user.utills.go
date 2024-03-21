@@ -2,7 +2,6 @@ package utills
 
 import (
 	"context"
-	"fmt"
 	"petpal-backend/src/models"
 	"time"
 
@@ -19,7 +18,6 @@ func InsertUser(db *models.MongoDB, user *models.User) (*models.User, error) {
 
 	// Insert the user into the collection
 	_, err := collection.InsertOne(context.Background(), user)
-	fmt.Println(err)
 	if err != nil {
 		return nil, err
 	}
