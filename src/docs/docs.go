@@ -76,6 +76,123 @@ const docTemplate = `{
                 }
             }
         },
+        "/chat/history": {
+            "post": {
+                "description": "Create chat history of a room by roomId , user0Id , user1Id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Chat"
+                ],
+                "summary": "Create chat history",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Chat"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/chat/history/:roomId": {
+            "get": {
+                "description": "Get chat history of a room by roomId",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Chat"
+                ],
+                "summary": "Get chat history",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number(default 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of items per page(default 10)",
+                        "name": "per",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Chat"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update chat history of a room by roomId",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Chat"
+                ],
+                "summary": "Update chat history",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Chat"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/current-entity": {
             "get": {
                 "security": [
@@ -2577,9 +2694,6 @@ const docTemplate = `{
         "models.BookingRequest": {
             "type": "object",
             "properties": {
-                "SVCPID": {
-                    "type": "string"
-                },
                 "serviceID": {
                     "type": "string"
                 },
@@ -2690,6 +2804,36 @@ const docTemplate = `{
                 },
                 "result": {
                     "$ref": "#/definitions/models.BookingFull"
+                }
+            }
+        },
+        "models.Chat": {
+            "type": "object",
+            "properties": {
+                "dateCreated": {
+                    "type": "string"
+                },
+                "messages": {
+                    "description": "This is usually only part of the chat, not all",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Message"
+                    }
+                },
+                "roomID": {
+                    "type": "string"
+                },
+                "user0ID": {
+                    "type": "string"
+                },
+                "user0Type": {
+                    "type": "string"
+                },
+                "user1ID": {
+                    "type": "string"
+                },
+                "user1Type": {
+                    "type": "string"
                 }
             }
         },
@@ -2831,6 +2975,23 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Message": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "messageType": {
+                    "type": "string"
+                },
+                "sender": {
+                    "type": "integer"
+                },
+                "timestamp": {
                     "type": "string"
                 }
             }
