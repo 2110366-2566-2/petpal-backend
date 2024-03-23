@@ -2,6 +2,7 @@ package configs
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"strings"
 
@@ -89,7 +90,9 @@ func GetProjectAbsPath() string {
 		return ""
 	}
 	path = strings.Split(path, "src")[0]
-	path = strings.TrimRight(path, "src/")
+	path = path + "src/"
+
+	fmt.Println(path)
 
 	return path
 }
