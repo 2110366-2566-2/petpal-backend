@@ -29,6 +29,8 @@ N_PETS = 5
 N_SVCP = 5
 N_SERVICES = 5
 
+N_ADMIN = 5
+
 SEED = 696969
 random.seed(SEED)
 
@@ -185,3 +187,18 @@ for user_idx in range(N_USER):
             continue
         else:
             print('\tcreated booking of user', user_idx)
+
+# register admin -------------------------------------------------------------
+
+for admin_idx in range(N_ADMIN):
+    admin = {
+        "email": f"{admin_idx}@admin.com",
+        "fullName": f"admin {admin_idx}",
+        "password": "password",
+        "username": f"admin {admin_idx}"
+    }
+    response = requests.post(BASE_URL + "register-admin", json=admin)
+    if response.status_code != 200:
+        continue
+    else:
+        print('registered admin', admin_idx)
