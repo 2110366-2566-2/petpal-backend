@@ -48,6 +48,4 @@ func (u *User) ImplementCurrentEntity() {} // Empty stub if no shared methods
 func (u *User) RemoveSensitiveData() {
 	// remove password
 	u.Password = ""
-	u.DefaultBank = ""
-	u.DefaultAccountNumber = ""
 }

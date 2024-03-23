@@ -13,7 +13,7 @@ import (
 // ChangePasswordHandler godoc
 //
 // @Summary     Change user password
-// @Description Change user password
+// @Description Change user password (login type : user, svcp, admin)
 // @Tags        Authentication
 //
 // @Accept      json
@@ -52,11 +52,10 @@ func ChangePasswordHandler(c *gin.Context, db *models.MongoDB) {
 	// Respond with a success message
 	c.JSON(http.StatusOK, gin.H{"message": "Password changed successfully"})
 }
-
 type ChangePasswordReq struct {
 	UserEmail   string
 	NewPassword string
-	LoginType   string
+	LoginType   string	
 }
 
 // GetCurrentEntityHandler godoc
@@ -200,4 +199,39 @@ func RegisterSVCPHandler(c *gin.Context, db *models.MongoDB) {
 	// Set token in cookies and send to frontend
 	c.SetCookie("token", tokenString, 3600, "/", "", false, true)
 	c.JSON(http.StatusOK, gin.H{"message": "User registered successfully", "token": tokenString})
+}
+
+// RegisterAdminHandler godoc
+//
+// @Summary     Admin registration
+// @Description Register a new admin
+// @Tags        Authentication
+//
+// @Accept      json
+// @Produce     json
+//
+// @Param       admin_data     body    models.CreateAdmin    true    "Admin registration data"
+//
+// @Success     200      {object} object{message=string, token=string}    "Success"
+// @Failure     400      {object} object{error=string}      "Bad request"
+// @Failure     500      {object} object{error=string}      "Internal server error"
+//
+// @Router      /register-admin [post]
+func RegisterAdminHandler(c *gin.Context, db *models.MongoDB) {
+	// Parse request body to get user data
+	var createAdmin models.CreateAdmin
+	if err := c.ShouldBindJSON(&createAdmin); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	// Generate a JWT token
+	tokenString, err := auth.RegisterAdmin(createAdmin, db)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Set token in cookies and send to frontend
+	c.SetCookie("token", tokenString, 3600, "/", "", false, true)
+	c.JSON(http.StatusOK, gin.H{"message": "Admin registered successfully", "token": tokenString})
 }
