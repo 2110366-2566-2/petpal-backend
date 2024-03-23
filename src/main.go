@@ -68,7 +68,8 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	port := configs.GetPort()
+	configs.GetInstance().SetProductionEnv()
+	port := configs.GetInstance().GetPort()
 
 	// add router
 	user_route.UserRoutes(r)

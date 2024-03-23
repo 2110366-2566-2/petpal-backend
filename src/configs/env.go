@@ -1,53 +1,73 @@
 package configs
 
 import (
-	"log"
+	"errors"
 	"os"
 
 	"github.com/lpernett/godotenv"
 )
 
-func GetPort() string {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading port from .env file")
-	}
-	port := os.Getenv("PORT")
-	return port
+type EnvormentVariable struct {
+	name                  string
+	port                  string
+	db_uri                string
+	email_sender_address  string
+	email_sender_password string
+	jwt_secret            string
 }
 
-func GetDB_URI() string {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading db_uri from .env file")
+var instance *EnvormentVariable
+
+func GetInstance() *EnvormentVariable {
+	if instance == nil {
+		instance = &EnvormentVariable{name: "Golang Singleton"}
 	}
-	db_uri := os.Getenv("DB_URI")
-	return db_uri
+	return instance
 }
 
-func GetEmailSenderAddress() string {
+func (s *EnvormentVariable) SetProductionEnv() error {
+
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading email_sender_address from .env file")
+		return errors.New("Error loading .env file")
 	}
-	email_sender_address := os.Getenv("EMAIL_SENDER_ADDRESS")
-	return email_sender_address
+	s.name = "Production"
+	s.port = os.Getenv("PORT")
+	s.db_uri = os.Getenv("DB_URI")
+	s.email_sender_address = os.Getenv("EMAIL_SENDER_ADDRESS")
+	s.email_sender_password = os.Getenv("EMAIL_SENDER_PASSWORD")
+	s.jwt_secret = os.Getenv("JWT_SECRET")
+	return nil
+}
+func (s *EnvormentVariable) SetTestEnv() error {
+	err := godotenv.Load(".env.test")
+	if err != nil {
+		return errors.New("Error loading .env.test file")
+	}
+	s.name = "Test"
+	s.port = os.Getenv("PORT")
+	s.db_uri = os.Getenv("DB_URI")
+	s.email_sender_address = os.Getenv("EMAIL_SENDER_ADDRESS")
+	s.email_sender_password = os.Getenv("EMAIL_SENDER_PASSWORD")
+	s.jwt_secret = os.Getenv("JWT_SECRET")
+	return nil
 }
 
-func GetEmailSenderPassword() string {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading email_sender_password from .env file")
-	}
-	email_sender_password := os.Getenv("EMAIL_SENDER_PASSWORD")
-	return email_sender_password
+func (s *EnvormentVariable) GetName() string {
+	return s.name
 }
-
-func GetJWT_SECRET() string {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading jwt_secret from .env file")
-	}
-	jwt_secret := os.Getenv("JWT_SECRET")
-	return jwt_secret
+func (s *EnvormentVariable) GetPort() string {
+	return s.port
+}
+func (s *EnvormentVariable) GetDB_URI() string {
+	return s.db_uri
+}
+func (s *EnvormentVariable) GetEmailSenderAddress() string {
+	return s.email_sender_address
+}
+func (s *EnvormentVariable) GetEmailSenderPassword() string {
+	return s.email_sender_password
+}
+func (s *EnvormentVariable) GetJWT_SECRET() string {
+	return s.jwt_secret
 }

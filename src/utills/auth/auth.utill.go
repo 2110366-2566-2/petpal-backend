@@ -14,7 +14,7 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-var secretKey = configs.GetJWT_SECRET()
+var secretKey = configs.GetInstance().GetJWT_SECRET()
 
 type JWTClaims struct {
 	LoginType string `json:logintype`
