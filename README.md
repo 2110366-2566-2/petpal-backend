@@ -24,6 +24,12 @@ to run go backend server use following command (cd into src directory first)
 cd src
 go run main.go
 ```
+and what if u want to use hot-reload(nodemon) 
+```bash
+npm install
+cd src
+nodemon
+```
 
 # Swagger 
 
