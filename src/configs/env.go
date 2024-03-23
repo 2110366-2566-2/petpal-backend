@@ -4,6 +4,8 @@ import (
 	"errors"
 	"os"
 
+	"sync"
+
 	"github.com/lpernett/godotenv"
 )
 
@@ -16,37 +18,41 @@ type EnvormentVariable struct {
 	jwt_secret            string
 }
 
-var instance *EnvormentVariable
+var (
+	instance *EnvormentVariable
+	once     sync.Once
+)
 
 func GetInstance() *EnvormentVariable {
-	if instance == nil {
-		instance = &EnvormentVariable{name: "Golang Singleton"}
-	}
+	once.Do(func() {
+		instance = &EnvormentVariable{name: "Safe Golang Singleton"}
+	})
 	return instance
 }
 
 func (s *EnvormentVariable) SetProductionEnv() error {
 
-	err := godotenv.Load()
+	err := godotenv.Load(".env")
 	if err != nil {
 		return errors.New("Error loading .env file")
 	}
 	s.name = "Production"
-	s.port = os.Getenv("PORT")
-	s.db_uri = os.Getenv("DB_URI")
+	s.port = "8000"
+	s.db_uri = "mongodb://inwza:strongpassword@localhost:27017"
 	s.email_sender_address = os.Getenv("EMAIL_SENDER_ADDRESS")
 	s.email_sender_password = os.Getenv("EMAIL_SENDER_PASSWORD")
 	s.jwt_secret = os.Getenv("JWT_SECRET")
 	return nil
 }
 func (s *EnvormentVariable) SetTestEnv() error {
-	err := godotenv.Load(".env.test")
+	err := godotenv.Load("test.env")
 	if err != nil {
-		return errors.New("Error loading .env.test file")
+		return errors.New("Error loading test.env file")
 	}
 	s.name = "Test"
 	s.port = os.Getenv("PORT")
-	s.db_uri = os.Getenv("DB_URI")
+	s.port = "8000"
+	s.db_uri = "mongodb://inwza:strongpassword@localhost:27017"
 	s.email_sender_address = os.Getenv("EMAIL_SENDER_ADDRESS")
 	s.email_sender_password = os.Getenv("EMAIL_SENDER_PASSWORD")
 	s.jwt_secret = os.Getenv("JWT_SECRET")

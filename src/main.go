@@ -46,6 +46,12 @@ func InitGinRouter() *gin.Engine {
 }
 
 func main() {
+	err := configs.GetInstance().SetProductionEnv()
+	if err != nil {
+		fmt.Println("Error setting production env:", err)
+		return
+	}
+
 	// Initialize Gin router
 	r := InitGinRouter()
 
@@ -68,7 +74,6 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	configs.GetInstance().SetProductionEnv()
 	port := configs.GetInstance().GetPort()
 
 	// add router
