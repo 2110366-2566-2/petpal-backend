@@ -22,8 +22,8 @@ func CreateNewServices(createServices *models.CreateService) *models.Service {
 			EndTime:    createServices.Timeslots[i].EndTime,
 			Status:     "available",
 		}
-		// newTimeslots = append(newTimeslots, newTimeslot)
-		newTimeslots[i] = newTimeslot
+		newTimeslots = append(newTimeslots, newTimeslot)
+		// newTimeslots[i] = newTimeslot
 	}
 
 	return &models.Service{

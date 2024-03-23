@@ -28,9 +28,9 @@ func InsertUser(db *models.MongoDB, user *models.User) (*models.User, error) {
 
 func GetUsers(db *models.MongoDB, filter bson.D, page int64, per int64) ([]models.User, error) {
 	collection := db.Collection("user")
-	opts := options.Find().SetSkip(page * per).SetLimit(per).SetProjection(bson.D{
-		{Key: "search_history", Value: 0},
-	})
+
+	// define options for pagination
+	opts := options.Find().SetSkip(page * per).SetLimit(per)
 
 	// Find all documents in the collection
 	cursor, err := collection.Find(context.Background(), filter, opts)
@@ -39,7 +39,6 @@ func GetUsers(db *models.MongoDB, filter bson.D, page int64, per int64) ([]model
 	}
 	defer cursor.Close(context.Background())
 
-	// Decode results
 	var users []models.User
 	if err := cursor.All(context.Background(), &users); err != nil {
 		return nil, err
