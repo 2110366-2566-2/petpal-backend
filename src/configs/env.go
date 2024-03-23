@@ -62,6 +62,7 @@ func (s *EnvormentVariable) SetTestEnv() error {
 	s.email_sender_address = os.Getenv("EMAIL_SENDER_ADDRESS")
 	s.email_sender_password = os.Getenv("EMAIL_SENDER_PASSWORD")
 	s.jwt_secret = os.Getenv("JWT_SECRET")
+	fmt.Println(s.port, s.db_uri, s.email_sender_address, s.email_sender_password, s.jwt_secret)
 	return nil
 }
 
