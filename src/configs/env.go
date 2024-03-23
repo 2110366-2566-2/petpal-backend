@@ -3,6 +3,7 @@ package configs
 import (
 	"errors"
 	"os"
+	"strings"
 
 	"sync"
 
@@ -32,7 +33,9 @@ func GetInstance() *EnvormentVariable {
 
 func (s *EnvormentVariable) SetProductionEnv() error {
 
-	err := godotenv.Load(".env")
+	var envFile = GetProjectAbsPath() + ".env"
+	err := godotenv.Load(envFile)
+
 	if err != nil {
 		return errors.New("Error loading .env file")
 	}
@@ -45,7 +48,10 @@ func (s *EnvormentVariable) SetProductionEnv() error {
 	return nil
 }
 func (s *EnvormentVariable) SetTestEnv() error {
-	err := godotenv.Load("test.env")
+
+	var envFile = GetProjectAbsPath() + "test.env"
+	err := godotenv.Load(envFile)
+
 	if err != nil {
 		return errors.New("Error loading test.env file")
 	}
@@ -75,4 +81,15 @@ func (s *EnvormentVariable) GetEmailSenderPassword() string {
 }
 func (s *EnvormentVariable) GetJWT_SECRET() string {
 	return s.jwt_secret
+}
+
+func GetProjectAbsPath() string {
+	path, err := os.Getwd()
+	if err != nil {
+		return ""
+	}
+	path = strings.Split(path, "src")[0]
+	path = strings.TrimRight(path, "src/")
+
+	return path
 }
