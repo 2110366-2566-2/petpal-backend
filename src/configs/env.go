@@ -37,8 +37,8 @@ func (s *EnvormentVariable) SetProductionEnv() error {
 		return errors.New("Error loading .env file")
 	}
 	s.name = "Production"
-	s.port = "8000"
-	s.db_uri = "mongodb://inwza:strongpassword@localhost:27017"
+	s.port = os.Getenv("PORT")
+	s.db_uri = os.Getenv("DB_URI")
 	s.email_sender_address = os.Getenv("EMAIL_SENDER_ADDRESS")
 	s.email_sender_password = os.Getenv("EMAIL_SENDER_PASSWORD")
 	s.jwt_secret = os.Getenv("JWT_SECRET")
@@ -51,8 +51,7 @@ func (s *EnvormentVariable) SetTestEnv() error {
 	}
 	s.name = "Test"
 	s.port = os.Getenv("PORT")
-	s.port = "8000"
-	s.db_uri = "mongodb://inwza:strongpassword@localhost:27017"
+	s.db_uri = os.Getenv("DB_URI")
 	s.email_sender_address = os.Getenv("EMAIL_SENDER_ADDRESS")
 	s.email_sender_password = os.Getenv("EMAIL_SENDER_PASSWORD")
 	s.jwt_secret = os.Getenv("JWT_SECRET")
