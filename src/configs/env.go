@@ -18,6 +18,7 @@ type EnvormentVariable struct {
 	email_sender_address  string
 	email_sender_password string
 	jwt_secret            string
+	petpal_phone_number   string
 }
 
 var (
@@ -46,6 +47,7 @@ func (s *EnvormentVariable) SetProductionEnv() error {
 	s.email_sender_address = os.Getenv("EMAIL_SENDER_ADDRESS")
 	s.email_sender_password = os.Getenv("EMAIL_SENDER_PASSWORD")
 	s.jwt_secret = os.Getenv("JWT_SECRET")
+	s.petpal_phone_number = os.Getenv("PETPAL_PHONENUMBER")
 	return nil
 }
 func (s *EnvormentVariable) SetTestEnv() error {
@@ -62,6 +64,7 @@ func (s *EnvormentVariable) SetTestEnv() error {
 	s.email_sender_address = os.Getenv("EMAIL_SENDER_ADDRESS")
 	s.email_sender_password = os.Getenv("EMAIL_SENDER_PASSWORD")
 	s.jwt_secret = os.Getenv("JWT_SECRET")
+	s.petpal_phone_number = os.Getenv("PETPAL_PHONENUMBER")
 	return nil
 }
 
@@ -83,6 +86,9 @@ func (s *EnvormentVariable) GetEmailSenderPassword() string {
 func (s *EnvormentVariable) GetJWT_SECRET() string {
 	return s.jwt_secret
 }
+func (s *EnvormentVariable) GetPetpalPhoneNumber() string {
+	return s.petpal_phone_number
+}
 
 func GetProjectAbsPath() string {
 	path, err := os.Getwd()
@@ -97,4 +103,3 @@ func GetProjectAbsPath() string {
 
 	return path
 }
-
