@@ -416,7 +416,7 @@ definitions:
         type: boolean
       license:
         type: string
-      location:
+      address:
         type: string
       services:
         items:
@@ -431,7 +431,7 @@ definitions:
         type: number
       end_time:
         type: string
-      location:
+      address:
         type: string
       max_rating:
         type: number
@@ -1479,7 +1479,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Search services based on query, location, timeslot, price range,
+      description: Search services based on query, address, timeslot, price range,
         rating
       parameters:
       - description: Search filter

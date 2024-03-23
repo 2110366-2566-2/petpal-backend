@@ -3,7 +3,7 @@
     "bsonType" : "object",
     "title" : "svcp",
     "description" : "Store service Provider data",
-    "required" : ["SVCPID", "SVCPImg", "SVCPUsername", "SVCPPassword", "SVCPEmail", "isVerified", "SVCPResponsiblePerson", "defaultBank", "defaultAccountNumber", "license", "location", "SVCPAdditionalImg", "services"],
+    "required" : ["SVCPID", "SVCPImg", "SVCPUsername", "SVCPPassword", "SVCPEmail", "isVerified", "SVCPResponsiblePerson", "defaultBank", "defaultAccountNumber", "license", "address", "SVCPAdditionalImg", "services"],
     "properties" : {
         "SVCPID" : {"bsonType" : "string"},
         "SVCPImg" : {"bsonType" : "string"},
@@ -26,9 +26,13 @@
         "defaultBank" : {"bsonType" : "string"},
         "defaultAccountNumber" : {"bsonType" : "string"},
         "license" : {"bsonType" : "string"},
-        "location" : {
+        "address" : {
             "bsonType" : "string",
             "maxLength" : 256
+        },
+        "phoneNumber" : {
+            "bsonType" : "string",
+            "pattern" : "^[0-9]{10}$"
         },
         "description" : {"bsonType" : "string"},
         "SVCPAdditionalImg" : {"bsonType" : "string"},

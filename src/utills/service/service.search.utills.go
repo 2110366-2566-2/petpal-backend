@@ -39,7 +39,7 @@ func SearchServices(db *models.MongoDB, searchFilter *models.SearchFilter, id st
 					bson.D{{Key: "services.serviceDescription", Value: bson.D{{Key: "$regex", Value: searchFilter.Q}, {Key: "$options", Value: "i"}}}},
 				}}},
 				bson.D{{Key: "services.serviceType", Value: bson.D{{Key: "$regex", Value: searchFilter.ServicesType}, {Key: "$options", Value: "i"}}}},
-				bson.D{{Key: "location", Value: bson.D{{Key: "$regex", Value: searchFilter.Location}, {Key: "$options", Value: "i"}}}},
+				bson.D{{Key: "address", Value: bson.D{{Key: "$regex", Value: searchFilter.Address}, {Key: "$options", Value: "i"}}}},
 				bson.D{{Key: "services.price", Value: bson.D{{Key: "$gte", Value: searchFilter.StartPriceRange}, {Key: "$lte", Value: searchFilter.EndPriceRange}}}},
 				bson.D{{Key: "services.averageRating", Value: bson.D{{Key: "$gte", Value: searchFilter.MinRating}, {Key: "$lte", Value: searchFilter.MaxRating}}}},
 			}},
@@ -47,7 +47,7 @@ func SearchServices(db *models.MongoDB, searchFilter *models.SearchFilter, id st
 		{{Key: "$sort", Value: bson.D{{Key: sortCiteria, Value: isDesc}}}},
 		{{Key: "$project", Value: bson.D{
 			{Key: "services", Value: 1},
-			{Key: "location", Value: 1},
+			{Key: "address", Value: 1},
 			{Key: "SVCPUsername", Value: 1},
 			{Key: "SVCPServiceType", Value: 1},
 		}}},

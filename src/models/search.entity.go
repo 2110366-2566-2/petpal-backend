@@ -7,7 +7,7 @@ import "time"
 type SearchFilter struct {
 	Q               string    `json:"q" bson:"q"`
 	ServicesType    string    `json:"services_type" bson:"services_type"`
-	Location        string    `json:"location" bson:"location"`
+	Address         string    `json:"address" bson:"address"`
 	StartTime       time.Time `json:"start_time" bson:"start_time"`
 	EndTime         time.Time `json:"end_time" bson:"end_time"`
 	StartPriceRange float64   `json:"start_price_range" bson:"start_price_range"`
@@ -27,7 +27,7 @@ type SearchHistory struct {
 
 type SearchResult struct {
 	Services        Service `json:"services"`
-	Location        string  `json:"location"`
+	Address         string  `json:"address"`
 	SVCPUsername    string  `json:"SVCPUsername"`
 	SVCPServiceType string  `json:"SVCPServiceType"`
 }

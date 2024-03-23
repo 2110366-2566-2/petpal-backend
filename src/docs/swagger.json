@@ -1302,7 +1302,7 @@
         },
         "/service/searching": {
             "post": {
-                "description": "Search services based on query, location, timeslot, price range, rating",
+                "description": "Search services based on query, address, timeslot, price range, rating",
                 "consumes": [
                     "application/json"
                 ],
@@ -3130,7 +3130,7 @@
                 "license": {
                     "type": "string"
                 },
-                "location": {
+                "address": {
                     "type": "string"
                 },
                 "services": {
@@ -3153,7 +3153,7 @@
                 "end_time": {
                     "type": "string"
                 },
-                "location": {
+                "address": {
                     "type": "string"
                 },
                 "max_rating": {
