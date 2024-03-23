@@ -52,7 +52,7 @@ func CreateServicesHandler(c *gin.Context, db *models.MongoDB) {
 // SearchServicesHandler godoc
 //
 // @Summary Search services
-// @Description Search services based on query, location, timeslot, price range, rating
+// @Description Search services based on query, Address, timeslot, price range, rating
 // @Tags Service
 //
 // @Accept json

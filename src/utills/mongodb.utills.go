@@ -17,7 +17,7 @@ func NewMongoDB() (*models.MongoDB, error) {
 	//"mongodb://inwza:strongpassword@localhost:27017/"
 	mongoClient, err := mongo.Connect(
 		ctx,
-		options.Client().ApplyURI(configs.GetDB_URI()),
+		options.Client().ApplyURI(configs.GetInstance().GetDB_URI()),
 	)
 
 	if err != nil {

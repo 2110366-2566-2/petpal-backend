@@ -7,7 +7,7 @@ import (
 // Send an email to "toEmailAddress" with "emailSubject" and "emailContent"
 func SendEmailWithGmail(toEmailAddress string, emailSubject string, emailContent string) error {
 	// Add a function to validate an Email address
-	sender := NewGmailSender("PetpalAdmin", configs.GetEmailSenderAddress(), configs.GetEmailSenderPassword())
+	sender := NewGmailSender("PetpalAdmin", configs.GetInstance().GetEmailSenderAddress(), configs.GetInstance().GetEmailSenderPassword())
 	/* Example emailContent
 	`
 	<h4>สวัสดีครับ</h4>
