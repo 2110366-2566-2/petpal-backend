@@ -75,12 +75,16 @@ func GetSVCPByEmail(db *models.MongoDB, email string) (*models.SVCP, error) {
 	return &svcp, nil
 }
 
-func UpdateSVCP(db *models.MongoDB, id string, svcp *bson.M) error {
+func UpdateSVCP(db *models.MongoDB, current_svcp *models.SVCP, svcp *bson.M) error {
 	// get collection
 	collection := db.Collection("svcp")
 
+	for key, value := range *svcp {
+		current_svcp.UpdateField(key, value)
+	}
+
 	// update service provider by *SVCPID*, could be changed to individual id when it exists
-	filter := bson.D{{Key: "SVCPID", Value: id}}
+	filter := bson.D{{Key: "SVCPID", Value: current_svcp.SVCPID}}
 	update := bson.D{{Key: "$set", Value: svcp}}
 	res, err := collection.UpdateOne(context.Background(), filter, update)
 	if err != nil {

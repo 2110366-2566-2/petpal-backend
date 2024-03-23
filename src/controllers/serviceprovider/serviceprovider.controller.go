@@ -107,7 +107,6 @@ func GetSVCPByIDHandler(c *gin.Context, db *models.MongoDB, id string) {
 // @Accept  	json
 // @Produce  	json
 //
-// @Param 		id		path	string 	true	"Service Provider ID"
 // @Param 		svcp	body 	object 	true	"Service Provider Object (only the fields to be updated)"
 //
 // @Success 200 {object} models.BasicRes
@@ -126,7 +125,7 @@ func UpdateSVCPHandler(c *gin.Context, db *models.MongoDB) {
 		return
 	}
 
-	err = svcp_utills.UpdateSVCP(db, current_svcp.SVCPID, &svcp)
+	err = svcp_utills.UpdateSVCP(db, current_svcp, &svcp)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: "Failed to update service provider"})
 		return
