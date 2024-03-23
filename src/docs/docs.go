@@ -17,7 +17,7 @@ const docTemplate = `{
     "paths": {
         "/change-password": {
             "post": {
-                "description": "Change user password",
+                "description": "Change user password (login type : user, svcp, admin)",
                 "consumes": [
                     "application/json"
                 ],
@@ -305,6 +305,70 @@ const docTemplate = `{
                             "type": "object",
                             "properties": {
                                 "message": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/register-admin": {
+            "post": {
+                "description": "Register a new admin",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Admin registration",
+                "parameters": [
+                    {
+                        "description": "Admin registration data",
+                        "name": "admin_data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CreateAdmin"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                " token": {
+                                    "type": "string"
+                                },
+                                "message": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "error": {
                                     "type": "string"
                                 }
                             }
@@ -2833,6 +2897,23 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user1Type": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.CreateAdmin": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "fullName": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "username": {
                     "type": "string"
                 }
             }

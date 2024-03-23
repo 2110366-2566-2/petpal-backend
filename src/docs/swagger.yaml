@@ -217,6 +217,17 @@ definitions:
       user1Type:
         type: string
     type: object
+  models.CreateAdmin:
+    properties:
+      email:
+        type: string
+      fullName:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    type: object
   models.CreatePet:
     properties:
       age:
@@ -545,7 +556,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Change user password
+      description: 'Change user password (login type : user, svcp, admin)'
       parameters:
       - description: Change password request
         in: body
@@ -731,6 +742,47 @@ paths:
                 type: string
             type: object
       summary: User logout
+      tags:
+      - Authentication
+  /register-admin:
+    post:
+      consumes:
+      - application/json
+      description: Register a new admin
+      parameters:
+      - description: Admin registration data
+        in: body
+        name: admin_data
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateAdmin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              ' token':
+                type: string
+              message:
+                type: string
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+      summary: Admin registration
       tags:
       - Authentication
   /register-svcp:

@@ -6,8 +6,9 @@ import (
 	"petpal-backend/src/configs"
 	"petpal-backend/src/models"
 	svcp_utills "petpal-backend/src/utills/serviceprovider"
-	utills "petpal-backend/src/utills/serviceprovider"
 	user_utills "petpal-backend/src/utills/user"
+	admin_utills "petpal-backend/src/utills/admin"
+	utills "petpal-backend/src/utills/serviceprovider"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -88,8 +89,23 @@ func Login(db *models.MongoDB, req *models.LoginReq) (*models.LoginRes, error) {
 		}
 
 		return &models.LoginRes{AccessToken: ss, LoginType: "user", UserEmail: u.Email}, nil
+	} else if loginType == "admin" {
+		u, err := admin_utills.GetAdminByEmail(db, req.Email)
+		if err != nil {
+			return &models.LoginRes{}, err
+		}
+		err = CheckPassword(req.Password, u.Password)
+		if err != nil {
+			return &models.LoginRes{}, err
+		}
+		ss, err := GenerateToken(u.Username, u.Email, "admin")
+		if err != nil {
+			return &models.LoginRes{}, err
+		}
+
+		return &models.LoginRes{AccessToken: ss, LoginType: "admin", UserEmail: u.Email}, nil
 	}
-	return &models.LoginRes{}, fmt.Errorf("Invalid Login Type Request")
+	return &models.LoginRes{}, fmt.Errorf("invalid Login Type Request")
 }
 
 type CurrentEntity interface {
@@ -107,15 +123,24 @@ func GetCurrentEntity(token string, db *models.MongoDB) (CurrentEntity, error) {
 		if err != nil {
 			return nil, err
 		}
+		user.RemoveSensitiveData()
 		return user, nil
 	} else if loginType == "svcp" {
 		user, err := utills.GetSVCPByEmail(db, loginRes.UserEmail)
 		if err != nil {
 			return nil, err
 		}
+		user.RemoveSensitiveData()
+		return user, nil
+	} else if loginType == "admin" { 
+		user, err := admin_utills.GetAdminByEmail(db, loginRes.UserEmail)
+		if err != nil {
+			return nil, err
+		}
+		user.RemoveSensitiveData()
 		return user, nil
 	} else {
-		return nil, errors.New("Get Wrong User type we only accept svcp login type but get " + loginType)
+		return nil, errors.New("Get Wrong User type we only accept svcp/user/admin login type but get " + loginType)
 	}
 }
 

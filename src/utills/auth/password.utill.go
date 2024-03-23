@@ -24,12 +24,12 @@ func CheckPassword(password string, hashedPassword string) error {
 }
 
 func ChangePassword(email string, newPassword string, login_type string, db *models.MongoDB) (string, error) {
-	if login_type != "user" && login_type != "svcp" {
+	if login_type != "user" && login_type != "svcp" && login_type != "admin"{
 		return "Invalid login type", nil
 	}
 	var passwordKey string
 	var emailKey string
-	if login_type == "user" {
+	if login_type == "user" || login_type == "admin"{
 		passwordKey = "password"
 		emailKey = "email"
 	} else {
