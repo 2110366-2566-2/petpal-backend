@@ -21,6 +21,10 @@ func AuthRoutes(r *gin.Engine) {
 		db := c.MustGet("db").(*models.MongoDB)
 		controllers.RegisterUserHandler(c, db)
 	})
+	authGroup.POST("/register-admin", func(c *gin.Context) {
+		db := c.MustGet("db").(*models.MongoDB)
+		controllers.RegisterAdminHandler(c, db)
+	})
 	authGroup.POST("/login", func(c *gin.Context) {
 		db := c.MustGet("db").(*models.MongoDB)
 		controllers.LoginHandler(c, db)

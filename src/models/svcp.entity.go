@@ -39,6 +39,4 @@ func (e *SVCP) ImplementCurrentEntity() {} // Empty stub if no shared methods
 func (e *SVCP) RemoveSensitiveData() {
 	// remove password
 	e.SVCPPassword = ""
-	e.DefaultBank = ""
-	e.DefaultAccountNumber = ""
 }
