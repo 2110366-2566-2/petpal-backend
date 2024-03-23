@@ -89,6 +89,7 @@ func GetProjectAbsPath() string {
 	if err != nil {
 		return ""
 	}
+
 	path = strings.Split(path, "src")[0]
 	path = path + "src/"
 
@@ -96,3 +97,4 @@ func GetProjectAbsPath() string {
 
 	return path
 }
+

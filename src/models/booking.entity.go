@@ -205,3 +205,7 @@ type BookingWithIdArrayRes struct {
 	Message string           `json:"message"`
 	Result  []BookingShowALL `json:"result"`
 }
+
+type PromptpayQr struct {
+	QrImage []byte `json:"qrImage"`
+}

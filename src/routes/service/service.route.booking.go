@@ -4,9 +4,9 @@ import (
 	// controllers "petpal-backend/src/controllers/user"
 	// "petpal-backend/src/models"
 
+	controllersService "petpal-backend/src/controllers/service"
 	controllersSVCP "petpal-backend/src/controllers/serviceprovider"
-	controllers "petpal-backend/src/controllers/user"
-
+	controllersUser "petpal-backend/src/controllers/user"
 	"petpal-backend/src/models"
 
 	"github.com/gin-gonic/gin"
@@ -18,32 +18,32 @@ func ServiceBookingRoutes(r *gin.RouterGroup) {
 	{
 		bookingGroup.POST("/create", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
-			controllers.CreateBookingHandler(c, db)
+			controllersUser.CreateBookingHandler(c, db)
 		})
 
 		bookingGroup.POST("/all/user", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
-			controllers.UserGetAllBookingHandler(c, db)
+			controllersUser.UserGetAllBookingHandler(c, db)
 		})
 
 		bookingGroup.POST("/detail/user", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
-			controllers.UserGetDetailBookingHandler(c, db)
+			controllersUser.UserGetDetailBookingHandler(c, db)
 		})
 
 		bookingGroup.PATCH("/cancel/user", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
-			controllers.UserCancelBookingHandler(c, db)
+			controllersUser.UserCancelBookingHandler(c, db)
 		})
 
 		bookingGroup.PATCH("/reschedule/user", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
-			controllers.UserRescheduleBookingHandeler(c, db)
+			controllersUser.UserRescheduleBookingHandeler(c, db)
 		})
 
 		bookingGroup.PATCH("/complete/user", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
-			controllers.UserCompleteBookingHandler(c, db)
+			controllersUser.UserCompleteBookingHandler(c, db)
 		})
 
 		// svcp
@@ -68,6 +68,14 @@ func ServiceBookingRoutes(r *gin.RouterGroup) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllersSVCP.SVCPGetDetailBookingHandler(c, db)
 		})
-
+		// Payment
+		bookingGroup.POST("/payment/qr", func(c *gin.Context) {
+			db := c.MustGet("db").(*models.MongoDB)
+			controllersService.GetPromptpayQrHandler(c, db)
+		})
+		bookingGroup.POST("/payment/authorize", func(c *gin.Context) {
+			db := c.MustGet("db").(*models.MongoDB)
+			controllersService.AuthorizePaymentHandler(c, db)
+		})
 	}
 }

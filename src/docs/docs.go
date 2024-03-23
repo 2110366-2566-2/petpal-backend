@@ -505,6 +505,58 @@ const docTemplate = `{
                 }
             }
         },
+        "/service/booking//payment/authorize": {
+            "post": {
+                "description": "Authorize a from a booking payment",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Service Booking Payment"
+                ],
+                "summary": "Authorize a from a booking payment",
+                "parameters": [
+                    {
+                        "description": "Request Body",
+                        "name": "requestBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.RequestBookingId"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/models.Booking"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "401": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/service/booking/all/svcp": {
             "post": {
                 "security": [
@@ -1121,6 +1173,52 @@ const docTemplate = `{
                 }
             }
         },
+        "/service/booking/payment/qr": {
+            "post": {
+                "description": "Get promptpayQr from a booking",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Service Booking Payment"
+                ],
+                "summary": "Get promptpayQr from a booking",
+                "parameters": [
+                    {
+                        "description": "Request Body",
+                        "name": "requestBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.RequestBookingId"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/models.PromptpayQr"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/service/booking/reschedule/user": {
             "patch": {
                 "security": [
@@ -1377,7 +1475,7 @@ const docTemplate = `{
         },
         "/service/searching": {
             "post": {
-                "description": "Search services based on query, Address, timeslot, price range, rating",
+                "description": "Search services based on query, location, timeslot, price range, rating",
                 "consumes": [
                     "application/json"
                 ],
@@ -1622,6 +1720,13 @@ const docTemplate = `{
                 ],
                 "summary": "Update service provider",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Service Provider ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "description": "Service Provider Object (only the fields to be updated)",
                         "name": "svcp",
@@ -3105,6 +3210,17 @@ const docTemplate = `{
                 },
                 "vaccinations": {
                     "type": "string"
+                }
+            }
+        },
+        "models.PromptpayQr": {
+            "type": "object",
+            "properties": {
+                "qrImage": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 }
             }
         },

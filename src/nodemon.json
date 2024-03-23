@@ -3,4 +3,5 @@
     "ext": "go",
     "ignore": ["*.test.go", "vendor/**"],
     "signal": "SIGTERM"
-  }
+}
+  
