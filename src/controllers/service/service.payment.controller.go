@@ -17,7 +17,7 @@ import (
 // @Accept json
 // @Produce json
 // @Param requestBody body models.RequestBookingId true "Request Body"
-// @Success 200 {array} models.PromptpayQr "Success"
+// @Success 200 {object} models.PromptpayQr "Success"
 // @Failure 400 {object} models.BasicErrorRes "Bad Request"
 // @Failure 500 {object} models.BasicErrorRes "Internal Server Error"
 // @Router /service/booking/promptpayqr [post]
@@ -47,16 +47,17 @@ func GetPromptpayQrHandler(c *gin.Context, db *models.MongoDB) {
 }
 
 // AuthorizePaymentHandler godoc
-// @Summary Get promptpayQr from a booking
-// @Description Get promptpayQr from a booking
+// @Summary Authorize a from a booking payment
+// @Description Authorize a from a booking payment
 // @Tags Service
 // @Accept json
 // @Produce json
 // @Param requestBody body models.RequestBookingId true "Request Body"
-// @Success 200 {array} models.PromptpayQr "Success"
+// @Success 200 {object} models.Booking "Success"
 // @Failure 400 {object} models.BasicErrorRes "Bad Request"
+// @Failure 401 {object} models.BasicErrorRes "Bad Request"
 // @Failure 500 {object} models.BasicErrorRes "Internal Server Error"
-// @Router /service/booking/promptpayqr [post]
+// @Router /service/booking/payment-authorize [post]
 func AuthorizePaymentHandler(c *gin.Context, db *models.MongoDB) {
 	request := models.RequestBookingId{}
 	//400 bad request
@@ -64,20 +65,29 @@ func AuthorizePaymentHandler(c *gin.Context, db *models.MongoDB) {
 		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: err.Error()})
 		return
 	}
+	//401 not authorized
+	current_user, err := _authenticate(c, db)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, models.BasicErrorRes{Error: err.Error()})
+		return
+	}
 	if request.BookingID == "" {
 		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "Missing bookingID"})
 		return
 	}
-
 	booking, err := service_utills.GetABookingDetail(db, request.BookingID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})
 		return
 	}
-	qr, err := payment_utills.GeneratePromptpayQr(configs.GetPetpalPhoneNumber(), int(booking.TotalBookingPrice))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})
+	if booking.UserID != current_user.ID {
+		c.JSON(http.StatusForbidden, models.BasicErrorRes{Error: "This booking is not belong to you"})
 		return
 	}
-	c.JSON(http.StatusAccepted, models.PromptpayQr{QrImage: qr})
+	if booking.Cancel.CancelStatus {
+		c.JSON(http.StatusForbidden, models.BasicErrorRes{Error: "This booking is already cancelled"})
+		return
+	}
+	updateBooking, err := payment_utills.ConfirmBookingPayment(db, booking.BookingID)
+	c.JSON(http.StatusAccepted, updateBooking)
 }
