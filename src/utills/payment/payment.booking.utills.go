@@ -2,6 +2,7 @@ package utills
 
 import (
 	"context"
+	"fmt"
 	"petpal-backend/src/models"
 	"time"
 
@@ -9,7 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func ConfirmBookingPayment(db *models.MongoDB, bookingID string) (*models.Booking, error) {
+func ConfirmBookingPayment(db *models.MongoDB, bookingID string, userID string) (*models.Booking, error) {
 	// Get the booking collection
 	collection := db.Collection("booking")
 	// Find the booking by bookingID
@@ -23,6 +24,15 @@ func ConfirmBookingPayment(db *models.MongoDB, bookingID string) (*models.Bookin
 	err = collection.FindOne(context.Background(), filter).Decode(&booking)
 	if err != nil {
 		return nil, err
+	}
+	if bookingID == "" {
+		return nil, fmt.Errorf("Missing BookingID")
+	}
+	if booking.UserID != userID {
+		return nil, fmt.Errorf("This booking is not belong to you")
+	}
+	if booking.Cancel.CancelStatus {
+		return nil, fmt.Errorf("This booking is already cancelled")
 	}
 	timeNow := time.Now()
 	timeDiff := timeNow.Sub(booking.BookingTimestamp)

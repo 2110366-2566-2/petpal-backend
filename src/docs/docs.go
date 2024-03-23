@@ -505,6 +505,58 @@ const docTemplate = `{
                 }
             }
         },
+        "/service/booking//payment/authorize": {
+            "post": {
+                "description": "Authorize a from a booking payment",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Service Booking Payment"
+                ],
+                "summary": "Authorize a from a booking payment",
+                "parameters": [
+                    {
+                        "description": "Request Body",
+                        "name": "requestBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.RequestBookingId"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/models.Booking"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "401": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/service/booking/all/svcp": {
             "post": {
                 "security": [
@@ -1121,59 +1173,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/service/booking/payment-authorize": {
-            "post": {
-                "description": "Authorize a from a booking payment",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Service"
-                ],
-                "summary": "Authorize a from a booking payment",
-                "parameters": [
-                    {
-                        "description": "Request Body",
-                        "name": "requestBody",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.RequestBookingId"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Success",
-                        "schema": {
-                            "$ref": "#/definitions/models.Booking"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.BasicErrorRes"
-                        }
-                    },
-                    "401": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.BasicErrorRes"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.BasicErrorRes"
-                        }
-                    }
-                }
-            }
-        },
-        "/service/booking/promptpayqr": {
+        "/service/booking/payment/qr": {
             "post": {
                 "description": "Get promptpayQr from a booking",
                 "consumes": [
@@ -1183,7 +1183,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Service"
+                    "Service Booking Payment"
                 ],
                 "summary": "Get promptpayQr from a booking",
                 "parameters": [

@@ -963,6 +963,40 @@ paths:
       summary: Update a service
       tags:
       - Service
+  /service/booking//payment/authorize:
+    post:
+      consumes:
+      - application/json
+      description: Authorize a from a booking payment
+      parameters:
+      - description: Request Body
+        in: body
+        name: requestBody
+        required: true
+        schema:
+          $ref: '#/definitions/models.RequestBookingId'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/models.Booking'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "401":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      summary: Authorize a from a booking payment
+      tags:
+      - Service Booking Payment
   /service/booking/all/svcp:
     post:
       consumes:
@@ -1373,41 +1407,7 @@ paths:
       summary: user get a booking detail by booking id
       tags:
       - Booking user
-  /service/booking/payment-authorize:
-    post:
-      consumes:
-      - application/json
-      description: Authorize a from a booking payment
-      parameters:
-      - description: Request Body
-        in: body
-        name: requestBody
-        required: true
-        schema:
-          $ref: '#/definitions/models.RequestBookingId'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Success
-          schema:
-            $ref: '#/definitions/models.Booking'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/models.BasicErrorRes'
-        "401":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/models.BasicErrorRes'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.BasicErrorRes'
-      summary: Authorize a from a booking payment
-      tags:
-      - Service
-  /service/booking/promptpayqr:
+  /service/booking/payment/qr:
     post:
       consumes:
       - application/json
@@ -1436,7 +1436,7 @@ paths:
             $ref: '#/definitions/models.BasicErrorRes'
       summary: Get promptpayQr from a booking
       tags:
-      - Service
+      - Service Booking Payment
   /service/booking/reschedule/user:
     patch:
       consumes:

@@ -13,7 +13,7 @@ import (
 // GetPromptpayQrHandler godoc
 // @Summary Get promptpayQr from a booking
 // @Description Get promptpayQr from a booking
-// @Tags Service
+// @Tags Service Booking Payment
 // @Accept json
 // @Produce json
 // @Param requestBody body models.RequestBookingId true "Request Body"
@@ -49,7 +49,7 @@ func GetPromptpayQrHandler(c *gin.Context, db *models.MongoDB) {
 // AuthorizePaymentHandler godoc
 // @Summary Authorize a from a booking payment
 // @Description Authorize a from a booking payment
-// @Tags Service
+// @Tags Service Booking Payment
 // @Accept json
 // @Produce json
 // @Param requestBody body models.RequestBookingId true "Request Body"
@@ -57,7 +57,7 @@ func GetPromptpayQrHandler(c *gin.Context, db *models.MongoDB) {
 // @Failure 400 {object} models.BasicErrorRes "Bad Request"
 // @Failure 401 {object} models.BasicErrorRes "Bad Request"
 // @Failure 500 {object} models.BasicErrorRes "Internal Server Error"
-// @Router /service/booking//payment/authorize [post]
+// @Router /service/booking/payment/authorize [post]
 func AuthorizePaymentHandler(c *gin.Context, db *models.MongoDB) {
 	request := models.RequestBookingId{}
 	//400 bad request
@@ -71,23 +71,10 @@ func AuthorizePaymentHandler(c *gin.Context, db *models.MongoDB) {
 		c.JSON(http.StatusUnauthorized, models.BasicErrorRes{Error: err.Error()})
 		return
 	}
-	if request.BookingID == "" {
-		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "Missing bookingID"})
-		return
-	}
-	booking, err := service_utills.GetABookingDetail(db, request.BookingID)
+	updateBooking, err := payment_utills.ConfirmBookingPayment(db, request.BookingID, current_user.ID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})
+		c.JSON(http.StatusForbidden, models.BasicErrorRes{Error: err.Error()})
 		return
 	}
-	if booking.UserID != current_user.ID {
-		c.JSON(http.StatusForbidden, models.BasicErrorRes{Error: "This booking is not belong to you"})
-		return
-	}
-	if booking.Cancel.CancelStatus {
-		c.JSON(http.StatusForbidden, models.BasicErrorRes{Error: "This booking is already cancelled"})
-		return
-	}
-	updateBooking, err := payment_utills.ConfirmBookingPayment(db, booking.BookingID)
-	c.JSON(http.StatusAccepted, updateBooking)
+	c.JSON(http.StatusOK, updateBooking)
 }
