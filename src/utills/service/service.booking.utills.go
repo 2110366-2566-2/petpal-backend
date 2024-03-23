@@ -10,10 +10,6 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	// "github.com/gin-gonic/gin"
-	// "go.mongodb.org/mongo-driver/bson/primitive"
-	// "go.mongodb.org/mongo-driver/bson"
-	// "go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func InsertBooking(db *models.MongoDB, BookingCreate *models.Booking, user *models.User) (*models.Booking, error) {

@@ -1121,6 +1121,55 @@ const docTemplate = `{
                 }
             }
         },
+        "/service/booking/promptpayqr": {
+            "post": {
+                "description": "Get promptpayQr from a booking",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Service"
+                ],
+                "summary": "Get promptpayQr from a booking",
+                "parameters": [
+                    {
+                        "description": "Request Body",
+                        "name": "requestBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.RequestBookingId"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.PromptpayQr"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/service/booking/reschedule/user": {
             "patch": {
                 "security": [
@@ -1377,7 +1426,7 @@ const docTemplate = `{
         },
         "/service/searching": {
             "post": {
-                "description": "Search services based on query, aocation, timeslot, price range, rating",
+                "description": "Search services based on query, location, timeslot, price range, rating",
                 "consumes": [
                     "application/json"
                 ],
@@ -3115,6 +3164,17 @@ const docTemplate = `{
                 }
             }
         },
+        "models.PromptpayQr": {
+            "type": "object",
+            "properties": {
+                "qrImage": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
         "models.RequestBookingAll": {
             "type": "object",
             "properties": {
@@ -3204,6 +3264,9 @@ const docTemplate = `{
                 "SVCPUsername": {
                     "type": "string"
                 },
+                "address": {
+                    "type": "string"
+                },
                 "defaultAccountNumber": {
                     "type": "string"
                 },
@@ -3222,7 +3285,7 @@ const docTemplate = `{
                 "license": {
                     "type": "string"
                 },
-                "address": {
+                "phoneNumber": {
                     "type": "string"
                 },
                 "services": {
@@ -3236,6 +3299,9 @@ const docTemplate = `{
         "models.SearchFilter": {
             "type": "object",
             "properties": {
+                "address": {
+                    "type": "string"
+                },
                 "descending": {
                     "type": "boolean"
                 },
@@ -3243,9 +3309,6 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "end_time": {
-                    "type": "string"
-                },
-                "address": {
                     "type": "string"
                 },
                 "max_rating": {

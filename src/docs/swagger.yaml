@@ -357,6 +357,13 @@ definitions:
       vaccinations:
         type: string
     type: object
+  models.PromptpayQr:
+    properties:
+      qrImage:
+        items:
+          type: integer
+        type: array
+    type: object
   models.RequestBookingAll:
     properties:
       cancelStatus:
@@ -415,6 +422,8 @@ definitions:
         type: string
       SVCPUsername:
         type: string
+      address:
+        type: string
       defaultAccountNumber:
         type: string
       defaultBank:
@@ -427,7 +436,7 @@ definitions:
         type: boolean
       license:
         type: string
-      address:
+      phoneNumber:
         type: string
       services:
         items:
@@ -436,13 +445,13 @@ definitions:
     type: object
   models.SearchFilter:
     properties:
+      address:
+        type: string
       descending:
         type: boolean
       end_price_range:
         type: number
       end_time:
-        type: string
-      address:
         type: string
       max_rating:
         type: number
@@ -1364,6 +1373,38 @@ paths:
       summary: user get a booking detail by booking id
       tags:
       - Booking user
+  /service/booking/promptpayqr:
+    post:
+      consumes:
+      - application/json
+      description: Get promptpayQr from a booking
+      parameters:
+      - description: Request Body
+        in: body
+        name: requestBody
+        required: true
+        schema:
+          $ref: '#/definitions/models.RequestBookingId'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/models.PromptpayQr'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      summary: Get promptpayQr from a booking
+      tags:
+      - Service
   /service/booking/reschedule/user:
     patch:
       consumes:
@@ -1531,7 +1572,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Search services based on query, address, timeslot, price range,
+      description: Search services based on query, location, timeslot, price range,
         rating
       parameters:
       - description: Search filter

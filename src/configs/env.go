@@ -51,3 +51,12 @@ func GetJWT_SECRET() string {
 	jwt_secret := os.Getenv("JWT_SECRET")
 	return jwt_secret
 }
+
+func GetPetpalPhoneNumber() string {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading petpal_phonenumber from .env file")
+	}
+	jwt_secret := os.Getenv("PETPAL_PHONENUMBER")
+	return jwt_secret
+}
