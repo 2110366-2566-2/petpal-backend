@@ -1623,13 +1623,6 @@ const docTemplate = `{
                 "summary": "Update service provider",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Service Provider ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
                         "description": "Service Provider Object (only the fields to be updated)",
                         "name": "svcp",
                         "in": "body",

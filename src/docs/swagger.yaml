@@ -1599,11 +1599,6 @@ paths:
       description: Update service provider (authentication required and only the service
         provider can update their own profile)
       parameters:
-      - description: Service Provider ID
-        in: path
-        name: id
-        required: true
-        type: string
       - description: Service Provider Object (only the fields to be updated)
         in: body
         name: svcp
