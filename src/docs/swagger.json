@@ -1366,7 +1366,7 @@
         },
         "/service/searching": {
             "post": {
-                "description": "Search services based on query, address, timeslot, price range, rating",
+                "description": "Search services based on query, Address, timeslot, price range, rating",
                 "consumes": [
                     "application/json"
                 ],
@@ -3193,6 +3193,9 @@
                 "SVCPUsername": {
                     "type": "string"
                 },
+                "address": {
+                    "type": "string"
+                },
                 "defaultAccountNumber": {
                     "type": "string"
                 },
@@ -3211,7 +3214,7 @@
                 "license": {
                     "type": "string"
                 },
-                "address": {
+                "phoneNumber": {
                     "type": "string"
                 },
                 "services": {
@@ -3225,6 +3228,9 @@
         "models.SearchFilter": {
             "type": "object",
             "properties": {
+                "address": {
+                    "type": "string"
+                },
                 "descending": {
                     "type": "boolean"
                 },
@@ -3232,9 +3238,6 @@
                     "type": "number"
                 },
                 "end_time": {
-                    "type": "string"
-                },
-                "address": {
                     "type": "string"
                 },
                 "max_rating": {

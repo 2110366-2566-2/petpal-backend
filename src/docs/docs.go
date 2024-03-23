@@ -1377,7 +1377,7 @@ const docTemplate = `{
         },
         "/service/searching": {
             "post": {
-                "description": "Search services based on query, aocation, timeslot, price range, rating",
+                "description": "Search services based on query, Address, timeslot, price range, rating",
                 "consumes": [
                     "application/json"
                 ],
@@ -3204,6 +3204,9 @@ const docTemplate = `{
                 "SVCPUsername": {
                     "type": "string"
                 },
+                "address": {
+                    "type": "string"
+                },
                 "defaultAccountNumber": {
                     "type": "string"
                 },
@@ -3222,7 +3225,7 @@ const docTemplate = `{
                 "license": {
                     "type": "string"
                 },
-                "address": {
+                "phoneNumber": {
                     "type": "string"
                 },
                 "services": {
@@ -3236,6 +3239,9 @@ const docTemplate = `{
         "models.SearchFilter": {
             "type": "object",
             "properties": {
+                "address": {
+                    "type": "string"
+                },
                 "descending": {
                     "type": "boolean"
                 },
@@ -3243,9 +3249,6 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "end_time": {
-                    "type": "string"
-                },
-                "address": {
                     "type": "string"
                 },
                 "max_rating": {

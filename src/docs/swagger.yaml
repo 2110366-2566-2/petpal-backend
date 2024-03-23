@@ -415,6 +415,8 @@ definitions:
         type: string
       SVCPUsername:
         type: string
+      address:
+        type: string
       defaultAccountNumber:
         type: string
       defaultBank:
@@ -427,7 +429,7 @@ definitions:
         type: boolean
       license:
         type: string
-      address:
+      phoneNumber:
         type: string
       services:
         items:
@@ -436,13 +438,13 @@ definitions:
     type: object
   models.SearchFilter:
     properties:
+      address:
+        type: string
       descending:
         type: boolean
       end_price_range:
         type: number
       end_time:
-        type: string
-      address:
         type: string
       max_rating:
         type: number
@@ -1531,7 +1533,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Search services based on query, address, timeslot, price range,
+      description: Search services based on query, Address, timeslot, price range,
         rating
       parameters:
       - description: Search filter
