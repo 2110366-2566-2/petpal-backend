@@ -79,9 +79,9 @@
                 "bsonType": "string",
                 "pattern": "service(Name|Type|Description)\\d"
               },
-              "location": {
+              "address": {
                 "bsonType": "string",
-                "pattern": "location\\d"
+                "pattern": "address\\d"
               },
               "start_time": { "bsonType": "date" },
               "end_time": { "bsonType": "date" },

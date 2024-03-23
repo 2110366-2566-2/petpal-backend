@@ -1313,7 +1313,7 @@ const docTemplate = `{
         },
         "/service/searching": {
             "post": {
-                "description": "Search services based on query, location, timeslot, price range, rating",
+                "description": "Search services based on query, aocation, timeslot, price range, rating",
                 "consumes": [
                     "application/json"
                 ],
@@ -3141,7 +3141,7 @@ const docTemplate = `{
                 "license": {
                     "type": "string"
                 },
-                "location": {
+                "address": {
                     "type": "string"
                 },
                 "services": {
@@ -3164,7 +3164,7 @@ const docTemplate = `{
                 "end_time": {
                     "type": "string"
                 },
-                "location": {
+                "address": {
                     "type": "string"
                 },
                 "max_rating": {

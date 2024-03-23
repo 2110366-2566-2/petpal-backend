@@ -25,7 +25,7 @@ func NewSVCP(createSVCP models.CreateSVCP) (*models.SVCP, error) {
 		DefaultBank:           "",
 		DefaultAccountNumber:  "",
 		License:               "",
-		Location:              "",
+		Address:               "",
 		SVCPAdditionalImg:     []byte{},
 		SVCPServiceType:       createSVCP.SVCPServiceType,
 		Services:              []models.Service{},
