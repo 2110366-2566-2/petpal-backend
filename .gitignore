@@ -1,4 +1,4 @@
 .vscode
 src/.env
-
+node_modules
 __pycache__/
