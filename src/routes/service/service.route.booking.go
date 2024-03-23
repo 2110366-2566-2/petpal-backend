@@ -69,11 +69,11 @@ func ServiceBookingRoutes(r *gin.RouterGroup) {
 			controllersSVCP.SVCPGetDetailBookingHandler(c, db)
 		})
 		// Payment
-		bookingGroup.POST("/promptpayqr", func(c *gin.Context) {
+		bookingGroup.POST("/payment/qr", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllersService.GetPromptpayQrHandler(c, db)
 		})
-		bookingGroup.POST("/payment-authorize", func(c *gin.Context) {
+		bookingGroup.POST("/payment/authorize", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllersService.AuthorizePaymentHandler(c, db)
 		})

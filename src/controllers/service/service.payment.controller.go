@@ -20,7 +20,7 @@ import (
 // @Success 200 {object} models.PromptpayQr "Success"
 // @Failure 400 {object} models.BasicErrorRes "Bad Request"
 // @Failure 500 {object} models.BasicErrorRes "Internal Server Error"
-// @Router /service/booking/promptpayqr [post]
+// @Router /service/booking/payment/qr [post]
 func GetPromptpayQrHandler(c *gin.Context, db *models.MongoDB) {
 	request := models.RequestBookingId{}
 	//400 bad request
@@ -57,7 +57,7 @@ func GetPromptpayQrHandler(c *gin.Context, db *models.MongoDB) {
 // @Failure 400 {object} models.BasicErrorRes "Bad Request"
 // @Failure 401 {object} models.BasicErrorRes "Bad Request"
 // @Failure 500 {object} models.BasicErrorRes "Internal Server Error"
-// @Router /service/booking/payment-authorize [post]
+// @Router /service/booking//payment/authorize [post]
 func AuthorizePaymentHandler(c *gin.Context, db *models.MongoDB) {
 	request := models.RequestBookingId{}
 	//400 bad request
