@@ -73,7 +73,10 @@ func AddTextMessage(db *models.MongoDB, roomId string, content string, senderId 
 
 	filter := bson.D{{Key: "chatId", Value: roomId}}
 	update := bson.D{{Key: "$push", Value: bson.D{{
-		Key: "messages", Value: message,
+		Key: "messages", Value: bson.M{
+			"$each":     bson.A{message},
+			"$position": 0,
+		},
 	}}}}
 	_, err = collection.UpdateOne(context.Background(), filter, update)
 
