@@ -113,10 +113,7 @@ const docTemplate = `{
         },
         "/chat/history/{roomId}": {
             "get": {
-                "description": "Get chat history of a room by roomId",
-                "consumes": [
-                    "application/json"
-                ],
+                "description": "Get chat history of a room by roomId. Chat.messages are paginated.",
                 "produces": [
                     "application/json"
                 ],
@@ -127,13 +124,13 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Page number(default 1)",
+                        "description": "Page number of chat messages (default 1)",
                         "name": "page",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "Number of items per page(default 10)",
+                        "description": "Number of chat messages per page (default 10)",
                         "name": "per",
                         "in": "query"
                     },
@@ -1858,6 +1855,66 @@ const docTemplate = `{
                 }
             }
         },
+        "/serviceproviders/chats": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get chat rooms of the current service provider. Each ` + "`" + `Chat.messages` + "`" + ` contains only *one* latest message.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ServiceProviders"
+                ],
+                "summary": "Get the current service provider's chats",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number of chat rooms (default 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of chat rooms per page (default 10)",
+                        "name": "per",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Chat"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/serviceproviders/delete-bank-account": {
             "delete": {
                 "security": [
@@ -2160,6 +2217,66 @@ const docTemplate = `{
                         "description": "Success",
                         "schema": {
                             "$ref": "#/definitions/models.BasicRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/chats": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get chat rooms of the current user. Each ` + "`" + `Chat.messages` + "`" + ` contains only *one* latest message.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get the current user's chats",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number of chat rooms (default 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of chat rooms per page (default 10)",
+                        "name": "per",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Chat"
+                            }
                         }
                     },
                     "400": {

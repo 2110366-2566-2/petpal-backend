@@ -367,27 +367,25 @@ type defaultBankAccountReq struct {
 	DefaultBank          string `json:"defaultBank"`
 }
 
-func _authenticate(c *gin.Context, db *models.MongoDB) (*models.SVCP, error) {
-	entity, err := auth.GetCurrentEntityByGinContenxt(c, db)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "Failed to get token from Cookie plase login first, " + err.Error()})
-		return nil, err
-	}
-	switch entity := entity.(type) {
-	case *models.User:
-		err = errors.New("need token of type SVCP but recives token SVCP type")
-		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: err.Error()})
-		return nil, nil
-		// Handle user
-	case *models.SVCP:
-		return entity, nil
-		// Handle svcp
-	}
-	err = errors.New("need token of type SVCP but wrong type")
-	c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: err.Error()})
-	return nil, err
-}
-
+// GetChatsHandler godoc
+//
+// @Summary 	Get the current service provider's chats
+// @Description Get chat rooms of the current service provider. Each `Chat.messages` contains only *one* latest message.
+// @Tags 		ServiceProviders
+//
+// @Security ApiKeyAuth
+//
+// @Produce  	json
+//
+// @Param 		page	query	int 	false	"Page number of chat rooms (default 1)"
+// @Param 		per 	query	int 	false 	"Number of chat rooms per page (default 10)"
+//
+// @Success 	200      {object} []models.Chat         "Success"
+// @Failure     400      {object} models.BasicErrorRes  "Bad request"
+// @Failure     401      {object} models.BasicErrorRes  "Unauthorized"
+// @Failure     500      {object} models.BasicErrorRes  "Internal server error"
+//
+// @Router /serviceproviders/chats [get]
 func GetChatsHandler(c *gin.Context, db *models.MongoDB) {
 	// get current svcp
 	current_svcp, err := _authenticate(c, db)
@@ -420,4 +418,25 @@ func GetChatsHandler(c *gin.Context, db *models.MongoDB) {
 		return
 	}
 	c.JSON(http.StatusOK, chats)
+}
+
+func _authenticate(c *gin.Context, db *models.MongoDB) (*models.SVCP, error) {
+	entity, err := auth.GetCurrentEntityByGinContenxt(c, db)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "Failed to get token from Cookie plase login first, " + err.Error()})
+		return nil, err
+	}
+	switch entity := entity.(type) {
+	case *models.User:
+		err = errors.New("need token of type SVCP but recives token SVCP type")
+		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: err.Error()})
+		return nil, nil
+		// Handle user
+	case *models.SVCP:
+		return entity, nil
+		// Handle svcp
+	}
+	err = errors.New("need token of type SVCP but wrong type")
+	c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: err.Error()})
+	return nil, err
 }

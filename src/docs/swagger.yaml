@@ -633,15 +633,13 @@ paths:
       - Chat
   /chat/history/{roomId}:
     get:
-      consumes:
-      - application/json
-      description: Get chat history of a room by roomId
+      description: Get chat history of a room by roomId. Chat.messages are paginated.
       parameters:
-      - description: Page number(default 1)
+      - description: Page number of chat messages (default 1)
         in: query
         name: page
         type: integer
-      - description: Number of items per page(default 10)
+      - description: Number of chat messages per page (default 10)
         in: query
         name: per
         type: integer
@@ -1803,6 +1801,45 @@ paths:
       summary: Add service
       tags:
       - ServiceProviders
+  /serviceproviders/chats:
+    get:
+      description: Get chat rooms of the current service provider. Each `Chat.messages`
+        contains only *one* latest message.
+      parameters:
+      - description: Page number of chat rooms (default 1)
+        in: query
+        name: page
+        type: integer
+      - description: Number of chat rooms per page (default 10)
+        in: query
+        name: per
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/models.Chat'
+            type: array
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
+      summary: Get the current service provider's chats
+      tags:
+      - ServiceProviders
   /serviceproviders/delete-bank-account:
     delete:
       consumes:
@@ -2010,6 +2047,45 @@ paths:
           schema:
             $ref: '#/definitions/models.BasicErrorRes'
       summary: Get user by ID
+      tags:
+      - User
+  /user/chats:
+    get:
+      description: Get chat rooms of the current user. Each `Chat.messages` contains
+        only *one* latest message.
+      parameters:
+      - description: Page number of chat rooms (default 1)
+        in: query
+        name: page
+        type: integer
+      - description: Number of chat rooms per page (default 10)
+        in: query
+        name: per
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/models.Chat'
+            type: array
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
+      summary: Get the current user's chats
       tags:
       - User
   /user/delete-bank-account:

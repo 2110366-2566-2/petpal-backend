@@ -501,6 +501,25 @@ func GetSearchHistoryHandler(c *gin.Context, db *models.MongoDB) {
 	c.JSON(http.StatusOK, models.UserSearchHistory{User: *currentUser, SearchHistory: search_history})
 }
 
+// GetChatsHandler godoc
+//
+// @Summary 	Get the current user's chats
+// @Description Get chat rooms of the current user. Each `Chat.messages` contains only *one* latest message.
+// @Tags 		User
+//
+// @Security ApiKeyAuth
+//
+// @Produce  	json
+//
+// @Param 		page	query	int 	false	"Page number of chat rooms (default 1)"
+// @Param 		per 	query	int 	false 	"Number of chat rooms per page (default 10)"
+//
+// @Success 	200      {object} []models.Chat         "Success"
+// @Failure     400      {object} models.BasicErrorRes  "Bad request"
+// @Failure     401      {object} models.BasicErrorRes  "Unauthorized"
+// @Failure     500      {object} models.BasicErrorRes  "Internal server error"
+//
+// @Router /user/chats [get]
 func GetChatsHandler(c *gin.Context, db *models.MongoDB) {
 	current_user, err := _authenticate(c, db)
 	if err != nil {
