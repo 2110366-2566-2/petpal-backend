@@ -38,7 +38,7 @@ type UserSearchHistory struct {
 	SearchHistory []SearchHistory `json:"search_history" bson:"search_history"`
 }
 
-func (u *User) UpdateField(key string, value any) User {
+func (u *User) UpdateField(key string, value any) {
 	// UpdateField
 	// get the field and update it
 	// return the updated service
@@ -67,8 +67,6 @@ func (u *User) UpdateField(key string, value any) User {
 	} else if key == "pets" {
 		u.Pets = value.([]Pet)
 	}
-	return *u
-
 }
 func (u *User) editPet(petName string, petDetails Pet) Pet {
 	// Mock Function

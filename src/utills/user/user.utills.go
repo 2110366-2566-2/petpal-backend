@@ -52,14 +52,10 @@ func GetUserByID(db *models.MongoDB, id string) (*models.User, error) {
 	collection := db.Collection("user")
 
 	// find user by id
-	objectID, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		return nil, err
-	}
 	var user models.User = models.User{}
-	filter := bson.D{{Key: "_id", Value: objectID}}
+	filter := bson.D{{Key: "_id", Value: id}}
 	opts := options.FindOne().SetProjection(bson.D{{Key: "search_history", Value: 0}})
-	err = collection.FindOne(context.Background(), filter, opts).Decode(&user)
+	err := collection.FindOne(context.Background(), filter, opts).Decode(&user)
 	if err != nil {
 		return nil, err
 	}
@@ -143,12 +139,7 @@ func UpdateUser(db *models.MongoDB, userUpdate *bson.M, userId string) (string, 
 	for key, value := range *userUpdate {
 		user.UpdateField(key, value)
 	}
-
-	objectID, err := primitive.ObjectIDFromHex(userId)
-	if err != nil {
-		return "Invalid user id", err
-	}
-	filter := bson.D{{Key: "_id", Value: objectID}}
+	filter := bson.D{{Key: "_id", Value: userId}}
 	// update user
 	update := bson.D{
 		{Key: "$set", Value: user},
