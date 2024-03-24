@@ -64,6 +64,8 @@ func SVCPGetAllBookingHandler(c *gin.Context, db *models.MongoDB) {
 
 	bookingsList = utills.FillSVCPDetail(db, bookingsList)
 
+	bookingsList = utills.FillBookingStatusString(db, bookingsList)
+
 	c.JSON(http.StatusOK, models.BookingWithIdArrayRes{Message: "get all svcp booking successfully", Result: bookingsList})
 
 }

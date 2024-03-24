@@ -527,7 +527,7 @@ func FillSVCPDetail(db *models.MongoDB, bookingArray []models.BookingShowALL) []
 	return bookingArray
 }
 
-func FillBookingStatusString(db *models.MongoDB, bookingArray []models.BookingShowALL, userId string) []models.BookingShowALL {
+func FillBookingStatusString(db *models.MongoDB, bookingArray []models.BookingShowALL) []models.BookingShowALL {
 	timeNow := time.Now()
 	const twentyFourHours = 24 * time.Hour
 	const threeDays = 72 * time.Hour

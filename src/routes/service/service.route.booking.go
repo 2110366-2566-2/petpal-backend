@@ -79,5 +79,9 @@ func ServiceBookingRoutes(r *gin.RouterGroup) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllersService.AuthorizePaymentHandler(c, db)
 		})
+		bookingGroup.POST("/payment/refund", func(c *gin.Context) {
+			db := c.MustGet("db").(*models.MongoDB)
+			controllersService.RefundBookingHandler(c, db)
+		})
 	}
 }
