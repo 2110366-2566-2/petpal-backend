@@ -115,14 +115,14 @@ func UpdateUserHandler(c *gin.Context, db *models.MongoDB) {
 		return
 	}
 
-	var user bson.M
-	if err := c.ShouldBindJSON(&user); err != nil {
+	var userUpdate bson.M
+	if err := c.ShouldBindJSON(&userUpdate); err != nil {
 		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: err.Error()})
 		return
 	}
 
 	// Call the user service to update the user
-	err_str, err := user_utills.UpdateUser(db, &user, currentUser.ID)
+	err_str, err := user_utills.UpdateUser(db, &userUpdate, currentUser.ID)
 	if err != nil {
 		// show error message
 		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err_str})

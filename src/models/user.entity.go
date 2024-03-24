@@ -38,6 +38,38 @@ type UserSearchHistory struct {
 	SearchHistory []SearchHistory `json:"search_history" bson:"search_history"`
 }
 
+func (u *User) UpdateField(key string, value any) User {
+	// UpdateField
+	// get the field and update it
+	// return the updated service
+	if key == "id" {
+		u.ID = value.(string)
+	} else if key == "username" {
+		u.Username = value.(string)
+	} else if key == "password" {
+		u.Password = value.(string)
+	} else if key == "email" {
+		u.Email = value.(string)
+	} else if key == "fullName" {
+		u.FullName = value.(string)
+	} else if key == "address" {
+		u.Address = value.(string)
+	} else if key == "dateOfBirth" {
+		u.DateOfBirth = value.(time.Time)
+	} else if key == "phoneNumber" {
+		u.PhoneNumber = value.(string)
+	} else if key == "profilePicture" {
+		u.ProfilePicture = value.([]byte)
+	} else if key == "defaultAccountNumber" {
+		u.DefaultAccountNumber = value.(string)
+	} else if key == "defaultBank" {
+		u.DefaultBank = value.(string)
+	} else if key == "pets" {
+		u.Pets = value.([]Pet)
+	}
+	return *u
+
+}
 func (u *User) editPet(petName string, petDetails Pet) Pet {
 	// Mock Function
 	return petDetails

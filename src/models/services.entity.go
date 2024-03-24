@@ -42,6 +42,9 @@ func (u *Service) UpdateField(key string, value any) Service {
 	if key == "serviceName" {
 		u.ServiceName = value.(string)
 	}
+	if key == "servicesImg" {
+		u.ServiceImg = value.([]byte)
+	}
 	if key == "serviceType" {
 		u.ServiceType = value.(string)
 	}

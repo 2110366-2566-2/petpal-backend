@@ -130,17 +130,25 @@ func AddSearchHistory(db *models.MongoDB, id string, search_filters models.Searc
 	return nil
 }
 
-func UpdateUser(db *models.MongoDB, user *bson.M, id string) (string, error) {
+func UpdateUser(db *models.MongoDB, userUpdate *bson.M, userId string) (string, error) {
 	// get collection
 	collection := db.Collection("user")
 
 	// find user by id
-	objectID, err := primitive.ObjectIDFromHex(id)
+	user, err := GetUserByID(db, userId)
+	if err != nil {
+		return "User not found", err
+	}
+
+	for key, value := range *userUpdate {
+		user.UpdateField(key, value)
+	}
+
+	objectID, err := primitive.ObjectIDFromHex(userId)
 	if err != nil {
 		return "Invalid user id", err
 	}
 	filter := bson.D{{Key: "_id", Value: objectID}}
-
 	// update user
 	update := bson.D{
 		{Key: "$set", Value: user},
