@@ -588,7 +588,8 @@ func CompleteBooking(db *models.MongoDB, bookingID string, userType string) (*mo
 		booking.Status.SvcpCompleted = true
 		booking.Status.SvcpCompletedTimestamp = time.Now()
 	} else if userType == "user" {
-		err = payment_utils.SendMoneyToSVCP(db, booking.SVCPID, booking.TotalBookingPrice)
+		moneyToSVCP := payment_utils.CalculateFee(booking.TotalBookingPrice)
+		err = payment_utils.SendMoneyToSVCP(db, booking.SVCPID, moneyToSVCP)
 		if err != nil {
 			return nil, err
 		}

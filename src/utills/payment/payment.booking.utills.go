@@ -128,6 +128,10 @@ func RefundBooking(db *models.MongoDB, bookingID string) error {
 	return nil
 }
 
+func CalculateFee(money float64) float64 {
+	return money * 0.97
+}
+
 func SendMoneyToSVCP(db *models.MongoDB, SVCPID string, money float64) error {
 	// Get the booking collection
 	collection := db.Collection("svcp")
