@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"petpal-backend/src/models"
 	"petpal-backend/src/utills/auth"
+	"petpal-backend/src/utills/chat/chathistory"
 	user_utills "petpal-backend/src/utills/user"
 	"strconv"
 
@@ -524,7 +525,7 @@ func GetChatsHandler(c *gin.Context, db *models.MongoDB) {
 		return
 	}
 
-	chatHistory, err := user_utills.GetChatsByUserId(db, current_user.ID, page, per)
+	chatHistory, err := chathistory.GetChatsById(db, current_user.ID, page, per, "user")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -545,7 +546,7 @@ func _authenticate(c *gin.Context, db *models.MongoDB) (*models.User, error) {
 	case *models.SVCP:
 		err = errors.New("need token of type User but recives token SVCP type")
 		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: err.Error()})
-		return nil, nil
+		return nil, err
 		// Handle svcp
 	}
 	err = errors.New("need token of type User but wrong type")

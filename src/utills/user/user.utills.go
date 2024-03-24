@@ -319,34 +319,3 @@ func GetProfileImage(email string, userType string, db *models.MongoDB) (gin.H, 
 	}
 	return gin.H{"error": "missing usertype in backend"}, nil
 }
-
-func GetChatsByUserId(db *models.MongoDB, id string, page int64, per int64) ([]models.Chat, error) {
-	// get collection
-	collection := db.Collection("chat")
-
-	// find chat by id
-	filter := bson.D{{Key: "$or", Value: bson.A{
-		bson.M{"user0Id": id, "user0type": "user"},
-		bson.M{"user1Id": id, "user1type": "user"},
-	}}}
-
-	// filter := bson.D{{Key: "user0Id", Value: id}}
-	opts := options.Find().SetProjection(bson.D{{
-		Key: "messages", Value: bson.D{{
-			Key: "$slice", Value: []int64{0, 1},
-		}},
-	}}).SetSkip((page - 1) * per).SetLimit(per)
-
-	cursor, err := collection.Find(context.Background(), filter, opts)
-	if err != nil {
-		return nil, err
-	}
-
-	var chats []models.Chat = []models.Chat{}
-	if err := cursor.All(context.Background(), &chats); err != nil {
-		return nil, err
-	}
-	defer cursor.Close(context.Background())
-
-	return chats, err
-}
