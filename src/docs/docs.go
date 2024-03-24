@@ -111,7 +111,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/chat/history/:roomId": {
+        "/chat/history/{roomId}": {
             "get": {
                 "description": "Get chat history of a room by roomId",
                 "consumes": [
@@ -136,6 +136,13 @@ const docTemplate = `{
                         "description": "Number of items per page(default 10)",
                         "name": "per",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Room ID",
+                        "name": "roomId",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -171,6 +178,15 @@ const docTemplate = `{
                     "Chat"
                 ],
                 "summary": "Update chat history",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Room ID",
+                        "name": "roomId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",

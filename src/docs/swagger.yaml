@@ -631,7 +631,7 @@ paths:
       summary: Create chat history
       tags:
       - Chat
-  /chat/history/:roomId:
+  /chat/history/{roomId}:
     get:
       consumes:
       - application/json
@@ -645,6 +645,11 @@ paths:
         in: query
         name: per
         type: integer
+      - description: Room ID
+        in: path
+        name: roomId
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -667,6 +672,12 @@ paths:
       consumes:
       - application/json
       description: Update chat history of a room by roomId
+      parameters:
+      - description: Room ID
+        in: path
+        name: roomId
+        required: true
+        type: string
       produces:
       - application/json
       responses:
