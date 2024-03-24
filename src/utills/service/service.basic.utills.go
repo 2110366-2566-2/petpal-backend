@@ -185,7 +185,10 @@ func UpdateService(db *models.MongoDB, serviceID string, svcpID string, updateSe
 	}
 
 	for key, value := range *updateService {
-		(*services).UpdateField(key, value)
+		err = (*services).UpdateField(key, value)
+		if err != nil {
+			return err
+		}
 	}
 
 	// find user by email

@@ -23,19 +23,7 @@ type Service struct {
 	Price              float64    `json:"price" bson:"price"`
 }
 
-func (u *Service) createTimeslot(timeslotDetails Timeslot) Timeslot {
-	timeslot := Timeslot{
-		StartTime: timeslotDetails.StartTime,
-		EndTime:   timeslotDetails.EndTime,
-	}
-	return timeslot
-}
-
-func (u *Service) editService(serviceDetails Service) Service {
-	u = &serviceDetails
-	return *u
-}
-func (u *Service) UpdateField(key string, value any) Service {
+func (u *Service) UpdateField(key string, value any) error {
 	// UpdateField
 	// get the field and update it
 	// return the updated service
@@ -43,7 +31,8 @@ func (u *Service) UpdateField(key string, value any) Service {
 		u.ServiceName = value.(string)
 	}
 	if key == "servicesImg" {
-		u.ServiceImg = value.([]byte)
+		e := value.(string)
+		u.ServiceImg = []byte(e)
 	}
 	if key == "serviceType" {
 		u.ServiceType = value.(string)
@@ -61,10 +50,27 @@ func (u *Service) UpdateField(key string, value any) Service {
 		u.Price = value.(float64)
 	}
 	if key == "timeslots" {
-		u.Timeslots = value.([]Timeslot)
-	}
-	return *u
+		currentTimeslots := u.Timeslots
+		var Timeslots []Timeslot
+		for i, timeslot := range value.([]interface{}) {
+			var singleTimeslot Timeslot
+			if i < len(currentTimeslots) {
+				singleTimeslot = currentTimeslots[i]
+			} else {
+				singleTimeslot.SetDefult()
+			}
 
+			for k, v := range timeslot.(map[string]interface{}) {
+				err := singleTimeslot.UpdateField(k, v)
+				if err != nil {
+					return err
+				}
+			}
+			Timeslots = append(Timeslots, singleTimeslot)
+		}
+		u.Timeslots = Timeslots
+	}
+	return nil
 }
 
 func (u *Service) calculateAvgRating(newRating int) int {

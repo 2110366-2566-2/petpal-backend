@@ -138,12 +138,8 @@ func SendMoneyToSVCP(db *models.MongoDB, SVCPID string, money float64) error {
 	// Find the booking by bookingID
 	var SVCP models.SVCP
 	// Convert bookingID to ObjectID
-	objID, err := primitive.ObjectIDFromHex(SVCPID)
-	if err != nil {
-		return err
-	}
-	filter := bson.D{{Key: "_id", Value: objID}}
-	err = collection.FindOne(context.Background(), filter).Decode(&SVCP)
+	filter := bson.D{{Key: "_id", Value: SVCPID}}
+	err := collection.FindOne(context.Background(), filter).Decode(&SVCP)
 	if err != nil {
 		return err
 	}
@@ -161,12 +157,8 @@ func SendMoneyToUser(db *models.MongoDB, userID string, money float64) error {
 	// Find the booking by bookingID
 	var user models.User
 	// Convert bookingID to ObjectID
-	objID, err := primitive.ObjectIDFromHex(userID)
-	if err != nil {
-		return err
-	}
-	filter := bson.D{{Key: "_id", Value: objID}}
-	err = collection.FindOne(context.Background(), filter).Decode(&user)
+	filter := bson.D{{Key: "_id", Value: userID}}
+	err := collection.FindOne(context.Background(), filter).Decode(&user)
 	if err != nil {
 		return err
 	}
