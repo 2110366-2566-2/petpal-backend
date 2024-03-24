@@ -4,19 +4,26 @@ import (
 	"errors"
 	"petpal-backend/src/models"
 	svcp_utills "petpal-backend/src/utills/serviceprovider"
+	misc_utills "petpal-backend/src/utills/miscellaneous"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func NewSVCP(createSVCP models.CreateSVCP) (*models.SVCP, error) {
 	objID := primitive.NewObjectID().Hex()
+
+	randomProfileImage, err := misc_utills.RandomProfileImage()
+	if err != nil {
+		return nil, err
+	}
+
 	// You can add more validation rules as needed
 	newSVCP := &models.SVCP{
 		Individual: models.Individual{
 			IndividualID: objID,
 		},
 		SVCPID:                objID,
-		SVCPImg:               []byte{},
+		SVCPImg:               randomProfileImage,
 		SVCPUsername:          createSVCP.SVCPUsername,
 		SVCPPassword:          createSVCP.SVCPPassword,
 		SVCPEmail:             createSVCP.SVCPEmail,
