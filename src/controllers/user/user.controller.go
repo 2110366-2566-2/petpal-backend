@@ -500,6 +500,38 @@ func GetSearchHistoryHandler(c *gin.Context, db *models.MongoDB) {
 	c.JSON(http.StatusOK, models.UserSearchHistory{User: *currentUser, SearchHistory: search_history})
 }
 
+func GetChatsHandler(c *gin.Context, db *models.MongoDB) {
+	current_user, err := _authenticate(c, db)
+	if err != nil {
+		return
+	}
+
+	params := c.Request.URL.Query()
+
+	// set default values for page and per
+	if !params.Has("page") {
+		params.Set("page", "1")
+	}
+	if !params.Has("per") {
+		params.Set("per", "10")
+	}
+
+	// fetch page and per from request query
+	page, err_page := strconv.ParseInt(params.Get("page"), 10, 64)
+	per, err_per := strconv.ParseInt(params.Get("per"), 10, 64)
+	if err_page != nil || err_per != nil {
+		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "Invalid page or per number"})
+		return
+	}
+
+	chatHistory, err := user_utills.GetChatsByUserId(db, current_user.ID, page, per)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, chatHistory)
+}
+
 func _authenticate(c *gin.Context, db *models.MongoDB) (*models.User, error) {
 	entity, err := auth.GetCurrentEntityByGinContenxt(c, db)
 	if err != nil {

@@ -42,4 +42,9 @@ func UserBaseRoutes(r *gin.RouterGroup) {
 		db := c.MustGet("db").(*models.MongoDB)
 		controllers.GetSearchHistoryHandler(c, db)
 	})
+
+	userGroup.GET("/chats", func(c *gin.Context) {
+		db := c.MustGet("db").(*models.MongoDB)
+		controllers.GetChatsHandler(c, db)
+	})
 }
