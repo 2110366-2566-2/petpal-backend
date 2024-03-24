@@ -96,4 +96,45 @@ func TestLogin(t *testing.T) {
 
 		assert.Error(t, err)
 	})
+
+	t.Run("Login with invalid password and too long password", func(t *testing.T) {
+		req := &models.LoginReq{
+			Email:     "0@user.com",
+			Password:  "passwordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpassword",
+			LoginType: "user",
+		}
+
+		_, err := auth_utills.Login(db, req)
+
+		assert.Error(t, err)
+	})
+
+	t.Run("Login with request nil", func(t *testing.T) {
+		// must be panic
+		assert.Panics(t, func() {
+			auth_utills.Login(db, nil)
+		})
+	})
+
+	t.Run("Login after loged in", func(t *testing.T) {
+		req := &models.LoginReq{
+			Email:     "0@user.com",
+			Password:  "password",
+			LoginType: "user",
+		}
+
+		_, err := auth_utills.Login(db, req)
+
+		assert.NoError(t, err)
+
+		req2 := &models.LoginReq{
+			Email:     "0@user.com",
+			Password:  "password",
+			LoginType: "user",
+		}
+
+		_, err2 := auth_utills.Login(db, req2)
+
+		assert.NoError(t, err2)
+	})
 }
