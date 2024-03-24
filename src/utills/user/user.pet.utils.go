@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"petpal-backend/src/models"
 
-	"go.mongodb.org/mongo-driver/bson/primitive"
-
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -49,13 +47,9 @@ func AddUserPet(db *models.MongoDB, createPet *models.CreatePet, user *models.Us
 
 	// find user by email
 	user_id := user.ID
-	user_objectid, err := primitive.ObjectIDFromHex(user_id)
-	if err != nil {
-		return "Invalid user id", err
-	}
 	pet := CreateNewPet(createPet, user.Username)
 
-	filter := bson.D{{Key: "_id", Value: user_objectid}}
+	filter := bson.D{{Key: "_id", Value: user_id}}
 	res, err := user_collection.UpdateOne(context.Background(), filter, bson.D{{Key: "$push", Value: bson.D{{Key: "pets", Value: pet}}}})
 	if res == nil {
 		return "User not found (id=" + user_id + ")", err
@@ -75,11 +69,7 @@ func UpdateUserPet(db *models.MongoDB, pet *models.Pet, user_id string, pet_idx 
 	user_collection := db.Collection("user")
 
 	// find user by email
-	user_objectid, err := primitive.ObjectIDFromHex(user_id)
-	if err != nil {
-		return "Invalid user id", err
-	}
-	filter := bson.D{{Key: "_id", Value: user_objectid}}
+	filter := bson.D{{Key: "_id", Value: user_id}}
 	res, err := user_collection.UpdateOne(context.Background(), filter, bson.D{{
 		Key: "$set", Value: bson.D{{
 			Key: "pets." + fmt.Sprint(pet_idx), Value: pet,
@@ -103,12 +93,7 @@ func DeleteUserPet(db *models.MongoDB, user_id string, pet_idx int) (string, err
 	user_collection := db.Collection("user")
 
 	// find user by email
-	user_objectid, err := primitive.ObjectIDFromHex(user_id)
-	if err != nil {
-		return "Invalid user id", err
-	}
-
-	filter := bson.D{{Key: "_id", Value: user_objectid}}
+	filter := bson.D{{Key: "_id", Value: user_id}}
 	res, err := user_collection.UpdateOne(context.Background(), filter, bson.A{bson.D{{
 		Key: "$set", Value: bson.D{{
 			Key: "pets", Value: bson.D{{

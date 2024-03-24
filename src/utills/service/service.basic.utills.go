@@ -66,11 +66,7 @@ func UpdateUserPet(db *models.MongoDB, pet *models.Pet, user_id string, pet_idx 
 	user_collection := db.Collection("user")
 
 	// find user by email
-	user_objectid, err := primitive.ObjectIDFromHex(user_id)
-	if err != nil {
-		return "Invalid user id", err
-	}
-	filter := bson.D{{Key: "_id", Value: user_objectid}}
+	filter := bson.D{{Key: "_id", Value: user_id}}
 	res, err := user_collection.UpdateOne(context.Background(), filter, bson.D{{
 		Key: "$set", Value: bson.D{{
 			Key: "pets." + fmt.Sprint(pet_idx), Value: pet,

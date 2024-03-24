@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -82,16 +81,10 @@ func GetSearchHistory(db *models.MongoDB, id string) ([]models.SearchHistory, er
 	// get collection
 	collection := db.Collection("user")
 
-	// find user by email
-	objectId, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		return nil, err
-	}
-
 	var search_history models.UserSearchHistory = models.UserSearchHistory{}
-	filter := bson.D{{Key: "_id", Value: objectId}}
+	filter := bson.D{{Key: "_id", Value: id}}
 	opts := options.FindOne().SetProjection(bson.D{{Key: "search_history", Value: 1}})
-	err = collection.FindOne(context.Background(), filter, opts).Decode(&search_history)
+	_ = collection.FindOne(context.Background(), filter, opts).Decode(&search_history)
 
 	return search_history.SearchHistory, nil
 }
@@ -101,11 +94,7 @@ func AddSearchHistory(db *models.MongoDB, id string, search_filters models.Searc
 	collection := db.Collection("user")
 
 	// find user by id
-	objectID, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		return err
-	}
-	filter := bson.D{{Key: "_id", Value: objectID}}
+	filter := bson.D{{Key: "_id", Value: id}}
 
 	search_history := models.SearchHistory{
 		Date:         time.Now(),
@@ -118,7 +107,7 @@ func AddSearchHistory(db *models.MongoDB, id string, search_filters models.Searc
 			{Key: "search_history", Value: search_history},
 		}},
 	}
-	_, err = collection.UpdateOne(context.Background(), filter, update)
+	_, err := collection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
 		return err
 	}
