@@ -9,6 +9,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 
+	misc_utills "petpal-backend/src/utills/miscellaneous"
+
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -26,13 +28,18 @@ func CreateNewServices(createServices *models.CreateService) *models.Service {
 		// newTimeslots[i] = newTimeslot
 	}
 
+	randomServiceImage, err := misc_utills.RandomServiceImage()
+	if err != nil {
+		return nil
+	}
+
 	return &models.Service{
 		ServiceID:          primitive.NewObjectID().Hex(),
 		ServiceName:        createServices.ServiceName,
 		ServiceType:        createServices.ServiceType,
 		ServiceDescription: createServices.ServiceDescription,
 		Price:              createServices.Price,
-		ServiceImg:         []byte{},
+		ServiceImg:         randomServiceImage,
 		AverageRating:      0,
 		RequireCert:        false,
 		Timeslots:          newTimeslots,

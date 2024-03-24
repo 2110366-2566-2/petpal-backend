@@ -4,12 +4,19 @@ import (
 	"errors"
 	"petpal-backend/src/models"
 	user_utills "petpal-backend/src/utills/user"
+	misc_utills "petpal-backend/src/utills/miscellaneous"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func NewUser(createUser models.CreateUser) (*models.User, error) {
 	objID := primitive.NewObjectID().Hex()
+
+	randomProfileImage, err := misc_utills.RandomProfileImage()
+	if err != nil {
+		return nil, err
+	}
+
 	// You can add more validation rules as needed
 	newUser := &models.User{
 		Individual: models.Individual{
@@ -23,7 +30,7 @@ func NewUser(createUser models.CreateUser) (*models.User, error) {
 		Address:              createUser.Address,
 		DateOfBirth:          createUser.DateOfBirth,
 		PhoneNumber:          createUser.PhoneNumber,
-		ProfilePicture:       []byte("Default"),
+		ProfilePicture:       randomProfileImage,
 		DefaultAccountNumber: "Deflut",
 		DefaultBank:          "Deflut",
 		Pets:                 []models.Pet{},
