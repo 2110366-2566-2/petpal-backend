@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"petpal-backend/src/models"
+	payment_utils "petpal-backend/src/utills/payment"
 	svcp_utils "petpal-backend/src/utills/serviceprovider"
 	user_utils "petpal-backend/src/utills/user"
 	"time"
@@ -526,6 +527,43 @@ func FillSVCPDetail(db *models.MongoDB, bookingArray []models.BookingShowALL) []
 	return bookingArray
 }
 
+func FillBookingStatusString(db *models.MongoDB, bookingArray []models.BookingShowALL, userId string) []models.BookingShowALL {
+	timeNow := time.Now()
+	const twentyFourHours = 24 * time.Hour
+	const threeDays = 72 * time.Hour
+	for i, b := range bookingArray {
+		if b.Status.PaymentStatus {
+			if b.Cancel.CancelReason == "Payment Expired (Not Authorize Payment within 24 hours)" {
+				bookingArray[i].StatusString = "Payment Expired"
+			} else if timeNow.Sub(b.BookingTimestamp) > twentyFourHours {
+				payment_utils.CheckUpdateExpiredBookingPayment(db, b.BookingID)
+				bookingArray[i].StatusString = "Payment Expired"
+			} else {
+				bookingArray[i].StatusString = "Pending Payment"
+			}
+		} else if b.Status.SvcpCompleted {
+			if b.Cancel.CancelStatus {
+				bookingArray[i].StatusString = "Cancelled"
+			} else {
+				bookingArray[i].StatusString = "Paid"
+			}
+		} else if b.Status.UserCompleted {
+			bookingArray[i].StatusString = "Completed"
+		} else if timeNow.Sub(b.Status.SvcpCompletedTimestamp) > threeDays {
+			bookingArray[i].StatusString = "Completed"
+			CompleteBooking(db, b.BookingID, "user")
+		} else {
+			if b.Status.UserRefund {
+				bookingArray[i].StatusString = "Refunded"
+			} else {
+				bookingArray[i].StatusString = "Service Completed"
+			}
+		}
+	}
+
+	return bookingArray
+}
+
 func CompleteBooking(db *models.MongoDB, bookingID string, userType string) (*models.Booking, error) {
 	// Get the booking collection
 	collection := db.Collection("booking")
@@ -550,7 +588,10 @@ func CompleteBooking(db *models.MongoDB, bookingID string, userType string) (*mo
 		booking.Status.SvcpCompleted = true
 		booking.Status.SvcpCompletedTimestamp = time.Now()
 	} else if userType == "user" {
-
+		err = payment_utils.SendMoneyToSVCP(db, booking.SVCPID, booking.TotalBookingPrice)
+		if err != nil {
+			return nil, err
+		}
 		booking.Status.UserCompleted = true
 		booking.Status.UserCompletedTimestamp = time.Now()
 	}

@@ -78,3 +78,36 @@ func AuthorizePaymentHandler(c *gin.Context, db *models.MongoDB) {
 	}
 	c.JSON(http.StatusOK, updateBooking)
 }
+
+// RefundBookingHandler godoc
+// @Summary Refund a booking
+// @Description Refund a booking
+// @Tags Service Booking Payment
+// @Accept json
+// @Produce json
+// @Param requestBody body models.RequestBookingId true "Request Body"
+// @Success 200 {object} models.BasicRes "Success"
+// @Failure 400 {object} models.BasicErrorRes "Bad Request"
+// @Failure 401 {object} models.BasicErrorRes "Bad Request"
+// @Failure 403 {object} models.BasicErrorRes "Bad Request"
+// @Router /service/booking/payment/refund [post]
+func RefundBookingHandler(c *gin.Context, db *models.MongoDB) {
+	request := models.RequestBookingId{}
+	//400 bad request
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: err.Error()})
+		return
+	}
+	// TODO: Change to Admin
+	_, err := _authenticate(c, db)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, models.BasicErrorRes{Error: err.Error()})
+		return
+	}
+	err = payment_utills.RefundBooking(db, request.BookingID)
+	if err != nil {
+		c.JSON(http.StatusForbidden, models.BasicErrorRes{Error: err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, models.BasicRes{Message: "Refund successfully"})
+}
