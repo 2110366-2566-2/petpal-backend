@@ -36,6 +36,8 @@ definitions:
     properties:
       SVCPID:
         type: string
+      bookingID:
+        type: string
       bookingTimestamp:
         type: string
       cancel:
@@ -152,6 +154,8 @@ definitions:
         type: string
       status:
         $ref: '#/definitions/models.BookingStatus'
+      statusString:
+        type: string
       timeslotID:
         type: string
       totalBookingPrice:
@@ -179,6 +183,10 @@ definitions:
       userCompleted:
         type: boolean
       userCompletedTimestamp:
+        type: string
+      userRefund:
+        type: boolean
+      userRefundTimestamp:
         type: string
     type: object
   models.BookingWithIdArrayRes:
@@ -963,40 +971,6 @@ paths:
       summary: Update a service
       tags:
       - Service
-  /service/booking//payment/authorize:
-    post:
-      consumes:
-      - application/json
-      description: Authorize a from a booking payment
-      parameters:
-      - description: Request Body
-        in: body
-        name: requestBody
-        required: true
-        schema:
-          $ref: '#/definitions/models.RequestBookingId'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Success
-          schema:
-            $ref: '#/definitions/models.Booking'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/models.BasicErrorRes'
-        "401":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/models.BasicErrorRes'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.BasicErrorRes'
-      summary: Authorize a from a booking payment
-      tags:
-      - Service Booking Payment
   /service/booking/all/svcp:
     post:
       consumes:
@@ -1407,6 +1381,40 @@ paths:
       summary: user get a booking detail by booking id
       tags:
       - Booking user
+  /service/booking/payment/authorize:
+    post:
+      consumes:
+      - application/json
+      description: Authorize a from a booking payment
+      parameters:
+      - description: Request Body
+        in: body
+        name: requestBody
+        required: true
+        schema:
+          $ref: '#/definitions/models.RequestBookingId'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/models.Booking'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "401":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      summary: Authorize a from a booking payment
+      tags:
+      - Service Booking Payment
   /service/booking/payment/qr:
     post:
       consumes:
@@ -1435,6 +1443,40 @@ paths:
           schema:
             $ref: '#/definitions/models.BasicErrorRes'
       summary: Get promptpayQr from a booking
+      tags:
+      - Service Booking Payment
+  /service/booking/payment/refund:
+    post:
+      consumes:
+      - application/json
+      description: Refund a booking
+      parameters:
+      - description: Request Body
+        in: body
+        name: requestBody
+        required: true
+        schema:
+          $ref: '#/definitions/models.RequestBookingId'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/models.BasicRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "401":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "403":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      summary: Refund a booking
       tags:
       - Service Booking Payment
   /service/booking/reschedule/user:
@@ -1604,7 +1646,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Search services based on query, location, timeslot, price range,
+      description: Search services based on query, Address, timeslot, price range,
         rating
       parameters:
       - description: Search filter
@@ -1670,11 +1712,6 @@ paths:
       description: Update service provider (authentication required and only the service
         provider can update their own profile)
       parameters:
-      - description: Service Provider ID
-        in: path
-        name: id
-        required: true
-        type: string
       - description: Service Provider Object (only the fields to be updated)
         in: body
         name: svcp
