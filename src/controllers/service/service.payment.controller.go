@@ -38,7 +38,7 @@ func GetPromptpayQrHandler(c *gin.Context, db *models.MongoDB) {
 		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})
 		return
 	}
-	qr, err := payment_utills.GeneratePromptpayQr(configs.GetInstance().GetPetpalPhoneNumber(), int(booking.TotalBookingPrice))
+	qr, err := payment_utills.GeneratePromptpayQr(configs.GetInstance().GetPetpalPhoneNumber(), booking.TotalBookingPrice)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})
 		return

@@ -1,13 +1,13 @@
 package utills
 
 import (
-	"strconv"
+	"fmt"
 
 	promptpayqr "github.com/kazekim/promptpay-qr-go"
 )
 
-func GeneratePromptpayQr(phoneNumber string, amount int) ([]byte, error) {
-	qr, err := promptpayqr.QRForTargetWithAmount(phoneNumber, strconv.Itoa(amount))
+func GeneratePromptpayQr(phoneNumber string, amount float64) ([]byte, error) {
+	qr, err := promptpayqr.QRForTargetWithAmount(phoneNumber, fmt.Sprintf("%v", amount))
 	if err != nil {
 		return nil, err
 	}
