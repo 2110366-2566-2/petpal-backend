@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"petpal-backend/src/models"
 	"petpal-backend/src/utills/auth"
+	"petpal-backend/src/utills/chat/chathistory"
 	mail "petpal-backend/src/utills/email"
 	svcp_utills "petpal-backend/src/utills/serviceprovider"
 	"strconv"
@@ -364,6 +365,59 @@ func SetDefaultBankAccountHandler(c *gin.Context, db *models.MongoDB) {
 type defaultBankAccountReq struct {
 	DefaultAccountNumber string `json:"defaultAccountNumber"`
 	DefaultBank          string `json:"defaultBank"`
+}
+
+// GetChatsHandler godoc
+//
+// @Summary 	Get the current service provider's chats
+// @Description Get chat rooms of the current service provider. Each `Chat.messages` contains only *one* latest message.
+// @Tags 		ServiceProviders
+//
+// @Security ApiKeyAuth
+//
+// @Produce  	json
+//
+// @Param 		page	query	int 	false	"Page number of chat rooms (default 1)"
+// @Param 		per 	query	int 	false 	"Number of chat rooms per page (default 10)"
+//
+// @Success 	200      {object} []models.Chat         "Success"
+// @Failure     400      {object} models.BasicErrorRes  "Bad request"
+// @Failure     401      {object} models.BasicErrorRes  "Unauthorized"
+// @Failure     500      {object} models.BasicErrorRes  "Internal server error"
+//
+// @Router /serviceproviders/chats [get]
+func GetChatsHandler(c *gin.Context, db *models.MongoDB) {
+	// get current svcp
+	current_svcp, err := _authenticate(c, db)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: err.Error()})
+		return
+	}
+
+	params := c.Request.URL.Query()
+
+	// set default values for page and per
+	if !params.Has("page") {
+		params.Set("page", "1")
+	}
+	if !params.Has("per") {
+		params.Set("per", "10")
+	}
+
+	// fetch page and per from request query
+	page, err_page := strconv.ParseInt(params.Get("page"), 10, 64)
+	per, err_per := strconv.ParseInt(params.Get("per"), 10, 64)
+	if err_page != nil || err_per != nil {
+		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "Invalid page or per number"})
+		return
+	}
+
+	chats, err := chathistory.GetChatsById(db, current_svcp.SVCPID, page, per, "svcp")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, chats)
 }
 
 func _authenticate(c *gin.Context, db *models.MongoDB) (*models.SVCP, error) {

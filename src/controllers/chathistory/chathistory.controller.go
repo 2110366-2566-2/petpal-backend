@@ -13,20 +13,20 @@ import (
 // GetChatHistoryHandler godoc
 //
 // @Summary 	Get chat history
-// @Description Get chat history of a room by roomId
+// @Description Get chat history of a room by roomId. Chat.messages are paginated.
 // @Tags 		Chat
 //
-// @Accept  	json
 // @Produce  	json
 //
-// @Param 		page	query	int 	false	"Page number(default 1)"
-// @Param 		per 	query	int 	false 	"Number of items per page(default 10)"
+// @Param 		page	query	int 	false	"Page number of chat messages (default 1)"
+// @Param 		per 	query	int 	false 	"Number of chat messages per page (default 10)"
+// @Param 		roomId 	path 	string 	true 	"Room ID"
 //
 // @Success 200 {object} models.Chat
 // @Failure 400 {object} models.BasicErrorRes
 // @Failure 500 {object} models.BasicErrorRes
 //
-// @Router /chat/history/:roomId [get]
+// @Router /chat/history/{roomId} [get]
 func GetChatHistoryHandler(c *gin.Context, db *models.MongoDB) {
 	roomId := c.Param("roomId")
 	params := c.Request.URL.Query()
@@ -100,11 +100,13 @@ func CreateChatHistoryHandler(c *gin.Context, db *models.MongoDB) {
 // @Accept  	json
 // @Produce  	json
 //
+// @Param 		roomId 	path 	string 	true 	"Room ID"
+//
 // @Success 200 {object} models.Chat
 // @Failure 400 {object} models.BasicErrorRes
 // @Failure 500 {object} models.BasicErrorRes
 //
-// @Router /chat/history/:roomId [put]
+// @Router /chat/history/{roomId} [put]
 func UpdateChatHistoryHandler(c *gin.Context, db *models.MongoDB) {
 	roomId := c.Param("roomId")
 	var updateChatHistoryReq bson.M

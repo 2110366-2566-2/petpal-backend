@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"petpal-backend/src/models"
 	"petpal-backend/src/utills/auth"
+	"petpal-backend/src/utills/chat/chathistory"
 	user_utills "petpal-backend/src/utills/user"
 	"strconv"
 
@@ -500,6 +501,57 @@ func GetSearchHistoryHandler(c *gin.Context, db *models.MongoDB) {
 	c.JSON(http.StatusOK, models.UserSearchHistory{User: *currentUser, SearchHistory: search_history})
 }
 
+// GetChatsHandler godoc
+//
+// @Summary 	Get the current user's chats
+// @Description Get chat rooms of the current user. Each `Chat.messages` contains only *one* latest message.
+// @Tags 		User
+//
+// @Security ApiKeyAuth
+//
+// @Produce  	json
+//
+// @Param 		page	query	int 	false	"Page number of chat rooms (default 1)"
+// @Param 		per 	query	int 	false 	"Number of chat rooms per page (default 10)"
+//
+// @Success 	200      {object} []models.Chat         "Success"
+// @Failure     400      {object} models.BasicErrorRes  "Bad request"
+// @Failure     401      {object} models.BasicErrorRes  "Unauthorized"
+// @Failure     500      {object} models.BasicErrorRes  "Internal server error"
+//
+// @Router /user/chats [get]
+func GetChatsHandler(c *gin.Context, db *models.MongoDB) {
+	current_user, err := _authenticate(c, db)
+	if err != nil {
+		return
+	}
+
+	params := c.Request.URL.Query()
+
+	// set default values for page and per
+	if !params.Has("page") {
+		params.Set("page", "1")
+	}
+	if !params.Has("per") {
+		params.Set("per", "10")
+	}
+
+	// fetch page and per from request query
+	page, err_page := strconv.ParseInt(params.Get("page"), 10, 64)
+	per, err_per := strconv.ParseInt(params.Get("per"), 10, 64)
+	if err_page != nil || err_per != nil {
+		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "Invalid page or per number"})
+		return
+	}
+
+	chatHistory, err := chathistory.GetChatsById(db, current_user.ID, page, per, "user")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, chatHistory)
+}
+
 func _authenticate(c *gin.Context, db *models.MongoDB) (*models.User, error) {
 	entity, err := auth.GetCurrentEntityByGinContenxt(c, db)
 	if err != nil {
@@ -513,7 +565,7 @@ func _authenticate(c *gin.Context, db *models.MongoDB) (*models.User, error) {
 	case *models.SVCP:
 		err = errors.New("need token of type User but recives token SVCP type")
 		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: err.Error()})
-		return nil, nil
+		return nil, err
 		// Handle svcp
 	}
 	err = errors.New("need token of type User but wrong type")

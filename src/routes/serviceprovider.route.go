@@ -50,5 +50,10 @@ func SVCPRoutes(r *gin.Engine) {
 			db := c.MustGet("db").(*models.MongoDB)
 			user_controllers.UploadImageHandler(c, db)
 		})
+
+		SVCPGroup.GET("/chats", func(c *gin.Context) {
+			db := c.MustGet("db").(*models.MongoDB)
+			controllers.GetChatsHandler(c, db)
+		})
 	}
 }
