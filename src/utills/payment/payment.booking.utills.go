@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func ConfirmBookingPayment(db *models.MongoDB, bookingID string, userID string) (*models.Booking, error) {
@@ -16,12 +15,8 @@ func ConfirmBookingPayment(db *models.MongoDB, bookingID string, userID string) 
 	// Find the booking by bookingID
 	var booking models.Booking = models.Booking{}
 	// Convert bookingID to ObjectID
-	objID, err := primitive.ObjectIDFromHex(bookingID)
-	if err != nil {
-		return nil, err
-	}
-	filter := bson.D{{Key: "_id", Value: objID}}
-	err = collection.FindOne(context.Background(), filter).Decode(&booking)
+	filter := bson.D{{Key: "_id", Value: bookingID}}
+	err := collection.FindOne(context.Background(), filter).Decode(&booking)
 	if err != nil {
 		return nil, err
 	}
@@ -43,8 +38,7 @@ func ConfirmBookingPayment(db *models.MongoDB, bookingID string, userID string) 
 		booking.Status.PaymentStatus = true
 		booking.Status.PaymentTimestamp = timeNow
 	}
-	// Update the booking in the collection
-	_, err = collection.ReplaceOne(context.Background(), filter, booking)
+	_, err = collection.UpdateOne(context.Background(), filter, bson.D{{Key: "$set", Value: booking}})
 	if err != nil {
 		return nil, err
 	}
@@ -70,12 +64,8 @@ func CheckUpdateExpiredBookingPayment(db *models.MongoDB, bookingID string) erro
 	// Find the booking by bookingID
 	var booking models.Booking = models.Booking{}
 	// Convert bookingID to ObjectID
-	objID, err := primitive.ObjectIDFromHex(bookingID)
-	if err != nil {
-		return err
-	}
-	filter := bson.D{{Key: "_id", Value: objID}}
-	err = collection.FindOne(context.Background(), filter).Decode(&booking)
+	filter := bson.D{{Key: "_id", Value: bookingID}}
+	err := collection.FindOne(context.Background(), filter).Decode(&booking)
 	if err != nil {
 		return err
 	}
@@ -83,11 +73,12 @@ func CheckUpdateExpiredBookingPayment(db *models.MongoDB, bookingID string) erro
 		return fmt.Errorf("This booking is already cancelled")
 	}
 	booking = UpdateExpiredBookingPayment(booking)
-	// Update the booking in the collection
-	_, err = collection.ReplaceOne(context.Background(), filter, booking)
+
+	_, err = collection.UpdateOne(context.Background(), filter, bson.D{{Key: "$set", Value: booking}})
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -97,12 +88,8 @@ func RefundBooking(db *models.MongoDB, bookingID string) error {
 	// Find the booking by bookingID
 	var booking models.Booking = models.Booking{}
 	// Convert bookingID to ObjectID
-	objID, err := primitive.ObjectIDFromHex(bookingID)
-	if err != nil {
-		return err
-	}
-	filter := bson.D{{Key: "_id", Value: objID}}
-	err = collection.FindOne(context.Background(), filter).Decode(&booking)
+	filter := bson.D{{Key: "_id", Value: bookingID}}
+	err := collection.FindOne(context.Background(), filter).Decode(&booking)
 	if err != nil {
 		return err
 	}
@@ -120,8 +107,7 @@ func RefundBooking(db *models.MongoDB, bookingID string) error {
 	booking.Status.UserRefund = true
 	booking.Status.UserRefundTimestamp = time.Now()
 
-	// Update the booking in the collection
-	_, err = collection.ReplaceOne(context.Background(), filter, booking)
+	_, err = collection.UpdateOne(context.Background(), filter, bson.D{{Key: "$set", Value: booking}})
 	if err != nil {
 		return err
 	}

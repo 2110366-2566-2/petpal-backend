@@ -4,6 +4,12 @@ package models
 import "time"
 
 // User represents a user entity
+
+type CreateBooking struct {
+	ServiceID  string `json:"serviceID" bson:"serviceID"`
+	TimeslotID string `json:"timeslot" bson:"timeslot"`
+}
+
 type Booking struct {
 	BookingID  string `json:"bookingID" bson:"_id,omitempty"`
 	UserID     string `json:"userID" bson:"userID"`

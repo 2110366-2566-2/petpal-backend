@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func InsertBooking(db *models.MongoDB, BookingCreate *models.Booking, user *models.User) (*models.Booking, error) {
@@ -100,13 +99,8 @@ func GetABookingDetail(db *models.MongoDB, bookingID string) (*models.BookingFul
 	// Find the booking by bookingID
 	booking := models.BookingFull{}
 
-	objID, err := primitive.ObjectIDFromHex(bookingID)
-	if err != nil {
-		return nil, err
-	}
-
-	filter := bson.D{{Key: "_id", Value: objID}}
-	err = collection.FindOne(context.Background(), filter).Decode(&booking)
+	filter := bson.D{{Key: "_id", Value: bookingID}}
+	err := collection.FindOne(context.Background(), filter).Decode(&booking)
 	if err != nil {
 		return nil, err
 	}
@@ -150,13 +144,8 @@ func GetBooking(db *models.MongoDB, bookingID string) (*models.Booking, error) {
 	// Find the booking by bookingID
 	var booking models.Booking = models.Booking{}
 
-	objID, err := primitive.ObjectIDFromHex(bookingID)
-	if err != nil {
-		return nil, err
-	}
-
-	filter := bson.D{{Key: "_id", Value: objID}}
-	err = collection.FindOne(context.Background(), filter).Decode(&booking)
+	filter := bson.D{{Key: "_id", Value: bookingID}}
+	err := collection.FindOne(context.Background(), filter).Decode(&booking)
 	if err != nil {
 		return nil, err
 	}
@@ -171,14 +160,8 @@ func CancelBooking(db *models.MongoDB, bookingID string, Cancel models.BookingCa
 	// Find the booking by bookingID
 	var booking models.Booking = models.Booking{}
 
-	// Convert bookingID to ObjectID
-	objID, err := primitive.ObjectIDFromHex(bookingID)
-	if err != nil {
-		return nil, err
-	}
-
-	filter := bson.D{{Key: "_id", Value: objID}}
-	err = collection.FindOne(context.Background(), filter).Decode(&booking)
+	filter := bson.D{{Key: "_id", Value: bookingID}}
+	err := collection.FindOne(context.Background(), filter).Decode(&booking)
 	if err != nil {
 		return nil, err
 	}
@@ -304,14 +287,8 @@ func ChangeBookingScheduled(db *models.MongoDB, bookingID string, newTimeslotID 
 	// Find the booking by bookingID
 	var booking models.Booking = models.Booking{}
 
-	// Convert bookingID to ObjectID
-	objID, err := primitive.ObjectIDFromHex(bookingID)
-	if err != nil {
-		return nil, err
-	}
-
-	filter := bson.D{{Key: "_id", Value: objID}}
-	err = collection.FindOne(context.Background(), filter).Decode(&booking)
+	filter := bson.D{{Key: "_id", Value: bookingID}}
+	err := collection.FindOne(context.Background(), filter).Decode(&booking)
 	if err != nil {
 		return nil, err
 	}
@@ -398,14 +375,8 @@ func BookingGetTimeSlot(db *models.MongoDB, bookingID string) (*models.Timeslot,
 	// Find the booking by bookingID
 	var booking models.Booking = models.Booking{}
 
-	// Convert bookingID to ObjectID
-	objID, err := primitive.ObjectIDFromHex(bookingID)
-	if err != nil {
-		return nil, err
-	}
-
-	filter := bson.D{{Key: "_id", Value: objID}}
-	err = collection.FindOne(context.Background(), filter).Decode(&booking)
+	filter := bson.D{{Key: "_id", Value: bookingID}}
+	err := collection.FindOne(context.Background(), filter).Decode(&booking)
 	if err != nil {
 		return nil, err
 	}
@@ -532,7 +503,7 @@ func FillBookingStatusString(db *models.MongoDB, bookingArray []models.BookingSh
 	const twentyFourHours = 24 * time.Hour
 	const threeDays = 72 * time.Hour
 	for i, b := range bookingArray {
-		if b.Status.PaymentStatus {
+		if !b.Status.PaymentStatus {
 			if b.Cancel.CancelReason == "Payment Expired (Not Authorize Payment within 24 hours)" {
 				bookingArray[i].StatusString = "Payment Expired"
 			} else if timeNow.Sub(b.BookingTimestamp) > twentyFourHours {
@@ -541,13 +512,13 @@ func FillBookingStatusString(db *models.MongoDB, bookingArray []models.BookingSh
 			} else {
 				bookingArray[i].StatusString = "Pending Payment"
 			}
-		} else if b.Status.SvcpCompleted {
+		} else if !b.Status.SvcpCompleted {
 			if b.Cancel.CancelStatus {
 				bookingArray[i].StatusString = "Cancelled"
 			} else {
 				bookingArray[i].StatusString = "Paid"
 			}
-		} else if b.Status.UserCompleted {
+		} else if !b.Status.UserCompleted {
 			bookingArray[i].StatusString = "Completed"
 		} else if timeNow.Sub(b.Status.SvcpCompletedTimestamp) > threeDays {
 			bookingArray[i].StatusString = "Completed"
@@ -571,14 +542,8 @@ func CompleteBooking(db *models.MongoDB, bookingID string, userType string) (*mo
 	// Find the booking by bookingID
 	var booking models.Booking = models.Booking{}
 
-	// Convert bookingID to ObjectID
-	objID, err := primitive.ObjectIDFromHex(bookingID)
-	if err != nil {
-		return nil, err
-	}
-
-	filter := bson.D{{Key: "_id", Value: objID}}
-	err = collection.FindOne(context.Background(), filter).Decode(&booking)
+	filter := bson.D{{Key: "_id", Value: bookingID}}
+	err := collection.FindOne(context.Background(), filter).Decode(&booking)
 	if err != nil {
 		return nil, err
 	}
@@ -637,14 +602,8 @@ func SVCPConfirmBooking(db *models.MongoDB, bookingID string, svcp *models.SVCP)
 	// Find the booking by bookingID
 	var booking models.Booking = models.Booking{}
 
-	// Convert bookingID to ObjectID
-	objID, err := primitive.ObjectIDFromHex(bookingID)
-	if err != nil {
-		return nil, err
-	}
-
-	filter := bson.D{{Key: "_id", Value: objID}}
-	err = collection.FindOne(context.Background(), filter).Decode(&booking)
+	filter := bson.D{{Key: "_id", Value: bookingID}}
+	err := collection.FindOne(context.Background(), filter).Decode(&booking)
 	if err != nil {
 		return nil, err
 	}

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // CreateBookingHandler godoc
@@ -30,11 +31,17 @@ import (
 // @Router 		/service/booking/create [post]
 func CreateBookingHandler(c *gin.Context, db *models.MongoDB) {
 	// create booking
-	request := models.Booking{}
+	request := models.BookingRequest{}
 
 	//400 bad request
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: err.Error()})
+		return
+	}
+
+	newBooking, err := craeteNewBooking(db, &request)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})
 		return
 	}
 
@@ -44,7 +51,7 @@ func CreateBookingHandler(c *gin.Context, db *models.MongoDB) {
 		c.JSON(http.StatusUnauthorized, models.BasicErrorRes{Error: err.Error()})
 		return
 	}
-	request.UserID = current_user.ID
+	newBooking.UserID = current_user.ID
 
 	// Check for required fields
 	if request.ServiceID == "" || request.TimeslotID == "" {
@@ -52,9 +59,9 @@ func CreateBookingHandler(c *gin.Context, db *models.MongoDB) {
 		return
 	}
 
-	request.BookingTimestamp = time.Now()
+	newBooking.BookingTimestamp = time.Now()
 
-	returnBooking, err := utills.InsertBooking(db, &request, current_user)
+	returnBooking, err := utills.InsertBooking(db, newBooking, current_user)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})
@@ -63,6 +70,16 @@ func CreateBookingHandler(c *gin.Context, db *models.MongoDB) {
 
 	c.JSON(http.StatusCreated, models.BookingBasicRes{Message: "Booking user created successfully", Result: *returnBooking})
 
+}
+
+func craeteNewBooking(db *models.MongoDB, request *models.BookingRequest) (*models.Booking, error) {
+	// create booking
+	newBooking := &models.Booking{
+		BookingID:  primitive.NewObjectID().Hex(),
+		ServiceID:  request.ServiceID,
+		TimeslotID: request.TimeslotID,
+	}
+	return newBooking, nil
 }
 
 // UserGetAllBookingHandler godoc
