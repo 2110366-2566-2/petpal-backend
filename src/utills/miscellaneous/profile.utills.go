@@ -7,6 +7,7 @@ import (
 	"image/jpeg"
 	"math/rand"
 	"os"
+	"strings"
 )
 
 func RandomProfileImage() ([]byte, error) {
@@ -18,6 +19,7 @@ func RandomProfileImage() ([]byte, error) {
 	// generate a random index
 	var random_idx = rand.Intn(len(profileImages))
 	current_wd, _ := os.Getwd()
+	current_wd = strings.Split(current_wd, "src")[0] + "src"
 	var target_file = fmt.Sprintf("%s%s", current_wd, profileImages[random_idx])
 	fmt.Println(target_file)
 
@@ -32,6 +34,7 @@ func RandomServiceImage() ([]byte, error) {
 	// generate a random index
 	var random_idx = rand.Intn(len(serviceImages))
 	current_wd, _ := os.Getwd()
+	current_wd = strings.Split(current_wd, "src")[0] + "src"
 	var target_file = fmt.Sprintf("%s%s", current_wd, serviceImages[random_idx])
 	fmt.Println(target_file)
 

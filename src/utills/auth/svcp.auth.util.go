@@ -3,8 +3,8 @@ package auth
 import (
 	"errors"
 	"petpal-backend/src/models"
-	svcp_utills "petpal-backend/src/utills/serviceprovider"
 	misc_utills "petpal-backend/src/utills/miscellaneous"
+	svcp_utills "petpal-backend/src/utills/serviceprovider"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -15,6 +15,10 @@ func NewSVCP(createSVCP models.CreateSVCP) (*models.SVCP, error) {
 	randomProfileImage, err := misc_utills.RandomProfileImage()
 	if err != nil {
 		return nil, err
+	}
+	randomServiceImage, err2 := misc_utills.RandomServiceImage()
+	if err2 != nil {
+		return nil, err2
 	}
 
 	// You can add more validation rules as needed
@@ -33,7 +37,7 @@ func NewSVCP(createSVCP models.CreateSVCP) (*models.SVCP, error) {
 		DefaultAccountNumber:  "",
 		License:               "",
 		Address:               "",
-		SVCPAdditionalImg:     []byte{},
+		SVCPAdditionalImg:     randomServiceImage,
 		SVCPServiceType:       createSVCP.SVCPServiceType,
 		Services:              []models.Service{},
 	}
