@@ -167,8 +167,8 @@ func DeleteService(db *models.MongoDB, serviceID string, svcpID string) error {
 	update := bson.D{{Key: "$pull", Value: bson.D{{Key: "services", Value: bson.D{{Key: "serviceID", Value: serviceID}}}}}}
 	res, err := svcp_collection.UpdateOne(context.Background(), filter, update)
 
-	if res.MatchedCount == 0 {
-		return errors.New("no document found with the given svcpID")
+	if res.ModifiedCount == 0 {
+		return errors.New("no document found with the given svcpID and serviceID " + svcpID + " " + serviceID)
 	}
 
 	return err
