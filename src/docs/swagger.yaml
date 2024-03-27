@@ -569,6 +569,45 @@ definitions:
 info:
   contact: {}
 paths:
+  /admin/service/{svcpID}/{serviceID}:
+    delete:
+      description: Delete a service identified by service provider ID and service
+        ID.
+      parameters:
+      - description: Service provider ID
+        in: path
+        name: svcpID
+        required: true
+        type: string
+      - description: Service ID
+        in: path
+        name: serviceID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.BasicRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete a service by SVCPID and service ID
+      tags:
+      - Admin
   /change-password:
     post:
       consumes:
