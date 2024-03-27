@@ -157,13 +157,12 @@ func GetServiceByID(db *models.MongoDB, serviceID string) (*models.Service, erro
 	return &results[0].Services, nil
 }
 
-// deletes a pet from a user's pet list by index
-// note that when index is out of range, it will do nothing and *NOT* return an error
+// deletes a service from a svcp's service list by service ID
 func DeleteService(db *models.MongoDB, serviceID string, svcpID string) error {
 	// get collection
 	svcp_collection := db.Collection("svcp")
 
-	// find user by email
+	// find svcp by id
 	filter := bson.D{{Key: "SVCPID", Value: svcpID}}
 	update := bson.D{{Key: "$pull", Value: bson.D{{Key: "services", Value: bson.D{{Key: "serviceID", Value: serviceID}}}}}}
 	res, err := svcp_collection.UpdateOne(context.Background(), filter, update)
