@@ -30,4 +30,5 @@ type SearchResult struct {
 	Address         string  `json:"address"`
 	SVCPUsername    string  `json:"SVCPUsername"`
 	SVCPServiceType string  `json:"SVCPServiceType"`
+	SVCPID          string  `json:"SVCPID"`
 }

@@ -50,6 +50,7 @@ func SearchServices(db *models.MongoDB, searchFilter *models.SearchFilter, id st
 			{Key: "address", Value: 1},
 			{Key: "SVCPUsername", Value: 1},
 			{Key: "SVCPServiceType", Value: 1},
+			{Key: "SVCPID", Value: 1},
 		}}},
 	}
 
