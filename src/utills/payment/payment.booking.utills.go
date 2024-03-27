@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"petpal-backend/src/models"
+	email_utils "petpal-backend/src/utills/email"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -35,6 +36,10 @@ func ConfirmBookingPayment(db *models.MongoDB, bookingID string, userID string) 
 	if timeDiff > twentyFourHours {
 		UpdateExpiredBookingPayment(booking)
 	} else {
+		err := SendMoneyToBank(db, "Petpal", booking.TotalBookingPrice)
+		if err != nil {
+			return nil, err
+		}
 		booking.Status.PaymentStatus = true
 		booking.Status.PaymentTimestamp = timeNow
 	}
@@ -157,5 +162,9 @@ func SendMoneyToUser(db *models.MongoDB, userID string, money float64) error {
 }
 
 func SendMoneyToBank(db *models.MongoDB, bankID string, money float64) error {
+	// monet to string
+	moneyStr := fmt.Sprintf("%f", money)
+
+	email_utils.SendEmailWithGmail("petpalgoldenarmorwarrior@gmail.com", "PetPal Confirm payment", "คุณได้จ่ายเงิน "+moneyStr+" บาท ไปยังธนาคาร "+bankID+" สำเร็จแล้ว")
 	return nil
 }
