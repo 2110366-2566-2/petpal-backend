@@ -16,4 +16,9 @@ func AdminRoutes(r *gin.Engine) {
 		serviceID := c.Param("serviceID")
 		admin.AdminDeleteServiceHandler(c, db, svcpID, serviceID)
 	})
+	adminGroup.PATCH("/serviceproviders/verify/:svcpID", func(c *gin.Context) {
+		db := c.MustGet("db").(*models.MongoDB)
+		svcpID := c.Param("svcpID")
+		admin.AdminVerifyServiceProviderHandler(c, db, svcpID)
+	})
 }

@@ -608,6 +608,51 @@ paths:
       summary: Delete a service by SVCPID and service ID
       tags:
       - Admin
+  /admin/serviceproviders/verify/{svcpID}:
+    patch:
+      consumes:
+      - application/json
+      description: Change the verification status of a service provider identified
+        by service provider ID to the given verification status.
+      parameters:
+      - description: Service provider ID
+        in: path
+        name: svcpID
+        required: true
+        type: string
+      - description: SVCP verification status to be set to
+        in: body
+        name: verify
+        required: true
+        schema:
+          properties:
+            verify:
+              type: boolean
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.BasicRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
+      summary: Change the verification status of a service provider
+      tags:
+      - Admin
   /change-password:
     post:
       consumes:
