@@ -68,6 +68,55 @@ func GetSVCPsHandler(c *gin.Context, db *models.MongoDB) {
 	c.JSON(http.StatusOK, svcps)
 }
 
+// GetUnverifiedSVCPsHandler godoc
+//
+// @Summary 	Get all unverified service providers
+// @Description Get all unverified service providers (authentication not required) and sensitive information is censored
+// @Tags 		ServiceProviders
+//
+// @Produce  	json
+//
+// @Param 		page	query	int 	false	"Page number(default 1)"
+// @Param 		per 	query	int 	false 	"Number of items per page(default 10)"
+//
+// @Success 200 {array} models.SVCP
+// @Failure 400 {object} models.BasicErrorRes
+// @Failure 500 {object} models.BasicErrorRes
+//
+// @Router /serviceproviders/unverified [get]
+func GetUnverifiedSVCPsHandler(c *gin.Context, db *models.MongoDB) {
+	params := c.Request.URL.Query()
+
+	// set default values for page and per
+	if !params.Has("page") {
+		params.Set("page", "1")
+	}
+	if !params.Has("per") {
+		params.Set("per", "10")
+	}
+
+	// fetch page and per from request query
+	page, err_page := strconv.ParseInt(params.Get("page"), 10, 64)
+	per, err_per := strconv.ParseInt(params.Get("per"), 10, 64)
+	if err_page != nil || err_per != nil {
+		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "Invalid page or per"})
+		return
+	}
+
+	svcps, err := svcp_utills.GetSVCPs(db, bson.D{{Key: "isVerified", Value: false}}, page-1, per)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: "Failed to get service providers" + err.Error()})
+		return
+	}
+
+	// remove sensitive data from svcps
+	for i := range svcps {
+		svcps[i].RemoveSensitiveData()
+	}
+
+	c.JSON(http.StatusOK, svcps)
+}
+
 // GetSVCPByIDHandler godoc
 //
 // @Summary 	Get service provider by ID
