@@ -15,6 +15,10 @@ func SVCPRoutes(r *gin.Engine) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllers.GetSVCPsHandler(c, db)
 		})
+		SVCPGroup.GET("/unverified", func(c *gin.Context) {
+			db := c.MustGet("db").(*models.MongoDB)
+			controllers.GetUnverifiedSVCPsHandler(c, db)
+		})
 		SVCPGroup.GET("/:id", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllers.GetSVCPByIDHandler(c, db, c.Param("id"))

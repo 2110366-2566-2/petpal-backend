@@ -2110,6 +2110,55 @@ const docTemplate = `{
                 }
             }
         },
+        "/serviceproviders/unverified": {
+            "get": {
+                "description": "Get all unverified service providers (authentication not required) and sensitive information is censored",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ServiceProviders"
+                ],
+                "summary": "Get all unverified service providers",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number(default 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of items per page(default 10)",
+                        "name": "per",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.SVCP"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/serviceproviders/upload-description": {
             "post": {
                 "security": [
