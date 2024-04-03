@@ -1,8 +1,6 @@
 // user.go
 package models
 
-import "go.mongodb.org/mongo-driver/bson"
-
 // User represents a user entity
 
 type CreateSVCP struct {
@@ -23,11 +21,6 @@ type UpdateSVCP struct {
 	SVCPImg           []byte `json:"SVCPImg" bson:"SVCPImg"`
 }
 
-type SVCPFilter struct {
-	// used for filtering in utills.GetSVCPs
-	IsVerified bool `json:"isVerified,omitempty" bson:"isVerified,omitempty"`
-}
-
 type SVCP struct {
 	Individual
 	SVCPID                string    `json:"SVCPID" bson:"SVCPID,omitempty"`
@@ -46,11 +39,6 @@ type SVCP struct {
 	SVCPAdditionalImg     []byte    `json:"SVCPAdditionalImg" bson:"SVCPAdditionalImg"`
 	SVCPServiceType       string    `json:"SVCPServiceType" bson:"SVCPServiceType"`
 	Services              []Service `json:"services" bson:"services"`
-}
-
-func (e *SVCPFilter) toBson() bson.D {
-
-	return bson.D{}
 }
 
 func (e *SVCP) validate(SVCPImg string) bool {
