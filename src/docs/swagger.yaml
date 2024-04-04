@@ -320,6 +320,35 @@ definitions:
       rating:
         type: number
     type: object
+  models.Issue:
+    properties:
+      associatedBookingID:
+        type: string
+      attachedImg:
+        items:
+          type: integer
+        type: array
+      details:
+        type: string
+      isResolved:
+        type: boolean
+      issueDate:
+        type: string
+      issueID:
+        type: string
+      issueType:
+        description: '"refund", "system", "service"'
+        type: string
+      reporterID:
+        type: string
+      reporterType:
+        description: user, svcp
+        type: string
+      resolveDate:
+        type: string
+      workingAdminID:
+        type: string
+    type: object
   models.LoginReq:
     properties:
       email:
@@ -803,6 +832,37 @@ paths:
       tags:
       - Authentication
   /issue:
+    get:
+      description: Get issues associated with the current user. If user is admin,
+        all issues are returned. Otherwise only issues associated with the user are
+        returned. Note that in an issue, if attached image is not provided, it will
+        be set to null.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/models.Issue'
+            type: array
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
+      summary: Get issues
+      tags:
+      - Issue
     post:
       consumes:
       - multipart/form-data

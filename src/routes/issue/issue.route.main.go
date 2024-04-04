@@ -14,4 +14,8 @@ func IssueRoutes(r *gin.Engine) {
 		db := c.MustGet("db").(*models.MongoDB)
 		controllers.CreateIssue(c, db)
 	})
+	issueGroup.GET("/", func(c *gin.Context) {
+		db := c.MustGet("db").(*models.MongoDB)
+		controllers.GetIssues(c, db)
+	})
 }

@@ -7,8 +7,10 @@ import (
 	"petpal-backend/src/models"
 	"petpal-backend/src/utills/auth"
 	issue_utills "petpal-backend/src/utills/issue"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 // CreateIssue godoc
@@ -79,6 +81,71 @@ func CreateIssue(c *gin.Context, db *models.MongoDB) {
 	}
 
 	c.JSON(http.StatusOK, models.BasicRes{Message: "Issue created successfully"})
+}
+
+// GetIssue godoc
+//
+// @Summary     Get issues
+// @Description Get issues associated with the current user. If user is admin, all issues are returned. Otherwise only issues associated with the user are returned. Note that in an issue, if attached image is not provided, it will be set to null.
+// @Tags        Issue
+//
+// @Produce     json
+//
+// @Security    ApiKeyAuth
+//
+// @Success     200      {object} []models.Issue    			"Success"
+// @Failure     400      {object} models.BasicErrorRes  		"Bad request"
+// @Failure     401      {object} models.BasicErrorRes  		"Unauthorized"
+// @Failure     500      {object} models.BasicErrorRes  		"Internal server error"
+//
+// @Router      /issue [get]
+func GetIssues(c *gin.Context, db *models.MongoDB) {
+	e, e_type, err := _authenticate(c, db)
+	if err != nil {
+		return
+	}
+
+	// set default page and per
+	params := c.Request.URL.Query()
+	if !params.Has("page") {
+		params.Set("page", "1")
+	}
+	if !params.Has("per") {
+		params.Set("per", "10")
+	}
+
+	// parse page and per
+	page, err_page := strconv.ParseInt(params.Get("page"), 10, 64)
+	per, err_per := strconv.ParseInt(params.Get("per"), 10, 64)
+
+	if err_page != nil || err_per != nil {
+		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "Invalid page or per"})
+		return
+	}
+
+	filter := bson.M{}
+	if e_type == "user" {
+		filter["reporterID"] = e.(*models.User).ID
+		filter["reporterType"] = "user"
+	} else if e_type == "svcp" {
+		filter["reporterID"] = e.(*models.SVCP).SVCPID
+		filter["reporterType"] = "svcp"
+	} else if e_type == "admin" {
+		// do nothing
+	} else {
+		err = errors.New("error getting user or svcp object from token")
+		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: err.Error()})
+		return
+	}
+
+	// get all issues
+	issues, err := issue_utills.GetIssues(db, filter, page-1, per)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, issues)
 }
 
 func _authenticate(c *gin.Context, db *models.MongoDB) (interface{}, string, error) {

@@ -374,6 +374,50 @@ const docTemplate = `{
             }
         },
         "/issue": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get issues associated with the current user. If user is admin, all issues are returned. Otherwise only issues associated with the user are returned. Note that in an issue, if attached image is not provided, it will be set to null.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Issue"
+                ],
+                "summary": "Get issues",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Issue"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
@@ -3582,6 +3626,49 @@ const docTemplate = `{
                 },
                 "rating": {
                     "type": "number"
+                }
+            }
+        },
+        "models.Issue": {
+            "type": "object",
+            "properties": {
+                "associatedBookingID": {
+                    "type": "string"
+                },
+                "attachedImg": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "details": {
+                    "type": "string"
+                },
+                "isResolved": {
+                    "type": "boolean"
+                },
+                "issueDate": {
+                    "type": "string"
+                },
+                "issueID": {
+                    "type": "string"
+                },
+                "issueType": {
+                    "description": "\"refund\", \"system\", \"service\"",
+                    "type": "string"
+                },
+                "reporterID": {
+                    "type": "string"
+                },
+                "reporterType": {
+                    "description": "user, svcp",
+                    "type": "string"
+                },
+                "resolveDate": {
+                    "type": "string"
+                },
+                "workingAdminID": {
+                    "type": "string"
                 }
             }
         },
