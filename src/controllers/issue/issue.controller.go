@@ -14,7 +14,7 @@ import (
 // CreateIssue godoc
 //
 // @Summary     Create issue
-// @Description Create an issue for the current user
+// @Description Create an issue for the current user. If attached image is not provided, it will be set to null.
 // @Tags        Issue
 //
 // @Accept      multipart/form-data
@@ -27,21 +27,21 @@ import (
 // @Param       issueType      		formData    string      true        "Type of issue (refund, system, service)"
 // @Param       associatedBookingID	formData    string      false 		"ID of associated booking if type is service (optional)"
 //
-// @Success     202      {object} models.BasicRes    "Accepted"
+// @Success     200      {object} models.BasicRes    "Accepted"
 // @Failure     400      {object} models.BasicErrorRes      "Bad request"
 // @Failure     401      {object} models.BasicErrorRes      "Unauthorized"
 // @Failure     500      {object} models.BasicErrorRes      "Internal server error"
 //
-// @Router      /user/uploadProfileImage [post]
+// @Router      /issue [post]
 func CreateIssue(c *gin.Context, db *models.MongoDB) {
-	user, svcp, err := _authenticate(c, db)
+	e, e_type, err := _authenticate(c, db)
 	if err != nil {
 		return
 	}
 
 	issue := models.CreateIssue{}
 
-	file, _, err := c.Request.FormFile("file")
+	file, _, err := c.Request.FormFile("attachedImage")
 	if err != nil && err.Error() != "http: no such file" {
 		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: err.Error()})
 		return
@@ -61,15 +61,16 @@ func CreateIssue(c *gin.Context, db *models.MongoDB) {
 	issue.IssueType = c.Request.FormValue("issueType")
 	issue.AssociatedBookingID = c.Request.FormValue("associatedBookingID")
 
-	if user != nil {
-		issue.ReporterID = user.ID
+	if e_type == "user" {
+		issue.ReporterID = e.(*models.User).ID
 		issue.ReporterType = "user"
-	} else if svcp != nil {
-		issue.ReporterID = svcp.SVCPID
+	} else if e_type == "svcp" {
+		issue.ReporterID = e.(*models.SVCP).SVCPID
 		issue.ReporterType = "svcp"
 	} else {
 		err = errors.New("error getting user or svcp object from token")
 		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: err.Error()})
+		return
 	}
 
 	if err := issue_utills.CreateIssue(db, &issue); err != nil {
@@ -80,22 +81,24 @@ func CreateIssue(c *gin.Context, db *models.MongoDB) {
 	c.JSON(http.StatusOK, models.BasicRes{Message: "Issue created successfully"})
 }
 
-func _authenticate(c *gin.Context, db *models.MongoDB) (*models.User, *models.SVCP, error) {
+func _authenticate(c *gin.Context, db *models.MongoDB) (interface{}, string, error) {
 	entity, err := auth.GetCurrentEntityByGinContenxt(c, db)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "Failed to get token from Cookie plase login first, " + err.Error()})
-		return nil, nil, err
+		c.JSON(http.StatusUnauthorized, models.BasicErrorRes{Error: "Failed to get token from Cookie plase login first, " + err.Error()})
+		return nil, "", err
 	}
 	switch entity := entity.(type) {
 	case *models.User:
-		return entity, nil, nil
+		return entity, "user", nil
 		// Handle user
 	case *models.SVCP:
-		return nil, entity, nil
+		return entity, "svcp", nil
 		// Handle svcp
+	case *models.Admin:
+		return entity, "admin", nil
 	default:
-		err = errors.New("need token of type User or SVCP but received Admin token")
+		err = errors.New("unexpected login type")
 		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: err.Error()})
-		return nil, nil, err
+		return nil, "", err
 	}
 }

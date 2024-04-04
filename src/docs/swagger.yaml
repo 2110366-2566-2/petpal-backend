@@ -802,6 +802,55 @@ paths:
       summary: Get current entity
       tags:
       - Authentication
+  /issue:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Create an issue for the current user. If attached image is not
+        provided, it will be set to null.
+      parameters:
+      - description: Attached image (optional)
+        in: formData
+        name: attachedImage
+        type: file
+      - description: Details of issue
+        in: formData
+        name: details
+        required: true
+        type: string
+      - description: Type of issue (refund, system, service)
+        in: formData
+        name: issueType
+        required: true
+        type: string
+      - description: ID of associated booking if type is service (optional)
+        in: formData
+        name: associatedBookingID
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Accepted
+          schema:
+            $ref: '#/definitions/models.BasicRes'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
+      summary: Create issue
+      tags:
+      - Issue
   /login:
     post:
       consumes:
