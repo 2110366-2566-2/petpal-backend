@@ -13,6 +13,5 @@ func CreateIssue(db *models.MongoDB, issue *models.CreateIssue) error {
 		return err
 	}
 
-	// Return the inserted issue
 	return nil
 }
