@@ -532,6 +532,58 @@
                 }
             }
         },
+        "/issue/resolve/{id}": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Admin resolves an issue. This will set the isResolved field of the issue to true and the resolveDate field to the current date. The issue can only be resolved by the admin who accepted the issue. If the current admin is not the working admin of the issue, this will return an error saying that no issue is found.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Issue"
+                ],
+                "summary": "Admin resolve issue",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of issue to resolve",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Accepted",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/login": {
             "post": {
                 "description": "Authenticate user and generate access token",

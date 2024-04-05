@@ -70,3 +70,19 @@ func AdminAcceptIssue(db *models.MongoDB, issueID string, adminID string) error 
 
 	return nil
 }
+
+func AdminResolveIssue(db *models.MongoDB, issueID string, adminID string) error {
+	collection := db.Collection("issue")
+
+	filter := bson.M{"_id": issueID, "workingAdminID": adminID}
+	update := bson.M{"$set": bson.M{"isResolved": true, "resolveDate": time.Now()}}
+	result, err := collection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		return errors.New("no issue found with the given ID and workingAdminID")
+	}
+
+	return nil
+}

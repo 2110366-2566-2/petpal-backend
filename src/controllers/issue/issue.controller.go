@@ -190,6 +190,47 @@ func AdminAcceptIssue(c *gin.Context, db *models.MongoDB) {
 
 }
 
+// AdminResolveIssue godoc
+//
+// @Summary     Admin resolve issue
+// @Description Admin resolves an issue. This will set the isResolved field of the issue to true and the resolveDate field to the current date. The issue can only be resolved by the admin who accepted the issue. If the current admin is not the working admin of the issue, this will return an error saying that no issue is found.
+// @Tags        Issue
+//
+// @Produce     json
+//
+// @Security    ApiKeyAuth
+//
+// @Param       id      path    string     true        "ID of issue to resolve"
+//
+// @Success     200      {object} models.BasicRes    		"Accepted"
+// @Failure     400      {object} models.BasicErrorRes      "Bad request"
+// @Failure     401      {object} models.BasicErrorRes      "Unauthorized"
+// @Failure     500      {object} models.BasicErrorRes      "Internal server error"
+//
+// @Router      /issue/resolve/{id} [post]
+func AdminResolveIssue(c *gin.Context, db *models.MongoDB) {
+	e, e_type, err := _authenticate(c, db)
+	if err != nil {
+		return
+	}
+
+	if e_type != "admin" {
+		c.JSON(http.StatusUnauthorized, models.BasicErrorRes{Error: "Only admin can resolve issues"})
+		return
+	}
+
+	admin := e.(*models.Admin)
+
+	issueID := c.Param("id")
+
+	if err := issue_utills.AdminResolveIssue(db, issueID, admin.AdminID); err != nil {
+		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, models.BasicRes{Message: "Issue resolved by " + admin.AdminID})
+}
+
 func _authenticate(c *gin.Context, db *models.MongoDB) (interface{}, string, error) {
 	entity, err := auth.GetCurrentEntityByGinContenxt(c, db)
 	if err != nil {
