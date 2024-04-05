@@ -498,7 +498,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Admin accepts an issue. This will set the workingAdminID field of the issue to the admin's ID.",
+                "description": "Admin accepts an issue. This will set the workingAdminID field of the issue to the admin's ID. If the issue is already accepted by another admin, this will return an error.",
                 "produces": [
                     "application/json"
                 ],

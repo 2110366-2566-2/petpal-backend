@@ -58,6 +58,17 @@ func AdminAcceptIssue(db *models.MongoDB, issueID string, adminID string) error 
 	collection := db.Collection("issue")
 
 	filter := bson.M{"_id": issueID}
+
+	issue_to_update := models.Issue{}
+	err := collection.FindOne(context.Background(), filter).Decode(&issue_to_update)
+	if err != nil {
+		return err
+	}
+
+	if issue_to_update.WorkingAdminID != "" {
+		return errors.New("issue already accepted by another admin")
+	}
+
 	update := bson.M{"$set": bson.M{"workingAdminID": adminID}}
 
 	result, err := collection.UpdateOne(context.Background(), filter, update)

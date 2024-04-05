@@ -151,7 +151,7 @@ func GetIssues(c *gin.Context, db *models.MongoDB) {
 // AdminAcceptIssue godoc
 //
 // @Summary     Admin accept issue
-// @Description Admin accepts an issue. This will set the workingAdminID field of the issue to the admin's ID.
+// @Description Admin accepts an issue. This will set the workingAdminID field of the issue to the admin's ID. If the issue is already accepted by another admin, this will return an error.
 // @Tags        Issue
 //
 // @Produce     json
