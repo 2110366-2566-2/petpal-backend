@@ -2,9 +2,11 @@ package utills
 
 import (
 	"context"
+	"errors"
 	"petpal-backend/src/models"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -36,4 +38,22 @@ func GetIssues(db *models.MongoDB, filter bson.M, page int64, per int64) ([]mode
 	}
 
 	return issues, nil
+}
+
+func AdminAcceptIssue(db *models.MongoDB, issueID string, adminID string) error {
+	collection := db.Collection("issue")
+
+	oid, _ := primitive.ObjectIDFromHex(issueID)
+	filter := bson.M{"_id": oid}
+	update := bson.M{"$set": bson.M{"workingAdminID": adminID}}
+
+	result, err := collection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		return errors.New("no issue found with the given ID")
+	}
+
+	return nil
 }

@@ -148,6 +148,48 @@ func GetIssues(c *gin.Context, db *models.MongoDB) {
 	c.JSON(http.StatusOK, issues)
 }
 
+// AdminAcceptIssue godoc
+//
+// @Summary     Admin accept issue
+// @Description Admin accepts an issue. This will set the workingAdminID field of the issue to the admin's ID.
+// @Tags        Issue
+//
+// @Produce     json
+//
+// @Security    ApiKeyAuth
+//
+// @Param       id      path    string     true        "ID of issue to accept"
+//
+// @Success     200      {object} models.BasicRes    		"Accepted"
+// @Failure     400      {object} models.BasicErrorRes      "Bad request"
+// @Failure     401      {object} models.BasicErrorRes      "Unauthorized"
+// @Failure     500      {object} models.BasicErrorRes      "Internal server error"
+//
+// @Router      /issue/accept/{id} [post]
+func AdminAcceptIssue(c *gin.Context, db *models.MongoDB) {
+	e, e_type, err := _authenticate(c, db)
+	if err != nil {
+		return
+	}
+
+	if e_type != "admin" {
+		c.JSON(http.StatusUnauthorized, models.BasicErrorRes{Error: "Only admin can accept issues"})
+		return
+	}
+
+	admin := e.(*models.Admin)
+
+	issueID := c.Param("id")
+
+	if err := issue_utills.AdminAcceptIssue(db, issueID, admin.AdminID); err != nil {
+		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, models.BasicRes{Message: "Issue accepted by " + admin.AdminID})
+
+}
+
 func _authenticate(c *gin.Context, db *models.MongoDB) (interface{}, string, error) {
 	entity, err := auth.GetCurrentEntityByGinContenxt(c, db)
 	if err != nil {

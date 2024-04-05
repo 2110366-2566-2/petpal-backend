@@ -18,4 +18,8 @@ func IssueRoutes(r *gin.Engine) {
 		db := c.MustGet("db").(*models.MongoDB)
 		controllers.GetIssues(c, db)
 	})
+	issueGroup.POST("/accept/:id", func(c *gin.Context) {
+		db := c.MustGet("db").(*models.MongoDB)
+		controllers.AdminAcceptIssue(c, db)
+	})
 }

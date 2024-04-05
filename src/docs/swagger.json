@@ -480,6 +480,58 @@
                 }
             }
         },
+        "/issue/accept/{id}": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Admin accepts an issue. This will set the workingAdminID field of the issue to the admin's ID.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Issue"
+                ],
+                "summary": "Admin accept issue",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of issue to accept",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Accepted",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/login": {
             "post": {
                 "description": "Authenticate user and generate access token",
