@@ -6,7 +6,9 @@ import (
 	"petpal-backend/src/models"
 	admin_utills "petpal-backend/src/utills/admin"
 	"petpal-backend/src/utills/auth"
+	"petpal-backend/src/utills/chat/chathistory"
 	service_utills "petpal-backend/src/utills/service"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -84,6 +86,57 @@ func AdminVerifyServiceProviderHandler(c *gin.Context, db *models.MongoDB, svcpI
 		return
 	}
 	c.JSON(http.StatusOK, models.BasicRes{Message: "Service provider verification status updated successfully"})
+}
+
+// AdminGetChatsHandler godoc
+//
+// @Summary 	Get chats
+// @Description Get chats of the current admin. Chats are paginated. Messages only contain the latest message.
+// @Tags 		Admin
+//
+// @Security 	ApiKeyAuth
+//
+// @Produce 	json
+//
+// @Param 		page 	query		int		false 	"Page number of chat messages (default 1)"
+// @Param 		per 	query		int		false 	"Number of chat messages per page (default 10)"
+//
+// @Success 	200 	{object}	[]models.Chat
+// @Failure 	400 	{object}	models.BasicErrorRes
+// @Failure 	401 	{object}	models.BasicErrorRes
+// @Failure 	500 	{object}	models.BasicErrorRes
+//
+// @Router /admin/chats [get]
+func AdminGetChatsHandler(c *gin.Context, db *models.MongoDB) {
+	current_admin, err := _authenticateAdmin(c, db) // admin object can be used for logging in the future
+	if err != nil {
+		return
+	}
+
+	params := c.Request.URL.Query()
+
+	// set default values for page and per
+	if !params.Has("page") {
+		params.Set("page", "1")
+	}
+	if !params.Has("per") {
+		params.Set("per", "10")
+	}
+
+	// fetch page and per from request query
+	page, err_page := strconv.ParseInt(params.Get("page"), 10, 64)
+	per, err_per := strconv.ParseInt(params.Get("per"), 10, 64)
+	if err_page != nil || err_per != nil {
+		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "Invalid page or per number"})
+		return
+	}
+
+	chats, err := chathistory.GetChatsById(db, current_admin.AdminID, page-1, per, "admin")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, chats)
 }
 
 func _authenticateAdmin(c *gin.Context, db *models.MongoDB) (*models.Admin, error) {

@@ -46,7 +46,7 @@ func CreateChatHistory(db *models.MongoDB, roomId string, user0Id string, user1I
 	return &chat, nil
 }
 
-func AddTextMessage(db *models.MongoDB, roomId string, content string, senderId string) error {
+func AddTextMessage(db *models.MongoDB, roomId string, content string, senderId string, senderType string) error {
 	// find chat by id
 	chat, err := GetChatHistory(db, roomId, 1, 1)
 	if err != nil {
@@ -56,9 +56,9 @@ func AddTextMessage(db *models.MongoDB, roomId string, content string, senderId 
 	collection := db.Collection("chat")
 
 	var sender int
-	if chat.User0ID == senderId {
+	if chat.User0ID == senderId && chat.User0Type == senderType {
 		sender = 0
-	} else if chat.User1ID == senderId {
+	} else if chat.User1ID == senderId && chat.User1Type == senderType {
 		sender = 1
 	} else {
 		return errors.New("sender not in chat")
@@ -95,7 +95,7 @@ func UpdateChatHistoryHandler(db *models.MongoDB, roomID string, updateChatHisto
 	if err != nil {
 		return nil, err
 	}
-	update := bson.D{{"$set", updateChatHistory}}
+	update := bson.D{{Key: "$set", Value: updateChatHistory}}
 	_, err = collection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
 		return nil, err
@@ -109,7 +109,7 @@ func UpdateChatHistoryHandler(db *models.MongoDB, roomID string, updateChatHisto
 }
 
 func GetChatsById(db *models.MongoDB, id string, page int64, per int64, userType string) ([]models.Chat, error) {
-	if userType != "user" && userType != "svcp" {
+	if userType != "user" && userType != "svcp" && userType != "admin" {
 		return nil, errors.New("invalid user type")
 	}
 
@@ -122,7 +122,6 @@ func GetChatsById(db *models.MongoDB, id string, page int64, per int64, userType
 		bson.M{"user1Id": id, "user1type": userType},
 	}}}
 
-	// filter := bson.D{{Key: "user0Id", Value: id}}
 	opts := options.Find().SetProjection(bson.D{{
 		Key: "messages", Value: bson.D{{
 			Key: "$slice", Value: []int64{0, 1},
