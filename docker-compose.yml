@@ -1,12 +1,13 @@
-version: "3.9"
 services:
   petpal_backend:
     image: petpal_backend
     build:
-      context: ./src
+      context: .
       dockerfile: Dockerfile
     container_name: petpal_backend
     restart: unless-stopped
+    volumes:
+      - ./src:/app/src
     ports:
       - 8080:8080
   ga_db:
