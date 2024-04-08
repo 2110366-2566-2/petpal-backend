@@ -46,7 +46,7 @@ func CreateChatHistory(db *models.MongoDB, roomId string, user0Id string, user1I
 	return &chat, nil
 }
 
-func AddTextMessage(db *models.MongoDB, roomId string, content string, senderId string) error {
+func AddTextMessage(db *models.MongoDB, roomId string, content string, senderId string, senderType string) error {
 	// find chat by id
 	chat, err := GetChatHistory(db, roomId, 1, 1)
 	if err != nil {
@@ -56,9 +56,9 @@ func AddTextMessage(db *models.MongoDB, roomId string, content string, senderId 
 	collection := db.Collection("chat")
 
 	var sender int
-	if chat.User0ID == senderId {
+	if chat.User0ID == senderId && chat.User0Type == senderType {
 		sender = 0
-	} else if chat.User1ID == senderId {
+	} else if chat.User1ID == senderId && chat.User1Type == senderType {
 		sender = 1
 	} else {
 		return errors.New("sender not in chat")
