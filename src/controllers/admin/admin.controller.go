@@ -90,17 +90,21 @@ func AdminVerifyServiceProviderHandler(c *gin.Context, db *models.MongoDB, svcpI
 
 // AdminGetChatsHandler godoc
 //
-// @Summary Get chats
+// @Summary 	Get chats
 // @Description Get chats of the current admin. Chats are paginated. Messages only contain the latest message.
-// @Tags Admin
-// @Security ApiKeyAuth
+// @Tags 		Admin
 //
-// @Produce json
+// @Security 	ApiKeyAuth
 //
-// @Success 200 {object} []models.Chat
-// @Failure 400 {object} models.BasicErrorRes
-// @Failure 401 {object} models.BasicErrorRes
-// @Failure 500 {object} models.BasicErrorRes
+// @Produce 	json
+//
+// @Param 		page 	query		int		false 	"Page number of chat messages (default 1)"
+// @Param 		per 	query		int		false 	"Number of chat messages per page (default 10)"
+//
+// @Success 	200 	{object}	[]models.Chat
+// @Failure 	400 	{object}	models.BasicErrorRes
+// @Failure 	401 	{object}	models.BasicErrorRes
+// @Failure 	500 	{object}	models.BasicErrorRes
 //
 // @Router /admin/chats [get]
 func AdminGetChatsHandler(c *gin.Context, db *models.MongoDB) {

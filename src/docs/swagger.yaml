@@ -598,6 +598,45 @@ definitions:
 info:
   contact: {}
 paths:
+  /admin/chats:
+    get:
+      description: Get chats of the current admin. Chats are paginated. Messages only
+        contain the latest message.
+      parameters:
+      - description: Page number of chat messages (default 1)
+        in: query
+        name: page
+        type: integer
+      - description: Number of chat messages per page (default 10)
+        in: query
+        name: per
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Chat'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
+      summary: Get chats
+      tags:
+      - Admin
   /admin/service/{svcpID}/{serviceID}:
     delete:
       description: Delete a service identified by service provider ID and service
