@@ -97,7 +97,7 @@ func GetProjectAbsPath() string {
 	}
 
 	path = strings.Split(path, "src")[0]
-	path = path + "src/"
+	path = path + "/src/"
 
 	fmt.Println(path)
 

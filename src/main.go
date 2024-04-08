@@ -69,8 +69,8 @@ func main() {
 
 	// set cors
 	r.Use(cors.New(cors.Config{
-		AllowOrigins: []string{"https://localhost:3000", "http://localhost:3000"},
-		// AllowAllOrigins:  true,
+		// AllowOrigins: []string{"https://localhost:3000", "http://localhost:3000", "http://localhost:8080", "https://localhost:8080"},
+		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"GET, POST, OPTIONS, PUT, DELETE, PATCH"},
 		AllowHeaders:     []string{"*"},
 		AllowCredentials: true,
@@ -96,5 +96,5 @@ func main() {
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	r.Run("localhost:" + port)
+	r.Run("0.0.0.0:" + port)
 }
