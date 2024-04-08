@@ -1,5 +1,14 @@
 version: "3.9"
 services:
+  petpal_backend:
+    image: petpal_backend
+    build:
+      context: ./src
+      dockerfile: Dockerfile
+    container_name: petpal_backend
+    restart: unless-stopped
+    ports:
+      - 8080:8080
   ga_db:
     image: mongo
     container_name: ga-mongo_db
