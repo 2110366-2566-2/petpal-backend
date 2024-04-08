@@ -21,4 +21,8 @@ func AdminRoutes(r *gin.Engine) {
 		svcpID := c.Param("svcpID")
 		admin.AdminVerifyServiceProviderHandler(c, db, svcpID)
 	})
+	adminGroup.GET("/chats", func(c *gin.Context) {
+		db := c.MustGet("db").(*models.MongoDB)
+		admin.AdminGetChatsHandler(c, db)
+	})
 }
