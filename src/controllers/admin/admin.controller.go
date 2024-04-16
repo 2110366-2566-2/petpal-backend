@@ -131,7 +131,7 @@ func AdminGetChatsHandler(c *gin.Context, db *models.MongoDB) {
 		return
 	}
 
-	chats, err := chathistory.GetChatsById(db, current_admin.AdminID, page-1, per, "admin")
+	chats, err := chathistory.GetChatsById(db, current_admin.AdminID, page, per, "admin")
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})
 		return
