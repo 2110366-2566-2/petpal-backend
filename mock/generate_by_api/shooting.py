@@ -187,6 +187,33 @@ for user_idx in range(N_USER):
             continue
         else:
             print('\tcreated booking of user', user_idx)
+        
+        booking_id = response.json()['result']['bookingID']
+        
+        # sent service issue -------------------------------------------------
+        issue = {
+            "details": "this is issue of booking",
+            "issueType": "service",
+            "associatedBookingID": booking_id
+        }
+        response = requests.post(BASE_URL + "issue", cookies={"token": user_token}, files=issue, data=issue)
+        if response.status_code != 200:
+            continue
+        else:
+            print('\tsent issue of booking of user', user_idx)
+
+        # sent refund issue -------------------------------------------------
+        if random.random() < 0.5:
+            issue = {
+                "details": "this is issue of refund",
+                "issueType": "refund",
+                "associatedBookingID": booking_id
+            }
+            response = requests.post(BASE_URL + "issue", cookies={"token": user_token}, files=issue, data=issue)
+            if response.status_code != 200:
+                continue
+            else:
+                print('\tsent issue of refund of user', user_idx)
 
 # register admin -------------------------------------------------------------
 for admin_idx in range(N_ADMIN):
@@ -201,3 +228,20 @@ for admin_idx in range(N_ADMIN):
         continue
     else:
         print('registered admin', admin_idx)
+
+# add system issue -----------------------------------------------------------
+for user_idx in range(N_USER):
+    # log in
+    user_token = auth.login(user_idx, "user")
+    if user_token == None:
+        continue
+
+    issue = {
+        "details": "this is issue of system",
+        "issueType": "system",
+    }
+    response = requests.post(BASE_URL + "issue", cookies={"token": user_token}, files=issue, data=issue)
+    if response.status_code != 200:
+        continue
+    else:
+        print('added system issue of user', user_idx)
