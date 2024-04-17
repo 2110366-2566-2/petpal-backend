@@ -876,6 +876,15 @@ paths:
         all issues are returned. Otherwise only issues associated with the user are
         returned. Note that in an issue, if attached image is not provided, it will
         be set to null.
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Number of issues per page
+        in: query
+        name: per
+        type: integer
       produces:
       - application/json
       responses:

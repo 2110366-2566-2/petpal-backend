@@ -448,6 +448,20 @@ const docTemplate = `{
                     "Issue"
                 ],
                 "summary": "Get issues",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of issues per page",
+                        "name": "per",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Success",

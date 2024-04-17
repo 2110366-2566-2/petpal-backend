@@ -93,6 +93,9 @@ func CreateIssue(c *gin.Context, db *models.MongoDB) {
 //
 // @Security    ApiKeyAuth
 //
+// @Param       page    query    int     false        "Page number"
+// @Param       per     query    int     false        "Number of issues per page"
+//
 // @Success     200      {object} []models.Issue    			"Success"
 // @Failure     400      {object} models.BasicErrorRes  		"Bad request"
 // @Failure     401      {object} models.BasicErrorRes  		"Unauthorized"
