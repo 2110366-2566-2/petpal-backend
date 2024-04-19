@@ -151,6 +151,18 @@ func GetIssues(c *gin.Context, db *models.MongoDB) {
 	c.JSON(http.StatusOK, issues)
 }
 
+func GetIssueById(c *gin.Context, db *models.MongoDB) {
+	issueID := c.Param("id")
+
+	issue, err := issue_utills.GetIssueByID(db, issueID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, issue)
+}
+
 // AdminAcceptIssue godoc
 //
 // @Summary     Admin accept issue
