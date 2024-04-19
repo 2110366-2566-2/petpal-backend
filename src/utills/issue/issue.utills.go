@@ -54,6 +54,19 @@ func GetIssues(db *models.MongoDB, filter bson.M, page int64, per int64) ([]mode
 	return issues, nil
 }
 
+func GetIssueByID(db *models.MongoDB, issueID string) (models.Issue, error) {
+	collection := db.Collection("issue")
+
+	filter := bson.M{"_id": issueID}
+
+	var issue = models.Issue{}
+	err := collection.FindOne(context.Background(), filter).Decode(&issue)
+	if err != nil {
+		return issue, err
+	}
+	return issue, nil
+}
+
 func AdminAcceptIssue(db *models.MongoDB, issueID string, adminID string) error {
 	collection := db.Collection("issue")
 

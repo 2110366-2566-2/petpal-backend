@@ -959,6 +959,39 @@ paths:
       summary: Create issue
       tags:
       - Issue
+  /issue/{id}:
+    get:
+      description: Get issue by ID
+      parameters:
+      - description: ID of issue to get
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/models.Issue'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.BasicErrorRes'
+      security:
+      - ApiKeyAuth: []
+      summary: Get issue by ID
+      tags:
+      - Issue
   /issue/accept/{id}:
     post:
       description: Admin accepts an issue. This will set the workingAdminID field
