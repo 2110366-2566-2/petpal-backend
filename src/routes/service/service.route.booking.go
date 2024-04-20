@@ -4,6 +4,7 @@ import (
 	// controllers "petpal-backend/src/controllers/user"
 	// "petpal-backend/src/models"
 
+	controllersAdmin "petpal-backend/src/controllers/admin"
 	controllersService "petpal-backend/src/controllers/service"
 	controllersSVCP "petpal-backend/src/controllers/serviceprovider"
 	controllersUser "petpal-backend/src/controllers/user"
@@ -82,6 +83,11 @@ func ServiceBookingRoutes(r *gin.RouterGroup) {
 		bookingGroup.POST("/payment/refund", func(c *gin.Context) {
 			db := c.MustGet("db").(*models.MongoDB)
 			controllersService.RefundBookingHandler(c, db)
+		})
+
+		bookingGroup.POST("/detail/admin", func(c *gin.Context) {
+			db := c.MustGet("db").(*models.MongoDB)
+			controllersAdmin.AdminGetDetailBookingHandler(c, db)
 		})
 	}
 }

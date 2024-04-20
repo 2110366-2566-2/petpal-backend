@@ -1484,6 +1484,69 @@ const docTemplate = `{
                 }
             }
         },
+        "/service/booking/detail/admin": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get a booking detail by booking id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking admin"
+                ],
+                "summary": "Admin get a booking detail by booking id",
+                "parameters": [
+                    {
+                        "description": "booking id",
+                        "name": "bookingID",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.RequestBookingId"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "get detail booking",
+                        "schema": {
+                            "$ref": "#/definitions/models.BookkingDetailRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.BasicErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/service/booking/detail/svcp": {
             "post": {
                 "security": [
