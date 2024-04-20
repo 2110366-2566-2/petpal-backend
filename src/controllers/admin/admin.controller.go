@@ -139,6 +139,55 @@ func AdminGetChatsHandler(c *gin.Context, db *models.MongoDB) {
 	c.JSON(http.StatusOK, chats)
 }
 
+// AdminGetDetailBookingHandler godoc
+//
+// @Summary 	Admin get a booking detail by booking id
+// @Description	get a booking detail by booking id
+// @Tags 		Booking admin
+//
+// @Accept		json
+// @Produce 	json
+//
+// @Security    ApiKeyAuth
+//
+// @Param       bookingID      body    models.RequestBookingId    true    "booking id"
+//
+// @Success 	200 {object} models.BookkingDetailRes "get detail booking"
+// @Failure 	400 {object} models.BasicErrorRes
+// @Failure 	401 {object} models.BasicErrorRes
+// @Failure 	403 {object} models.BasicErrorRes
+// @Failure 	500 {object} models.BasicErrorRes
+//
+// @Router 		/service/booking/detail/admin [post]
+func AdminGetDetailBookingHandler(c *gin.Context, db *models.MongoDB) {
+	_, err := _authenticateAdmin(c, db)
+	if err != nil {
+		return
+	}
+
+	request := models.RequestBookingId{}
+
+	//400 bad request
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: err.Error()})
+		return
+	}
+
+	if request.BookingID == "" {
+		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: "Missing required fields"})
+		return
+	}
+
+	booking, err := service_utills.GetABookingDetail(db, request.BookingID)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.BasicErrorRes{Error: err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, models.BookkingDetailRes{Message: "get detail user booking successfully", Result: *booking})
+}
+
 func _authenticateAdmin(c *gin.Context, db *models.MongoDB) (*models.Admin, error) {
 	entity, err := auth.GetCurrentEntityByGinContenxt(c, db)
 	if err != nil {
