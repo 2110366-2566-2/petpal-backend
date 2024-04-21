@@ -504,7 +504,7 @@ func FillBookingStatusString(db *models.MongoDB, bookingArray []models.BookingSh
 	const twentyFourHours = 72 * time.Hour
 	const threeDays = 72 * time.Hour
 	for i, b := range bookingArray {
-		if !b.Status.PaymentStatus {
+		if b.Status.PaymentStatus {
 			if !b.Status.SvcpCompleted {
 				if timeNow.Sub(b.BookingTimestamp) > oneHours {
 					payment_utils.UpdateBookingSVCPCompleted(db, b.BookingID)
@@ -527,7 +527,7 @@ func FillBookingStatusString(db *models.MongoDB, bookingArray []models.BookingSh
 			} else {
 				bookingArray[i].StatusString = "Paid"
 			}
-		} else if !b.Status.UserCompleted {
+		} else if b.Status.UserCompleted {
 			bookingArray[i].StatusString = "Completed"
 		} else if timeNow.Sub(b.Status.SvcpCompletedTimestamp) > threeDays {
 			bookingArray[i].StatusString = "Completed"
