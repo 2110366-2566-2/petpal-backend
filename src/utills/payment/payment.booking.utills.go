@@ -87,6 +87,30 @@ func CheckUpdateExpiredBookingPayment(db *models.MongoDB, bookingID string) erro
 	return nil
 }
 
+func UpdateBookingSVCPCompleted(db *models.MongoDB, bookingID string) error {
+	// Get the booking collection
+	collection := db.Collection("booking")
+	// Find the booking by bookingID
+	var booking models.Booking = models.Booking{}
+	// Convert bookingID to ObjectID
+	filter := bson.D{{Key: "_id", Value: bookingID}}
+	err := collection.FindOne(context.Background(), filter).Decode(&booking)
+	if err != nil {
+		return err
+	}
+	if booking.Cancel.CancelStatus {
+		return fmt.Errorf("This booking is already cancelled")
+	}
+	booking.Status.SvcpCompleted = true
+	booking.Status.SvcpCompletedTimestamp = time.Now()
+
+	_, err = collection.UpdateOne(context.Background(), filter, bson.D{{Key: "$set", Value: booking}})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func RefundBooking(db *models.MongoDB, bookingID string) error {
 	// Get the booking collection
 	collection := db.Collection("booking")
