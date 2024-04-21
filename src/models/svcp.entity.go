@@ -9,6 +9,8 @@ type CreateSVCP struct {
 	SVCPPassword    string `json:"SVCPPassword" bson:"SVCPPassword"`
 	SVCPEmail       string `json:"SVCPEmail" bson:"SVCPEmail"`
 	SVCPServiceType string `json:"SVCPServiceType" bson:"SVCPServiceType"`
+	PhoneNumber     string `json:"phoneNumber" bson:"phoneNumber"`
+	Address         string `json:"address" bson:"address"`
 }
 
 type UpdateSVCP struct {
