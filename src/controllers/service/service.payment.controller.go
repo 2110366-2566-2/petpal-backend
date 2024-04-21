@@ -98,8 +98,7 @@ func RefundBookingHandler(c *gin.Context, db *models.MongoDB) {
 		c.JSON(http.StatusBadRequest, models.BasicErrorRes{Error: err.Error()})
 		return
 	}
-	// TODO: Change to Admin
-	_, err := _authenticate(c, db)
+	_, err := _authenticateAdmin(c, db)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, models.BasicErrorRes{Error: err.Error()})
 		return
