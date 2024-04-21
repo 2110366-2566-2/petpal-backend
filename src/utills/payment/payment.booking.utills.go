@@ -103,6 +103,8 @@ func UpdateBookingSVCPCompleted(db *models.MongoDB, bookingID string) error {
 	}
 	booking.Status.SvcpCompleted = true
 	booking.Status.SvcpCompletedTimestamp = time.Now()
+	booking.Status.SvcpConfirmed = true
+	booking.Status.SvcpConfirmedTimestamp = time.Now()
 
 	_, err = collection.UpdateOne(context.Background(), filter, bson.D{{Key: "$set", Value: booking}})
 	if err != nil {

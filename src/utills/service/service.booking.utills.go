@@ -500,13 +500,13 @@ func FillSVCPDetail(db *models.MongoDB, bookingArray []models.BookingShowALL) []
 
 func FillBookingStatusString(db *models.MongoDB, bookingArray []models.BookingShowALL) []models.BookingShowALL {
 	timeNow := time.Now()
-	const oneHours = 1 * time.Hour
+	const oneHours = 0 * time.Hour
 	const twentyFourHours = 72 * time.Hour
 	const threeDays = 72 * time.Hour
 	for i, b := range bookingArray {
 		if b.Status.PaymentStatus {
 			if !b.Status.SvcpCompleted {
-				if timeNow.Sub(b.BookingTimestamp) > oneHours {
+				if timeNow.Sub(b.EndTime) > oneHours {
 					payment_utils.UpdateBookingSVCPCompleted(db, b.BookingID)
 				}
 			}
@@ -515,7 +515,7 @@ func FillBookingStatusString(db *models.MongoDB, bookingArray []models.BookingSh
 		if !b.Status.PaymentStatus {
 			if b.Cancel.CancelReason == "Payment Expired (Not Authorize Payment within 24 hours)" {
 				bookingArray[i].StatusString = "Payment Expired"
-			} else if timeNow.Sub(b.BookingTimestamp) > twentyFourHours {
+			} else if timeNow.Sub(b.StartTime) > twentyFourHours {
 				payment_utils.CheckUpdateExpiredBookingPayment(db, b.BookingID)
 				bookingArray[i].StatusString = "Payment Expired"
 			} else {
@@ -528,7 +528,12 @@ func FillBookingStatusString(db *models.MongoDB, bookingArray []models.BookingSh
 				bookingArray[i].StatusString = "Paid"
 			}
 		} else if b.Status.UserCompleted {
-			bookingArray[i].StatusString = "Completed"
+			if b.Feedback.FeedbackID != "" {
+				bookingArray[i].StatusString = "Feedbacked"
+			} else {
+				bookingArray[i].StatusString = "Completed"
+			}
+			// if bookingArray[i].StatusString =
 		} else if timeNow.Sub(b.Status.SvcpCompletedTimestamp) > threeDays {
 			bookingArray[i].StatusString = "Completed"
 			CompleteBooking(db, b.BookingID, "user")
