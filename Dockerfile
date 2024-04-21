@@ -17,8 +17,6 @@ WORKDIR /app
 
 COPY --from=builder /app/main .
 COPY ./src/.env ./src/.env
-
-EXPOSE 8088
 CMD ["./main"]
 
 # FROM golang:latest AS builder
