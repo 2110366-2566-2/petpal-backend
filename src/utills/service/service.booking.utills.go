@@ -500,8 +500,8 @@ func FillSVCPDetail(db *models.MongoDB, bookingArray []models.BookingShowALL) []
 
 func FillBookingStatusString(db *models.MongoDB, bookingArray []models.BookingShowALL) []models.BookingShowALL {
 	timeNow := time.Now()
-	const oneHours = 5 * time.Hour
-	const twentyFourHours = 24 * time.Hour
+	const oneHours = 1 * time.Hour
+	const twentyFourHours = 72 * time.Hour
 	const threeDays = 72 * time.Hour
 	for i, b := range bookingArray {
 		if !b.Status.PaymentStatus {
