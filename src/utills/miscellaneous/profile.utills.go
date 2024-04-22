@@ -19,12 +19,7 @@ func RandomProfileImage() ([]byte, error) {
 	// generate a random index
 	var random_idx = rand.Intn(len(profileImages))
 	current_wd, _ := os.Getwd()
-	current_wd = strings.Split(current_wd, "src")[0]
-	// check if the current working directory ends with a slash
-	if current_wd[len(current_wd)-1] != '/' {
-		current_wd = current_wd + "/"
-	}
-	current_wd = "/src"
+	current_wd = strings.Split(current_wd, "src")[0] + "src"
 	var target_file = fmt.Sprintf("%s%s", current_wd, profileImages[random_idx])
 	fmt.Println(target_file)
 
