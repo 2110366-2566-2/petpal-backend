@@ -502,7 +502,7 @@ func FillBookingStatusString(db *models.MongoDB, bookingArray []models.BookingSh
 	timeNow := time.Now()
 	const oneHours = 0 * time.Hour
 	const twentyFourHours = 72 * time.Hour
-	const threeDays = 72 * time.Hour
+	const threeDays = 5 * 24 * time.Hour
 	for i, b := range bookingArray {
 		if b.Status.PaymentStatus {
 			if !b.Status.SvcpCompleted {
