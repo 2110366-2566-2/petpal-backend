@@ -1,59 +1,113 @@
 {
-    "type" : "object",
-    "bsonType" : "object",
-    "title" : "User",
-    "desciption" : "Store user data",
-    "required" : ["username", "password", "address", "phoneNumber", "email", "profilePicture", "fullName", "dateOfBith", "defaultAccountNumber", "defaultBank"],
-    "properties" : {
-        "username" : {
-            "bsonType" : "string",
-            "minLength" : 1,
-            "maxLength" : 64
-        },
-        "password" : {
-            "bsonType" : "string",
-            "minLength" : 8,
-            "maxLength" : 64
-        },
-        "address" : {
-            "bsonType" : "string",
-            "maxLength" : 256
-        },
-        "phoneNumber" : {
-            "bsonType" : "string",
-            "pattern" : "0\\d*",
-            "minLength" : 10,
-            "maxLength" : 10
-        },
-        "email" : {
-            "bsonType" : "string",
-            "pattern" : ".+@.+\\..+",
-            "maxLength" : 64
-        },
-        "profilePicture" : {"bsonType" : "string"},
-        "fullName" : {
-            "bsonType" : "string",
-            "maxLength" : 128
-        },
-        "dateOfBith" : {"bsonType" : "date"},
-        "defaultAccountNumber" : {"bsonType" : "string"},
-        "defaultBank" : {"bsonType" : "string"},
-        "pets" : {
-            "bsonType" : "array",
-            "items" : {
-                "bsonType" : "object",
-                "properties" : {
-                    "name" : {"bsonType" : "string"},
-                    "gender" : {"bsonType" : "string"},
-                    "age" : {"bsonType" : "int"},
-                    "type" : {"bsonType" : "string"},
-                    "healthInformation" : {"bsonType" : "string"},
-                    "certificate" : {"bsonType" : "string"},
-                    "behaviouralNotes" : {"bsonType" : "string"},
-                    "vaccinations" : {"bsonType" : "string"},
-                    "dietyPreferences" : {"bsonType" : "string"}
-                }
-            }
+  "type": "object",
+  "bsonType": "object",
+  "title": "User",
+  "desciption": "Store user data",
+  "required": [
+    "username",
+    "password",
+    "address",
+    "phoneNumber",
+    "email",
+    "profilePicture",
+    "fullName",
+    "dateOfBirth",
+    "defaultAccountNumber",
+    "defaultBank"
+  ],
+  "properties": {
+    "username": {
+      "bsonType": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "password": {
+      "bsonType": "string",
+      "minLength": 8,
+      "maxLength": 64
+    },
+    "address": {
+      "bsonType": "string",
+      "maxLength": 256
+    },
+    "phoneNumber": {
+      "bsonType": "string",
+      "pattern": "0\\d*",
+      "minLength": 10,
+      "maxLength": 10
+    },
+    "email": {
+      "bsonType": "string",
+      "pattern": ".+@.+\\..+",
+      "maxLength": 64
+    },
+    "profilePicture": { "bsonType": "string" },
+    "fullName": {
+      "bsonType": "string",
+      "maxLength": 128
+    },
+    "dateOfBirth": { "bsonType": "date" },
+    "defaultAccountNumber": { "bsonType": "string" },
+    "defaultBank": { "bsonType": "string" },
+    "pets": {
+      "bsonType": "array",
+      "items": {
+        "bsonType": "object",
+        "properties": {
+          "name": { "bsonType": "string" },
+          "gender": { "bsonType": "string" },
+          "age": { "bsonType": "int" },
+          "type": { "bsonType": "string" },
+          "healthInformation": { "bsonType": "string" },
+          "certificate": { "bsonType": "string" },
+          "behaviouralNotes": { "bsonType": "string" },
+          "vaccinations": { "bsonType": "string" },
+          "dietyPreferences": { "bsonType": "string" }
         }
+      }
+    },
+    "search_history": {
+      "bsonType": "array",
+      "items": {
+        "bsonType": "object",
+        "properties": {
+          "date": { "bsonType": "date" },
+          "search_filters": {
+            "bsonType": "object",
+            "properties": {
+              "q": {
+                "bsonType": "string",
+                "pattern": "service(Name|Type|Description)\\d"
+              },
+              "address": {
+                "bsonType": "string",
+                "pattern": "address\\d"
+              },
+              "start_time": { "bsonType": "date" },
+              "end_time": { "bsonType": "date" },
+              "start_price_range": { "bsonType": "double" },
+              "end_price_range": { "bsonType": "double" },
+              "min_rating": {
+                "bsonType": "double",
+                "minimum": 0,
+                "maximum": 5
+              },
+              "max_rating": {
+                "bsonType": "double",
+                "minimum": 0,
+                "maximum": 5
+              },
+              "page_number": { "bsonType": "int", "maximum": 5 },
+              "page_size": { "bsonType": "int", "maximum": 20 },
+              "sort_by": {
+                "bsonType": "string",
+                "pattern": "(price|rating|distance)"
+              },
+              "descending": { "bsonType": "bool" }
+            }
+          }
+        }
+      }
     }
+  }
 }

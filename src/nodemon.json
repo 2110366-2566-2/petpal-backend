@@ -1,0 +1,7 @@
+{
+    "exec": "go run main.go",
+    "ext": "go",
+    "ignore": ["*.test.go", "vendor/**"],
+    "signal": "SIGTERM"
+}
+  

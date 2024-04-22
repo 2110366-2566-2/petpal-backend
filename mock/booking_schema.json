@@ -1,0 +1,60 @@
+{
+    "type" : "object",
+    "bsonType" : "object",
+    "title" : "booking",
+    "description" : "Service booking and feedback each booking",
+    "properties" : {
+        "userID" : {"bsonType" : "string"},
+        "SVCPID" : {"bsonType" : "string"},
+        "serviceID" : {"bsonType" : "string"},
+        "timeslotsID" : {"bsonType" : "string"},
+
+
+        "serviceName" : {"bsonType" : "string"},
+        "startTime" : {"bsonType" : "date"},
+        "endTime" : {"bsonType" : "date"},
+        "bookingTimestamp" : {"bsonType" : "date"},
+        "totalBookingPrice" : {"bsonType" : "double"},
+
+        
+        "cancel" : {
+            "bsonType" : "object",
+            "properties" : {
+            "cancelStatus" : {"bsonType" : "bool"},
+            "cancelTimestamp" : {"bsonType" : "date"},
+            "cancelReason" : {"bsonType" : "string"},
+            "cancelBy" : {"bsonType" : "string"} 
+            }
+        }
+        ,
+
+        "status" : {
+            "bsonType" : "object",
+
+            "properties" : {
+            "rescheduleStatus" : {"bsonType" : "bool"},
+
+            "paymentStatus" : {"bsonType" : "bool"},
+            "paymentTimestamp" : {"bsonType" : "date"},
+
+            "svcpConfirmed" : {"bsonType" : "bool"},
+            "svcpConfirmedTimestamp" : {"bsonType" : "date"},
+
+            "svcpCompleted" : {"bsonType" : "bool"},
+            "svcpCompletedTimestamp" : {"bsonType" : "date"},
+
+            "userCompleted" : {"bsonType" : "bool"},
+            "userCompletedTimestamp" : {"bsonType" : "date"} 
+        }
+    },
+
+        "feedback" : {
+            "bsonType" : "object",
+            "properties" : {
+                "feedbackID" : {"bsonType" : "string"},
+                "rating" : {"bsonType" : "double"},
+                "content" : {"bsonType" : "string"}
+            }
+        }
+    }
+}
