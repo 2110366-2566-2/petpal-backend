@@ -3,6 +3,7 @@ import requests
 import json
 import random
 import datetime
+import time
 
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
@@ -16,7 +17,6 @@ db_url = f"mongodb://{USERNAME}:{PASSWORD}@localhost:27017/"
 
 client = MongoClient(db_url, server_api=ServerApi('1'))
 client.drop_database('petpal')
-client.close()
 print('Dropped database petpal')
 
 
@@ -31,6 +31,9 @@ N_SERVICES = 5
 
 N_ADMIN = 1
 
+USER0_ID = None
+SVCP0_ID = None
+
 SEED = 696969
 random.seed(SEED)
 
@@ -41,7 +44,7 @@ for svcp_idx in range(N_SVCP):
         "SVCPEmail": f"{svcp_idx}@svcp.com",
         "SVCPPassword": "password",
         "SVCPServiceType": "whatever",
-        "SVCPUsername": f"user{svcp_idx}"
+        "SVCPUsername": f"svcp{svcp_idx}"
     }
     response = requests.post(BASE_URL + "register-svcp", json=svcp)
     if response.status_code != 200:
@@ -158,7 +161,7 @@ for user_idx in range(N_USER):
             print('\tadded pet', pet_idx, 'of user', user_idx)
 
 # create booking -------------------------------------------------------------
-for user_idx in range(N_USER):
+for user_idx in range(min(N_USER, 2)):
     # get svcp_id, service_id, timeslot_id
     svcp_token = auth.login(user_idx, "svcp")
     if svcp_token == None:
@@ -245,3 +248,39 @@ for user_idx in range(N_USER):
         continue
     else:
         print('added system issue of user', user_idx)
+
+svcp_token = auth.login(0, "svcp")
+if svcp_token is not None:
+    svcp_entity = auth.current_entity(svcp_token)
+    SVCP0_ID = svcp_entity['SVCPID']
+
+user_token = auth.login(0, "user")
+if user_token is not None:
+    user_entity = auth.current_entity(user_token)
+    USER0_ID = user_entity['id']
+
+booking = client.petpal.booking.find({"userID": USER0_ID, "SVCPID": SVCP0_ID})
+
+# able to see complete and feedback
+target_date = {
+    'status.paymentStatus': True,
+    'status.svcpConfirmed': True,
+    'status.userCompleted': True,
+    'status.svcpCompleted': True,
+    'startTime': (datetime.datetime.now() + datetime.timedelta(days=-10, hours=-1)).strftime("%Y-%m-%dT%H:%M:%SZ"),
+    'endTime': (datetime.datetime.now() + datetime.timedelta(days=-10)).strftime("%Y-%m-%dT%H:%M:%SZ"),
+}
+client.petpal.booking.update_one({"_id": booking[0]['_id']}, {"$set": target_date})
+
+# able to refund
+target_date = {
+    'status.paymentStatus': True,
+    'status.svcpCompleted': True,
+    'status.userCompletedTimestamp': (datetime.datetime.now() + datetime.timedelta(days=-1)).strftime("%Y-%m-%dT%H:%M:%SZ"),
+    'status.svcpCompletedTimestamp': (datetime.datetime.now() + datetime.timedelta(days=-1)).strftime("%Y-%m-%dT%H:%M:%SZ"),
+    'startTime': (datetime.datetime.now() + datetime.timedelta(days=-2, hours=-1)).strftime("%Y-%m-%dT%H:%M:%SZ"),
+    'endTime': (datetime.datetime.now() + datetime.timedelta(days=-2)).strftime("%Y-%m-%dT%H:%M:%SZ"),
+}
+client.petpal.booking.update_one({"_id": booking[1]['_id']}, {"$set": target_date})
+
+client.close()
