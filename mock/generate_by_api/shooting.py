@@ -66,7 +66,7 @@ for svcp_idx in range(N_SVCP):
             "price": random.randint(100, 1000),
             "serviceDescription": f"this is {service_idx}th service of svcp {svcp_idx}",
             "serviceName": "washing "+random.choice(["dog", "cat", "rabbit"]),
-            "serviceType": "string",
+            "serviceType": random.choice(["Healthcare", "Grooming", "Pet walking", "Others"]),
             "timeslots": [
                 {
                 "endTime": (datetime.datetime.now() + datetime.timedelta(hours=random.randint(1, 10))).strftime("%Y-%m-%dT%H:%M:%SZ"),
