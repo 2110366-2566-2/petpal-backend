@@ -69,7 +69,7 @@ func main() {
 
 	// set cors
 	r.Use(cors.New(cors.Config{
-		AllowOrigins: []string{"https://localhost:3000", "http://localhost:3000", "http://localhost:8080", "https://localhost:8080", "https://0.0.0.0:3000", "http://0.0.0.0:3000", "http://0.0.0.0:8080", "https://0.0.0.0:8080"},
+		AllowOrigins: []string{"https://localhost:3000", "http://localhost:3000", "http://localhost:8080", "https://localhost:8080", "https://0.0.0.0:3000", "http://0.0.0.0:3000", "http://0.0.0.0:8080", "https://0.0.0.0:8080", "http://54.236.230.118:3000", "https://54.236.230.118:3000"},
 		// AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"GET, POST, OPTIONS, PUT, DELETE, PATCH"},
 		AllowHeaders:     []string{"*"},
