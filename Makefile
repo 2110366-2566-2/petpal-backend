@@ -14,6 +14,5 @@ down-develop:
 	docker-compose -f docker-compose.yml down
 
 restart-develop:
-	$(MAKE) git-pull
 	$(MAKE) down-develop
 	$(MAKE) run-develop
