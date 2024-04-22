@@ -515,7 +515,7 @@ func FillBookingStatusString(db *models.MongoDB, bookingArray []models.BookingSh
 		if !b.Status.PaymentStatus {
 			if b.Cancel.CancelReason == "Payment Expired (Not Authorize Payment within 24 hours)" {
 				bookingArray[i].StatusString = "Payment Expired"
-			} else if timeNow.Sub(b.StartTime) > twentyFourHours {
+			} else if timeNow.Sub(b.EndTime) > twentyFourHours {
 				payment_utils.CheckUpdateExpiredBookingPayment(db, b.BookingID)
 				bookingArray[i].StatusString = "Payment Expired"
 			} else {
@@ -534,7 +534,7 @@ func FillBookingStatusString(db *models.MongoDB, bookingArray []models.BookingSh
 				bookingArray[i].StatusString = "Completed"
 			}
 			// if bookingArray[i].StatusString =
-		} else if timeNow.Sub(b.Status.SvcpCompletedTimestamp) > threeDays {
+		} else if timeNow.Sub(b.EndTime) > threeDays {
 			bookingArray[i].StatusString = "Completed"
 			CompleteBooking(db, b.BookingID, "user")
 		} else {
