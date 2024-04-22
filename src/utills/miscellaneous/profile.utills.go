@@ -24,7 +24,7 @@ func RandomProfileImage() ([]byte, error) {
 	if current_wd[len(current_wd)-1] != '/' {
 		current_wd = current_wd + "/"
 	}
-	current_wd = current_wd + "src"
+	current_wd = "/src"
 	var target_file = fmt.Sprintf("%s%s", current_wd, profileImages[random_idx])
 	fmt.Println(target_file)
 
